@@ -1,0 +1,22 @@
+# Working files. None of these are referenced by any served page — checked with
+# a grep across every html/js/css before excluding them.
+#
+# Left in, the deploy uploads ~700 MB and fails outright: handover.zip alone is
+# 153 MB, over Vercel's 100 MB per-file limit.
+
+iar-lab
+
+# generation scratch: masters, raw renders, graded sets, contact sheets
+images/_*
+
+# the client handover package — a deliverable, not part of the site
+handover
+handover.zip
+
+# the originals from the client's Drive: 6000x4000 camera files
+images/_orig
+# the mark clips' video sources — the site now ships the keyed webp instead
+assets/*.mp4
+
+# previews written by iar-lab/fit.py, alongside whatever it checked
+*-fit.jpg

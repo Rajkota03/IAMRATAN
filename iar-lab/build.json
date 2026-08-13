@@ -1,0 +1,171 @@
+{
+ "masters": {
+  "1-hero": "bdf61ae8-bc85-4ac4-9890-acf2e6cb0e63",
+  "2-back": "4f530b12-58ac-4e6f-b94c-e9f44b484172",
+  "3-collar": "43882602-9801-4e77-b642-d86d67e12684",
+  "4-cuff": "5719dafb-9599-4246-b788-ca3dfb591bde",
+  "5-button": "e32ba8f6-90b9-4993-a1af-eca01d7684a5"
+ },
+ "master_colour": {
+  "1-hero": "pale blue",
+  "2-back": "pale blue",
+  "3-collar": "charcoal grey",
+  "4-cuff": "charcoal grey",
+  "5-button": "charcoal grey"
+ },
+ "cloths": [
+  {
+   "slug": "blanc-celestia-2",
+   "name": "Blanc Celestia",
+   "cat": "#F2F2F0",
+   "photo": "#E2E1E9",
+   "img": "blanc-celestia-2.jpg",
+   "buttons": "WHITE",
+   "lum": 0.759
+  },
+  {
+   "slug": "obsidian",
+   "name": "Obsidian",
+   "cat": "#16171A",
+   "photo": "#1D2228",
+   "img": "obsidian.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.016
+  },
+  {
+   "slug": "midnight-speckle",
+   "name": "Midnight Speckle",
+   "cat": "#22252D",
+   "photo": "#2C2C2C",
+   "img": "midnight-speckle.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.025
+  },
+  {
+   "slug": "moonlight-speckle",
+   "name": "Moonlight Speckle",
+   "cat": "#E6E4DE",
+   "photo": "#E5E3E2",
+   "img": "moonlight-speckle.jpg",
+   "buttons": "WHITE",
+   "lum": 0.771
+  },
+  {
+   "slug": "aegean-haze",
+   "name": "Aegean Haze",
+   "cat": "#8FA0AD",
+   "photo": "#5B697D",
+   "img": "aegean-haze.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.138
+  },
+  {
+   "slug": "blanc-canvas",
+   "name": "Blanc Canvas",
+   "cat": "#F4F4F2",
+   "photo": "#D1D1D1",
+   "img": "blanc-canvas.jpg",
+   "buttons": "WHITE",
+   "lum": 0.638
+  },
+  {
+   "slug": "cognac-drift",
+   "name": "Cognac Drift",
+   "cat": "#8A6244",
+   "photo": "#8E512C",
+   "img": "cognac-drift.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.118
+  },
+  {
+   "slug": "dune-sand",
+   "name": "Dune Sand",
+   "cat": "#BFAE96",
+   "photo": "#968073",
+   "img": "dune-sand.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.232
+  },
+  {
+   "slug": "midnight-navy",
+   "name": "Midnight Navy",
+   "cat": "#232C4A",
+   "photo": "#242942",
+   "img": "midnight-navy.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.024
+  },
+  {
+   "slug": "pebble-mist",
+   "name": "Pebble Mist",
+   "cat": "#C4C6C6",
+   "photo": "#919095",
+   "img": "pebble-mist.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.281
+  },
+  {
+   "slug": "storm-grey",
+   "name": "Storm Grey",
+   "cat": "#5C6066",
+   "photo": "#545A6B",
+   "img": "storm-grey.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.103
+  },
+  {
+   "slug": "azure-pearls",
+   "name": "Azure Pearls",
+   "cat": "#9FB6D9",
+   "photo": "#6D738D",
+   "img": "azure-pearls.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.174
+  },
+  {
+   "slug": "blanc-dewdrop",
+   "name": "Blanc Dewdrop",
+   "cat": "#F0F0EC",
+   "photo": "#E9E8ED",
+   "img": "blanc-dewdrop.jpg",
+   "buttons": "WHITE",
+   "lum": 0.812
+  },
+  {
+   "slug": "claret-hound",
+   "name": "Claret Hound",
+   "cat": "#6B2F3A",
+   "photo": "#53272E",
+   "img": "claret-hound.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.035
+  },
+  {
+   "slug": "forest-weave",
+   "name": "Forest Weave",
+   "cat": "#5E6449",
+   "photo": "#938F75",
+   "img": "forest-weave.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.271
+  },
+  {
+   "slug": "onyx-hound",
+   "name": "Onyx Hound",
+   "cat": "#2E3033",
+   "photo": "#3A3A3D",
+   "img": "onyx-hound.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.043
+  },
+  {
+   "slug": "warm-dune",
+   "name": "Warm Dune",
+   "cat": "#C2A882",
+   "photo": "#C8A895",
+   "img": "warm-dune.jpg",
+   "buttons": "DARK AND TONAL with the cloth",
+   "lum": 0.425
+  }
+ ]
+}

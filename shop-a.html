@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shop — I Am Ratan</title>
+<meta name="description" content="Twenty-five rooms, one per cloth. The room takes the colour of the garment.">
+<meta name="theme-color" content="#B7CAEE">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="I Am Ratan">
+<meta property="og:title" content="Shop — I Am Ratan">
+<meta property="og:description" content="Twenty-five cloths, cut in five sizes. Each shirt gets a room of its own colour.">
+<meta property="og:image" content="https://im-ratan.vercel.app/images/cloth-stack.jpg">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786616451">
+<style>
+:root{
+  --sans:'Anek Latin',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --gut:clamp(1.1rem,4vw,4.5rem);
+  --swing:cubic-bezier(.2,.9,.25,1);
+  --settle:cubic-bezier(.16,1,.3,1);
+}
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.5s}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;scroll-snap-type:none}}
+/* on a phone the rooms outgrow the viewport; a mandatory snap fights the thumb */
+@media(max-width:700px){html{scroll-snap-type:y proximity}}
+@media(max-width:640px){
+  .abc{gap:var(--s1)}.abc a{font-size:.5rem}
+  .bagbtn{font-size:.5625rem}
+}
+body{margin:0;font-family:var(--sans);font-weight:300;line-height:1.55;
+  -webkit-font-smoothing:antialiased;background:var(--room);color:#EDE9E0}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.fig{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.label{font-family:var(--mono);font-size:.625rem;letter-spacing:.2em;text-transform:uppercase}
+.grounds{display:none!important}
+
+/* ---------- header: ink flips with the room under it ---------- */
+.top{position:fixed;inset:0 0 auto 0;z-index:40;display:flex;align-items:center;
+  justify-content:space-between;gap:var(--s3);padding:var(--s3) var(--gut);
+  color:var(--hink,#0C0B0A);transition:color .6s var(--settle)}
+.mark{width:36px;aspect-ratio:716/478;display:block;background:currentColor;
+  -webkit-mask:url('assets/mark-badger.png') no-repeat center/contain;
+  mask:url('assets/mark-badger.png') no-repeat center/contain}
+.abc{display:flex;gap:var(--s3);align-items:center}
+.abc a{opacity:.55;padding:var(--s0) var(--s0)}
+.abc a[aria-current]{opacity:1;border-bottom:1px solid currentColor}
+.bagbtn{display:flex;gap:var(--s1);align-items:baseline;padding:var(--s0) var(--s0)}
+
+/* ---------- the rooms ---------- */
+.room{min-height:100svh;scroll-snap-align:start;display:grid;align-items:center;
+  background:var(--c);color:var(--ink);position:relative;overflow:hidden;
+  padding:var(--sz) var(--gut) var(--sy)}
+.room-in{display:grid;gap:var(--s5);grid-template-columns:1fr;align-items:center;
+  max-width:1500px;margin-inline:auto;width:100%}
+@media(min-width:920px){.room-in{grid-template-columns:.9fr 1.1fr;gap:var(--sy)}}
+.room-no{font-family:var(--mono);font-size:.6875rem;letter-spacing:.2em;opacity:.62;margin:0}
+.room-name{font-weight:200;font-size:clamp(2.6rem,6.5vw,5.2rem);line-height:.95;
+  letter-spacing:-.035em;margin:var(--s1) 0 0;text-wrap:balance}
+.room-price{font-family:var(--mono);font-size:clamp(1.25rem,2vw,1.6rem);margin:var(--s3) 0 0}
+.sizes{display:flex;gap:var(--s1);flex-wrap:wrap;margin-top:var(--s4)}
+.sz{width:2.6rem;height:2.6rem;border:1px solid currentColor;font-family:var(--mono);
+  font-size:.8125rem;opacity:.62;transition:opacity .25s,background-color .25s,color .25s}
+.sz:hover{opacity:1}
+.sz.on{opacity:1;background:var(--ink);color:var(--c)}
+/* uncut necks are marked by form, not faintness — dimming measured below
+   4.5:1 on mid-tone grounds, and these chips are the bespoke entry point */
+.sz.uncut{border-style:dashed}
+.room-ctas{display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap;margin-top:var(--s4)}
+.add{border:1px solid currentColor;padding:var(--s2) var(--s5);font-family:var(--mono);
+  font-size:.6875rem;letter-spacing:.18em;text-transform:uppercase;
+  transition:background-color .35s var(--settle),color .35s var(--settle)}
+.add:hover{background:var(--ink);color:var(--c)}
+.buy{font-family:var(--mono);font-size:.6875rem;letter-spacing:.14em;
+  text-transform:uppercase;opacity:.62;border-bottom:1px solid currentColor;
+  padding-bottom:var(--s0)}
+.buy:hover{opacity:1}
+.room-shot{margin:0;position:relative;justify-self:center;width:min(100%,34rem);
+  aspect-ratio:4/3;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+.room-shot img{width:100%;height:100%;object-fit:cover;object-position:center 16%;
+  display:block;will-change:transform}
+
+/* the name arrives like a chalk line: revealed along its length */
+.js .room-name{clip-path:inset(0 100% 0 0)}
+.js .room.seen .room-name{clip-path:inset(0 0 0 0);
+  transition:clip-path .8s var(--swing)}
+
+/* ---------- rail of 25 for orientation ---------- */
+.dots{position:fixed;right:.9rem;top:50%;transform:translateY(-50%);z-index:40;
+  display:grid;gap:var(--s0)}
+.dots a{width:7px;height:7px;border-radius:50%;background:var(--hink,#0C0B0A);
+  opacity:.3;transition:opacity .3s,transform .3s}
+.dots a:hover{opacity:.8}
+.dots a.on{opacity:1;transform:scale(1.5)}
+@media(max-width:700px){.dots{display:none}}
+
+/* ---------- bag + toast ---------- */
+dialog.bag{border:0;padding:0;background:none;max-width:none;width:min(30rem,92vw)}
+dialog.bag::backdrop{background:rgba(10,10,12,.55);backdrop-filter:blur(6px)}
+.bag-in{background:#B9A882;color:#1C254A;padding:var(--s4);border-radius:2px 2px 2px 14px;
+  font-size:.9rem}
+.bag-top{display:flex;justify-content:space-between;align-items:baseline}
+.bag-title{font-weight:300;font-size:1.5rem;letter-spacing:-.02em;margin:0}
+.bag-x{font-size:1rem;padding:var(--s0)}
+.bag-item{display:grid;grid-template-columns:auto 1fr auto auto;gap:var(--s2);
+  align-items:center;padding:var(--s2) 0;border-bottom:1px solid rgba(28,37,74,.18)}
+.bag-sw{width:1.5rem;height:1.5rem;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.bag-nm em{display:block;font-style:normal;font-family:var(--mono);font-size:.6875rem;opacity:.66}
+.bag-rm{font-family:var(--mono);border:1px solid rgba(28,37,74,.4);width:1.5rem;height:1.5rem;
+  line-height:1;border-radius:50%}
+.bag-empty{opacity:.6;padding:var(--s3) 0}
+.bag-note{font-size:.75rem;opacity:.75;margin:var(--s3) 0 var(--s1)}
+.bag-row{display:flex;justify-content:space-between;font-size:1.05rem;margin:var(--s1) 0 var(--s3)}
+.bag-send{display:block;text-align:center;background:#1C254A;color:#EDE9E0;
+  padding:var(--s3);font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+  text-transform:uppercase}
+.toast{position:fixed;left:50%;bottom:1.4rem;transform:translate(-50%,140%);z-index:60;
+  background:var(--under);color:#EDE9E0;padding:var(--s2) var(--s3);font-size:.8125rem;
+  box-shadow:0 12px 32px rgba(0,0,0,.4);transition:transform .45s var(--swing);
+  max-width:min(92vw,30rem)}
+.toast.on{transform:translate(-50%,0)}
+.toast a{border-bottom:1px solid currentColor}
+
+@media(prefers-reduced-motion:reduce){
+  .js .room-name{clip-path:none;transition:none}
+  .toast{transition:none}
+  .room-shot img{transform:none!important}
+}
+</style>
+</head>
+<body data-no-grounds>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="abc" aria-label="Site">
+    <a href="index.html">Home</a>
+    <a href="shop-a.html" aria-current="page">Shop</a>
+    <a href="bespoke.html">Bespoke</a>
+    <a href="house.html">About us</a>
+  </nav>
+  <button class="bagbtn" id="bagBtn" type="button" aria-label="Open Customize">
+    Customize <span class="fig" data-bag-count>0</span>
+  </button>
+</header>
+
+<nav class="dots" id="dots" aria-label="The twenty-five"></nav>
+<main id="rooms"></main>
+
+<script src="assets/catalogue.js?v=1786616451"></script>
+<script src="assets/site.js?v=1786616451"></script>
+<script src="assets/shop.js?v=1786616451"></script>
+<script>
+(function(){
+  'use strict';
+  /* ?ground=bone|white — same contract as the rest of the site */
+  try{
+    var gp = new URLSearchParams(location.search).get('ground');
+    if (gp === 'bone' || gp === 'white')
+      document.documentElement.setAttribute('data-ground', gp);
+  }catch(e){}
+
+  var R=IAR.RANGE, reduce=SHOP.reduce;
+  document.documentElement.classList.add('js');
+
+  /* the rooms: the ground takes the colour of the garment shown — the house's
+     own signature move, made literal for all twenty-five */
+  document.getElementById('rooms').innerHTML=R.map(function(p,i){
+    return '<section class="room" id="r'+i+'" data-sizes data-slug="'+p.slug+'" '+
+      'style="--c:'+p.hex+';--ink:'+p.ink+'" aria-label="'+p.name+'">'+
+      '<div class="room-in">'+
+        '<div>'+
+          '<p class="room-no">'+p.no+' / 25 &nbsp;·&nbsp; '+(p.cat||'The range')+'</p>'+
+          '<h2 class="room-name">'+p.name+'</h2>'+
+          '<p class="room-price">'+p.priceText+'</p>'+
+          '<div class="sizes">'+SHOP.sizes(p)+'</div>'+
+          '<div class="room-ctas">'+
+            '<button class="add" type="button" data-add>Add to Customize</button>'+
+            '<a class="buy" href="product.html?p='+p.slug+'">See the shirt →</a>'+
+          '</div>'+
+        '</div>'+
+        '<figure class="room-shot"><img src="images/shirts/'+p.img+'" alt="'+p.name+'" '+
+          'loading="'+(i<2?'eager':'lazy')+'" decoding="async"></figure>'+
+      '</div>'+
+    '</section>';
+  }).join('');
+
+  document.getElementById('dots').innerHTML=R.map(function(p,i){
+    return '<a href="#r'+i+'" title="'+p.name+'" aria-label="'+p.name+'"></a>';
+  }).join('');
+
+  SHOP.mountBag();
+  SHOP.wireSizes(document.getElementById('rooms'),function(btn){
+    return btn.closest('.room').getAttribute('data-slug');
+  });
+  document.getElementById('bagBtn').addEventListener('click',SHOP.openBag);
+
+  /* the home page's door links here as #r<n>. Two traps: the rooms did not
+     exist when the browser tried the native anchor jump, and the rooms above
+     the target grow as their images arrive, dragging the anchor out from under
+     the viewport. So jump now, and jump again once everything has loaded. */
+  function landOnHash(){
+    if(!/^#r\d+$/.test(location.hash))return;
+    var tgt=document.getElementById(location.hash.slice(1));
+    if(tgt)tgt.scrollIntoView({behavior:'auto',block:'start'});
+  }
+  landOnHash();
+  addEventListener('load',function(){setTimeout(landOnHash,60);});
+
+  /* header ink + dots follow the room currently on stage */
+  var rooms=[].slice.call(document.querySelectorAll('.room'));
+  var dots=[].slice.call(document.querySelectorAll('.dots a'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        var i=rooms.indexOf(e.target);
+        if(e.isIntersecting){
+          e.target.classList.add('seen');
+          document.documentElement.style.setProperty('--hink',R[i].ink);
+          document.querySelector('meta[name="theme-color"]').setAttribute('content',R[i].hex);
+          dots.forEach(function(d,k){d.classList.toggle('on',k===i);});
+        }
+      });
+    },{threshold:.55});
+    rooms.forEach(function(r){io.observe(r);});
+    setTimeout(function(){rooms.forEach(function(r){r.classList.add('seen');});},2500);
+  }else{
+    rooms.forEach(function(r){r.classList.add('seen');});
+  }
+
+  /* the shot drifts against the scroll — barely, like cloth settling */
+  if(!reduce){
+    var ticking=false;
+    addEventListener('scroll',function(){
+      if(ticking) return; ticking=true;
+      requestAnimationFrame(function(){
+        rooms.forEach(function(r){
+          var rect=r.getBoundingClientRect();
+          if(rect.bottom<0||rect.top>innerHeight) return;
+          var img=r.querySelector('.room-shot img');
+          img.style.transform='translateY('+(rect.top*-0.06).toFixed(1)+'px) scale(1.08)';
+        });
+        ticking=false;
+      });
+    },{passive:true});
+  }
+})();
+</script>
+<script src="assets/mark.js?v=1786616451"></script>
+</body>
+</html>

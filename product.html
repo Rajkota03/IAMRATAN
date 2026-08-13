@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The range — I Am Ratan</title>
+<meta name="description" content="A shirt from the I Am Ratan range.">
+<meta name="theme-color" content="#101214">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="I Am Ratan">
+<meta property="og:title" content="The range — I Am Ratan">
+<meta property="og:description" content="A shirt from the I Am Ratan range.">
+<meta property="og:image" content="https://im-ratan.vercel.app/images/cloth-stack.jpg">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786616451">
+<style>
+/* ---------- the drench ----------
+   The garment's own colour becomes the room, exactly as it does in the shop.
+   --ink is written by JS from the measured value in site.js, and everything
+   downstream derives from currentColor so a pale cloth flips the whole section
+   to dark ink without a second code path. */
+.garment{background:var(--c,#22262A);color:var(--k,#EDE9E0);
+  padding:var(--clear) 0 var(--sy);
+  transition:background-color .8s var(--settle),color .8s var(--settle)}
+/* Nothing on the drench is dimmed. Swept every one of the twenty-five cloths:
+   against Storm Grey (#5C6066) — the ground with the least headroom between the
+   cloth and its measured ink — 68% reaches 3.02:1 and 72% reaches 3.19:1, both
+   under the 4.5:1 a body numeral or sentence needs. Only full ink clears it, at
+   4.55:1. So hierarchy on this section comes from scale, weight and space, and
+   never from opacity. Rings are a boundary, not text, and 70% clears their 3:1. */
+.garment .soft{color:currentColor}
+.garment .rule{background:color-mix(in oklab,currentColor 26%,transparent)}
+
+.g-grid{display:grid;gap:var(--sy);grid-template-columns:1fr;
+  align-items:start}
+@media(min-width:900px){.g-grid{grid-template-columns:1.05fr .95fr}}
+
+/* One photograph when that is all a cloth has; a gallery once it has been shot
+   on the model. The gallery is portrait 3:4, because a shirt on a body is
+   taller than it is wide and the 4:3 box was cropping the cuff off. */
+.g-shot{margin:0;position:relative;aspect-ratio:4/3;overflow:hidden;
+  background:rgba(0,0,0,.14);box-shadow:0 30px 70px rgba(0,0,0,.28)}
+.g-shot img{width:100%;height:100%;object-fit:cover;object-position:center 16%}
+
+.gal{display:grid;gap:var(--s2);grid-template-columns:1fr}
+.gal-main{margin:0;position:relative;aspect-ratio:3/4;overflow:hidden;
+  background:rgba(0,0,0,.10);box-shadow:0 30px 70px rgba(0,0,0,.24)}
+.gal-main img{width:100%;height:100%;object-fit:cover;display:block}
+/* auto-flow, so a cloth with four shots and a cloth with six both sit on one
+   row without the strip needing to know how many there are */
+.gal-strip{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:var(--s2)}
+.gal-strip button{aspect-ratio:3/4;overflow:hidden;padding:0;cursor:pointer;
+  border:1px solid transparent;background:rgba(0,0,0,.08);
+  transition:border-color .3s var(--settle),opacity .3s var(--settle);opacity:.6}
+.gal-strip button img{width:100%;height:100%;object-fit:cover;display:block}
+.gal-strip button:hover,.gal-strip button:focus-visible{opacity:1}
+.gal-strip button[aria-current="true"]{opacity:1;border-color:currentColor}
+
+.g-name{font-weight:200;font-size:clamp(2.4rem,5.6vw,4.2rem);line-height:.96;
+  letter-spacing:-.036em;margin:var(--s1) 0 0;text-wrap:balance}
+.g-price{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:clamp(1.2rem,2vw,1.6rem);margin:var(--s3) 0 0}
+.g-body{margin:var(--s4) 0 0;max-width:52ch}
+
+/* ---------- the size run ----------
+   All eight necks are shown. The three the house does not cut are dashed and
+   refusable — a size that does not exist is a bespoke lead, not a dead end. */
+.sizes{display:flex;flex-wrap:wrap;gap:var(--s1);margin-top:var(--s3)}
+.sz{width:3.1rem;height:3.1rem;
+  border:1px solid color-mix(in oklab,currentColor 70%,transparent);
+  border-radius:50%;font-family:var(--mono);font-size:.8125rem;cursor:pointer;
+  display:grid;place-items:center;background:none;
+  transition:background-color .3s,color .3s,border-color .3s}
+.sz:hover{border-color:currentColor}
+/* The fill is the measured ink VARIABLE, never currentColor. The first version
+   filled with currentColor and then set color:var(--c) for the numeral — but
+   color is what currentColor MEANS, so the disc, its ring and its numeral all
+   resolved to the ground colour and the chosen size vanished into the page.
+   A cocoa chip on a cocoa ground, found by selecting size 39 on Cocoa Drift. */
+.sz.on{background:currentColor;border-color:currentColor}
+.garment .sz.on{background:var(--k);border-color:var(--k);color:var(--c)}
+
+/* The three uncut necks are marked by FORM, never by faintness. Dimming the
+   numeral was measured across all twenty-five cloths: even at 70% opacity the
+   worst ground (Storm Grey #5C6066) reached only 3.11:1, under the 4.5:1 a
+   numeral needs — and these chips are the entry point to the bespoke funnel,
+   so a size-41 customer has to be able to read them. The dashed ring carries
+   the meaning; the numeral keeps the ink's full measured contrast. */
+.sz.uncut{border-style:dashed}
+.sz.uncut:hover{border-color:currentColor}
+
+.g-add{margin-top:var(--s4);display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.add{border:1px solid currentColor;padding:var(--s3) var(--s5);font-family:var(--mono);
+  font-size:.6875rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;
+  background:none;transition:background-color .35s,color .35s}
+.add:hover{background:currentColor}
+.garment .add:hover{color:var(--c)}
+
+.g-meta{margin-top:var(--s5);display:grid;gap:var(--s1)}
+.g-meta div{display:flex;justify-content:space-between;gap:var(--s4);
+  padding:var(--s1) 0;border-top:1px solid color-mix(in oklab,currentColor 18%,transparent)}
+
+/* ---------- the header bag ---------- */
+.bagbtn{font-family:var(--mono);font-size:.625rem;letter-spacing:.2em;
+  text-transform:uppercase;cursor:pointer;background:none;border:0;
+  display:inline-flex;gap:var(--s1);align-items:center}
+/* Every other page carries a place name in this third slot, and the bar hides
+   it on a phone. This page carries the only way into the customise drawer, so
+   it cannot be hidden — but the word will not fit beside four nav links at
+   375px, and without this it pushed ABOUT US onto a second line and ran itself
+   off the right edge. The count stays, ringed so it reads as a control; the
+   button's aria-label already says what it opens. */
+@media(max-width:640px){
+  .bagbtn{font-size:0;gap:0}
+  .bagbtn .fig{font-size:.625rem;letter-spacing:0;
+    display:grid;place-items:center;width:1.65rem;height:1.65rem;
+    border:1px solid var(--hair);border-radius:50%}
+}
+
+/* ---------- the bag, styled for shop.js ---------- */
+.bag{border:0;padding:0;background:none;max-width:min(30rem,92vw);width:100%;
+  color:var(--ink)}
+.bag::backdrop{background:rgba(8,9,10,.72)}
+.bag-in{background:var(--card);color:#0C0B0A;padding:var(--s5)}
+.bag-top{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3)}
+.bag-title{font-weight:300;font-size:1.5rem;letter-spacing:-.02em;margin:0}
+.bag-x{border:0;background:none;cursor:pointer;font-size:1rem;line-height:1}
+.bag-body{margin:var(--s3) 0;display:grid;gap:var(--s1)}
+.bag-empty{margin:0;color:rgba(12,11,10,.7)}
+.bag-item{display:grid;grid-template-columns:auto 1fr auto auto;gap:var(--s2);
+  align-items:center;padding-bottom:var(--s1);
+  border-bottom:1px solid rgba(12,11,10,.18)}
+.bag-sw{width:1.6rem;height:1.6rem;box-shadow:inset 0 0 0 1px rgba(12,11,10,.28)}
+.bag-nm{display:grid;line-height:1.25}
+.bag-nm em{font-style:normal;font-family:var(--mono);font-size:.625rem;
+  letter-spacing:.14em;text-transform:uppercase;color:rgba(12,11,10,.66)}
+.bag-rm{border:0;background:none;cursor:pointer;font-size:1.1rem;line-height:1;
+  padding:0 var(--s0)}
+.bag-foot{display:grid;gap:var(--s3)}
+.bag-note{margin:0;font-size:.8125rem;color:rgba(12,11,10,.7)}
+.bag-row{display:flex;justify-content:space-between;font-size:1.1rem;
+  padding-top:var(--s2);border-top:1px solid rgba(12,11,10,.28)}
+.bag-send{display:block;text-align:center;background:#0C0B0A;color:var(--card);
+  padding:var(--s3);font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+  text-transform:uppercase}
+
+/* ---------- the toast ---------- */
+.toast{position:fixed;left:50%;bottom:1.5rem;transform:translate(-50%,1.5rem);
+  z-index:80;background:var(--card);color:#0C0B0A;padding:var(--s2) var(--s3);
+  font-size:.875rem;max-width:min(30rem,92vw);opacity:0;pointer-events:none;
+  transition:opacity .35s var(--settle),transform .35s var(--settle)}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast a{text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- the way back ---------- */
+.crumb{margin:0 0 var(--s3)}
+.crumb a{font-family:var(--mono);font-size:.625rem;letter-spacing:.16em;
+  text-transform:uppercase;opacity:.72;transition:opacity .3s var(--settle)}
+.crumb a:hover{opacity:1}
+
+/* ---------- what a buyer needs to know ----------
+   Fabric, sizing, delivery, returns — as quiet accordions under the meta, the
+   way every serious shirtmaker's page carries them. Native <details name="pdp">
+   so only one opens at a time, and no JS owns it. */
+.g-facts{margin:var(--s5) 0 0;border-top:1px solid color-mix(in oklab,currentColor 22%,transparent)}
+.g-facts details{border-bottom:1px solid color-mix(in oklab,currentColor 22%,transparent)}
+.g-facts summary{list-style:none;cursor:pointer;display:flex;
+  justify-content:space-between;align-items:center;gap:var(--s3);
+  padding:var(--s3) 0;font-family:var(--mono);font-size:.625rem;
+  letter-spacing:.18em;text-transform:uppercase}
+.g-facts summary::-webkit-details-marker{display:none}
+.g-facts summary::after{content:'+';font-size:.9rem;font-weight:300;
+  transition:transform .3s var(--settle)}
+.g-facts details[open] summary::after{transform:rotate(45deg)}
+.g-facts .fx{padding:0 0 var(--s4);font-size:.9rem;line-height:1.65;opacity:.85}
+.g-facts .fx p{margin:0 0 var(--s2)}
+.g-facts .fx p:last-child{margin-bottom:0}
+.g-facts table{width:100%;border-collapse:collapse;font-family:var(--mono);
+  font-size:.6875rem;font-variant-numeric:tabular-nums}
+.g-facts th,.g-facts td{text-align:left;padding:var(--s1) var(--s2) var(--s1) 0;
+  border-bottom:1px solid color-mix(in oklab,currentColor 14%,transparent);
+  font-weight:400}
+.g-facts th{opacity:.65;letter-spacing:.1em;text-transform:uppercase;
+  font-size:.5625rem}
+.g-facts .fine{font-size:.75rem;opacity:.6;margin-top:var(--s2)}
+
+/* ---------- the bar that follows the decision ----------
+   On a phone the Add button scrolls away with the column. Once it has left the
+   screen, a slim bar carries the name, the price and the same button — same
+   [data-sizes] validation, because its button simply clicks the real one. */
+.gbar{position:fixed;left:0;right:0;bottom:0;z-index:40;
+  display:none;align-items:center;justify-content:space-between;gap:var(--s3);
+  padding:var(--s2) var(--gut);
+  padding-bottom:max(var(--s2),env(safe-area-inset-bottom));
+  background:var(--c,#1a1a1a);color:var(--k,#EDE9E0);
+  border-top:1px solid color-mix(in oklab,currentColor 25%,transparent);
+  transform:translateY(102%);transition:transform .38s var(--swing)}
+.gbar.on{transform:none}
+.gbar-nm{display:grid;line-height:1.3;min-width:0}
+.gbar-nm b{font-weight:300;font-size:.9375rem;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.gbar-nm span{font-family:var(--mono);font-size:.75rem;opacity:.8}
+.gbar button{flex:0 0 auto;border:1px solid currentColor;
+  padding:var(--s2) var(--s4);font-family:var(--mono);font-size:.625rem;
+  letter-spacing:.16em;text-transform:uppercase}
+@media(max-width:899px){.gbar{display:flex}}
+@media(prefers-reduced-motion:reduce){.gbar{transition:none}}
+
+.missing{min-height:70svh;display:grid;align-content:center;gap:var(--s3);
+  justify-items:start}
+
+@media(prefers-reduced-motion:reduce){.garment{transition:none}}
+</style>
+</head>
+<body data-no-grounds>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html" aria-current="page">Shop</a>
+    <a href="bespoke.html">Bespoke</a>
+    <a href="house.html">About us</a>
+  </nav>
+  <button class="bagbtn" id="bagBtn" type="button" aria-label="Open Customize">
+    Customize <span class="fig" data-bag-count>0</span>
+  </button>
+</header>
+
+<main id="main"></main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <span class="mark mark--monogram" aria-hidden="true"></span>
+        <p class="lede" style="max-width:22ch">A brand made by Indians, for the world.</p>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">The house</p>
+        <ul>
+          <li><a href="tel:+918282826264" class="fig">+91 82828 26264</a></li>
+          <li><a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a></li>
+          <li><a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Explore</p>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="bespoke.html">Bespoke</a></li>
+          <li><a href="house.html">About us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Visit</p>
+        <ul>
+          <li>Artisan Apparels</li>
+          <li>Hyderabad, India</li>
+          <li><a href="https://iamratan.co.in" rel="noopener">iamratan.co.in</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon label">
+      <span>© <span id="year">2026</span> I Am Ratan · Artisan Apparels</span>
+      <span><a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="shipping.html">Shipping &amp; returns</a></span>
+      <span>Reclaim · Redefine · Resonate</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/catalogue.js?v=1786616451"></script>
+<script src="assets/shots.js?v=1786616451"></script>
+<script src="assets/site.js?v=1786616451"></script>
+<script src="assets/shop.js?v=1786616451"></script>
+<script src="assets/iar-house.js?v=1786616451"></script>
+<script>
+(function () {
+  'use strict';
+
+  var R = IAR.RANGE, main = document.getElementById('main');
+  var slug = new URLSearchParams(location.search).get('p');
+  var p = null;
+  for (var i = 0; i < R.length; i++) if (R[i].slug === slug) { p = R[i]; break; }
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* a bad or missing ?p= is a real user path — a shared link that lost its query,
+     a product retired from the range. It gets a door out, never a blank page. */
+  if (!p) {
+    main.innerHTML =
+      '<section class="band"><div class="wrap missing">' +
+        '<p class="label muted">Not in the range</p>' +
+        '<h1 class="display" style="max-width:16ch">That cloth isn\'t one of ours.</h1>' +
+        '<p class="lede">Twenty-five are, and they\'re all one click away.</p>' +
+        '<a class="cta" href="shop.html">See the range</a>' +
+      '</div></section>';
+    return;
+  }
+
+  document.title = p.name + ' — I Am Ratan';
+  document.querySelector('meta[name="description"]').setAttribute('content',
+    p.name + ', ' + p.priceText + '. ' + p.body);
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', p.hex);
+
+  var SET = (window.IAR_SHOTS || {})[p.slug];
+
+  /* Indicative garment measurements per neck size, inches, flat. The columns
+     come from the sizes this cloth is actually cut in, so the table never
+     promises a 41 the rack does not hold. Bracket-marked as indicative until
+     the house confirms its block. */
+  var SPEC = {
+    '39': { chest: 41,   shoulder: 17.5, sleeve: 24.5 },
+    '40': { chest: 42.5, shoulder: 18,   sleeve: 25   },
+    '42': { chest: 44.5, shoulder: 18.5, sleeve: 25   },
+    '44': { chest: 46.5, shoulder: 19,   sleeve: 25.5 },
+    '46': { chest: 48.5, shoulder: 19.5, sleeve: 25.5 }
+  };
+  function sizeGuide(p) {
+    var cols = p.sizes.filter(function (z) { return SPEC[z]; });
+    function row(label, key) {
+      return '<tr><th scope="row">' + label + '</th>' + cols.map(function (z) {
+        return '<td>' + SPEC[z][key] + '</td>';
+      }).join('') + '</tr>';
+    }
+    return '<table><thead><tr><th scope="col">Neck</th>' +
+      cols.map(function (z) { return '<th scope="col">' + z + '</th>'; }).join('') +
+      '</tr></thead><tbody>' +
+      row('Chest', 'chest') + row('Shoulder', 'shoulder') + row('Sleeve', 'sleeve') +
+      '</tbody></table>';
+  }
+
+  function gallery(p) {
+    if (!SET) {
+      return '<figure class="g-shot">' +
+        '<img src="images/shirts/' + esc(p.img) + '" alt="' + esc(p.name) +
+        '" fetchpriority="high" decoding="async"></figure>';
+    }
+    var base = 'images/set/' + p.slug + '/';
+    return '<div class="gal">' +
+      '<figure class="gal-main"><img id="galMain" src="' + base + SET.shots[0].src +
+        '.jpg" alt="' + esc(SET.shots[0].alt) + '" fetchpriority="high" decoding="async">' +
+      '</figure>' +
+      '<div class="gal-strip" role="group" aria-label="Views of this shirt">' +
+        SET.shots.map(function (sh, i) {
+          return '<button type="button" data-shot="' + i + '"' +
+            (i === 0 ? ' aria-current="true"' : '') +
+            ' aria-label="' + esc(sh.alt) + '">' +
+            '<img src="' + base + sh.src + '-t.jpg" alt="" loading="lazy" decoding="async">' +
+            '</button>';
+        }).join('') +
+      '</div></div>';
+  }
+
+  main.innerHTML =
+    '<section class="garment" style="--c:' + p.hex + ';--k:' + p.ink + '">' +
+      '<div class="wrap g-grid">' +
+        gallery(p) +
+        '<div data-sizes>' +
+          '<p class="crumb"><a href="shop.html">&larr; The range</a></p>' +
+          '<p class="label soft"><span class="fig">' + p.no + '</span> / ' + R.length + ' &nbsp;·&nbsp; ' +
+            esc(p.cat || 'The range') + '</p>' +
+          '<h1 class="g-name">' + esc(p.name) + '</h1>' +
+          '<p class="g-price">' + p.priceText + '</p>' +
+          '<p class="g-body">' + esc(p.body) + '</p>' +
+
+          '<p class="label soft" style="margin:var(--s5) 0 0">Neck size</p>' +
+          '<div class="sizes">' + SHOP.sizes(p) + '</div>' +
+
+          '<div class="g-add">' +
+            '<button class="add" type="button" data-add>Add to Customize</button>' +
+          '</div>' +
+
+          '<div class="g-meta label soft">' +
+            '<div><span>Cut in</span><span class="fig">' +
+              p.sizes.join(' · ') + '</span></div>' +
+            '<div><span>Colour</span><span class="fig">' + p.hex + '</span></div>' +
+            '<div><span>In the range</span><span class="fig">' + p.no + ' of ' + R.length + '</span></div>' +
+          '</div>' +
+
+          '<div class="g-facts">' +
+            '<details name="pdp"><summary>Cloth &amp; care</summary><div class="fx">' +
+              '<p>[100% cotton, woven for the house. Composition and weave to be ' +
+              'confirmed by the house per cloth.]</p>' +
+              '<p>Machine wash cold with like colours, or hand wash. Line dry in ' +
+              'shade. Warm iron while faintly damp. No bleach, no tumble dryer ' +
+              '&mdash; the cloth outlives the machine that ruins it.</p>' +
+            '</div></details>' +
+            '<details name="pdp"><summary>Size guide</summary><div class="fx">' +
+              sizeGuide(p) +
+              '<p class="fine">Measurements in inches, taken flat on the garment. ' +
+              'Indicative until the house confirms its block. Between sizes, or ' +
+              'past them &mdash; <a href="bespoke.html" style="text-decoration:underline;text-underline-offset:3px">bespoke</a> ' +
+              'is the answer.</p>' +
+            '</div></details>' +
+            '<details name="pdp"><summary>Delivery &amp; returns</summary><div class="fx">' +
+              '<p>Ships across India in [3&ndash;7] working days. Unworn, with ' +
+              'tags, a shirt can come back within [7] days for an exchange or a ' +
+              'refund. A fault in cloth or making is ours to put right at any ' +
+              'reasonable point.</p>' +
+              '<p><a href="shipping.html" style="text-decoration:underline;text-underline-offset:3px">The full shipping &amp; returns page</a></p>' +
+            '</div></details>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</section>';
+
+  /* Two more bands used to follow — "Three necks the house does not cut", and a
+     "More from the range" strip of four cloths. Both are gone: a product page is
+     for the garment in front of you, and the range strip was drawing flat hex
+     swatches rather than the photography, which read as unfinished. The nav
+     carries Shop and Bespoke, so nothing became unreachable. */
+
+  /* the strip swaps the main plate; the room colour never changes, because the
+     room IS the garment and the garment has not changed */
+  if (SET) {
+    var strip = main.querySelector('.gal-strip');
+    var plate = main.querySelector('#galMain');
+    strip.addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-shot]');
+      if (!b) return;
+      var sh = SET.shots[+b.dataset.shot];
+      plate.src = 'images/set/' + p.slug + '/' + sh.src + '.jpg';
+      plate.alt = sh.alt;
+      strip.querySelectorAll('button').forEach(function (x) {
+        x.removeAttribute('aria-current');
+      });
+      b.setAttribute('aria-current', 'true');
+    });
+  }
+
+  SHOP.mountBag();
+  SHOP.wireSizes(main, function () { return p.slug; });
+  document.getElementById('bagBtn').addEventListener('click', SHOP.openBag);
+
+  /* The sticky bar. It appears only once the real Add button has scrolled off,
+     and its button proxies a click to that button — so size validation, the
+     toast, and the bag all stay in one place (shop.js) instead of two. */
+  (function () {
+    var realAdd = main.querySelector('[data-add]');
+    if (!realAdd || !('IntersectionObserver' in window)) return;
+    var bar = document.createElement('div');
+    bar.className = 'gbar';
+    bar.style.setProperty('--c', p.hex);
+    bar.style.setProperty('--k', p.ink);
+    bar.innerHTML =
+      '<span class="gbar-nm"><b>' + esc(p.name) + '</b>' +
+      '<span>' + p.priceText + '</span></span>' +
+      '<button type="button">Add to Customize</button>';
+    document.body.appendChild(bar);
+    bar.querySelector('button').addEventListener('click', function () {
+      var host = realAdd.closest('[data-sizes]');
+      if (host && !host.getAttribute('data-size')) {
+        /* nothing chosen yet: bring the picker back before the toast asks */
+        main.querySelector('.sizes').scrollIntoView({ block: 'center',
+          behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
+      }
+      realAdd.click();
+    });
+    /* The bar shows whenever the real button is off screen — in EITHER
+       direction. On a phone the gallery comes first, so "only after scrolling
+       past the button" left the bar missing exactly where it earns its keep:
+       while the photographs are being read and the button is still below.
+
+       And it retires when the footer arrives. Without that it sat on top of
+       the colophon and the legal links — the bar's job is to follow the
+       decision, not to sit on the page's last words. */
+    var addVisible = true, footVisible = false;
+    function sync() { bar.classList.toggle('on', !addVisible && !footVisible); }
+    new IntersectionObserver(function (en) {
+      addVisible = en[0].isIntersecting; sync();
+    }).observe(realAdd);
+    var foot = document.querySelector('footer.foot');
+    if (foot) new IntersectionObserver(function (en) {
+      footVisible = en[0].isIntersecting; sync();
+    }).observe(foot);
+  })();
+
+  /* the reveal observer ran before this markup existed */
+  document.querySelectorAll('.snap,.rise').forEach(function (el) {
+    el.classList.add('in');
+  });
+})();
+</script>
+<script src="assets/mark.js?v=1786616451"></script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

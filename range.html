@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The range — I Am Ratan</title>
+<meta name="description" content="Twenty-five cloths. Twenty-five colours, and only four of them are white.">
+<meta name="theme-color" content="#22262A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar.css?v=1786616451">
+</head>
+<body>
+
+<header class="head">
+  <div class="head-in">
+    <a href="mockup.html" aria-label="I Am Ratan — home"><span class="mark"></span></a>
+    <nav class="nav label">
+      <a href="mockup.html">Home</a>
+      <a href="range.html" aria-current="page">Shop</a>
+      <a href="bespoke.html">Bespoke</a>
+      <a href="house.html">The house</a>
+    </nav>
+    <span class="label muted">Hyderabad</span>
+  </div>
+</header>
+
+<main>
+  <section class="band band--tight">
+    <div class="wrap">
+      <h1 class="display">The range.</h1>
+      <div class="rule snap" style="margin:var(--s4) 0 var(--s4)"></div>
+      <p class="lede">Twenty-five colours, and only four of them are white.
+      Every fabric is chosen for its story.</p>
+
+      <div class="rangebar" style="margin-top:var(--sy)">
+        <div class="filters" id="filters" role="group" aria-label="Filter the range"></div>
+        <label class="label muted" style="display:flex;align-items:center;gap:var(--s1)">
+          Order
+          <select class="sortsel" id="sort" aria-label="Order the range">
+            <option value="light">Lightest first</option>
+            <option value="dark">Darkest first</option>
+            <option value="name">By name</option>
+            <option value="low">Price, low to high</option>
+            <option value="high">Price, high to low</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="wall" id="wall"></div>
+      <p class="label muted" id="note"></p>
+    </div>
+  </section>
+
+  <section class="band band--under">
+    <div class="wrap split">
+      <div>
+        <h2 class="h1">The three we do not cut.</h2>
+        <p style="margin-top:var(--s3);color:var(--muted)">The house cuts 39, 40, 42, 44
+        and 46. The empty buttonholes on every cloth are 41, 43 and 45 — sizes the
+        range does not carry. If yours is one of them, it is made to measure or nothing,
+        and made to measure fits better anyway.</p>
+        <a class="cta cta--claret" href="bespoke.html" style="margin-top:var(--s3)">Made to measure</a>
+      </div>
+      <div class="tally" id="tally"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <span class="mark mark--monogram" aria-hidden="true"></span>
+        <p class="lede" style="max-width:22ch">A brand made by Indians, for the World.</p>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">The house</p>
+        <ul>
+          <li><a href="tel:+918282826264" class="fig">+91 82828 26264</a></li>
+          <li><a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a></li>
+          <li><a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Explore</p>
+        <ul>
+          <li><a href="mockup.html">Home</a></li>
+          <li><a href="bespoke.html">Bespoke</a></li>
+          <li><a href="house.html">The house</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Visit</p>
+        <ul>
+          <li>Artisan Apparels</li>
+          <li>Hyderabad, India</li>
+          <li><a href="https://iamratan.co.in" rel="noopener">iamratan.co.in</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon label">
+      <span>© <span id="year">2026</span> I Am Ratan · Artisan Apparels</span>
+      <span>Discover your legacy. Wear your identity.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/catalogue.js?v=1786616451"></script>
+<script src="assets/site.js?v=1786616451"></script>
+<script>
+(function(){
+  var R=IAR.RANGE.slice(), wall=document.getElementById('wall');
+  var cat='All', order='light';
+
+  /* only categories the store actually assigns; seven cloths carry none, so they
+     live under All rather than in a bucket the house has not created */
+  var cats=[]; R.forEach(function(p){ if(p.cat && cats.indexOf(p.cat)<0) cats.push(p.cat); });
+  document.getElementById('filters').innerHTML=
+    ['All'].concat(cats).map(function(k){
+      var n=k==='All'?R.length:R.filter(function(p){return p.cat===k;}).length;
+      return '<button type="button" data-k="'+k+'" aria-pressed="'+(k==='All')+'">'+
+        k+' '+n+'</button>';
+    }).join('');
+
+  function draw(){
+    var list=R.filter(function(p){ return cat==='All'||p.cat===cat; });
+    var by={ name:function(a,b){return a.name.localeCompare(b.name);},
+      low:function(a,b){return a.price-b.price;},
+      high:function(a,b){return b.price-a.price;},
+      light:function(a,b){return b.lum-a.lum;},
+      dark:function(a,b){return a.lum-b.lum;} };
+    list.sort(by[order]);
+    wall.innerHTML=list.map(IAR.leaf).join('');
+    document.getElementById('note').textContent=
+      'Showing '+list.length+' of '+R.length+' · the house cuts 39, 40, 42, 44 and 46';
+    IAR.shots(wall);
+  }
+
+  document.getElementById('filters').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    cat=b.dataset.k;
+    [].forEach.call(this.children,function(x){x.setAttribute('aria-pressed',String(x===b));});
+    draw();
+  });
+  document.getElementById('sort').addEventListener('change',function(){order=this.value;draw();});
+
+  var prices=R.map(function(p){return p.price;});
+  document.getElementById('tally').innerHTML=[
+    [R.length,'cloths'],['5','sizes cut'],
+    [IAR.rupees(Math.min.apply(null,prices)),'from'],['30','measurements']
+  ].map(function(r){return '<div><b>'+r[0]+'</b><span>'+r[1]+'</span></div>';}).join('');
+
+  draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+.vercel
+
+# secrets — never commit
+.env
+.env.local
+
+# working scratch and deliverables
+images/_*
+handover/
+handover.zip
+
+# scratch that is not part of the site
+iar-lab/__pycache__/
+.DS_Store
+.staging-url
+.rollback-client

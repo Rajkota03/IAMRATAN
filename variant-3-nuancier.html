@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en" class="js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>I Am Ratan — Le Nuancier</title>
+<meta name="description" content="Twenty-five colours, twenty-five shirts. The palette is the catalogue.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600&family=Newsreader:opsz,wght@6..72,200;6..72,300;6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1C254A; --blue:#B7CAEE; --bone:#EDE9E0;
+  --claret:#6B2F3A; --nacre:#E2DBE1; --black:#0C0B0A;
+  --serif:'Newsreader',Georgia,serif;
+  --sans:'Archivo',system-ui,-apple-system,sans-serif;
+  --gut:clamp(1.25rem,3.2vw,3.25rem);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --hair:color-mix(in oklab,var(--bone) 22%,transparent);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--navy);color:var(--bone);
+  font-family:var(--sans);font-size:1rem;line-height:1.65;font-weight:300;
+  -webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img,svg{max-width:100%}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.fig{font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.micro{font-size:.6875rem;letter-spacing:.19em;text-transform:uppercase;font-weight:500}
+.dim{opacity:.62}
+.d1{font-family:var(--serif);font-weight:200;font-variation-settings:'opsz' 72;
+  font-size:clamp(2.75rem,7vw,5rem);line-height:.96;letter-spacing:-.035em;margin:0;
+  text-wrap:balance}
+.d2{font-family:var(--serif);font-weight:300;font-variation-settings:'opsz' 40;
+  font-size:clamp(1.85rem,3.6vw,2.85rem);line-height:1.08;letter-spacing:-.025em;margin:0;
+  text-wrap:balance}
+.d3{font-family:var(--serif);font-weight:300;font-variation-settings:'opsz' 24;
+  font-size:1.35rem;line-height:1.3;margin:0}
+p{margin:0 0 1em;max-width:66ch}
+
+/* ---------- header ---------- */
+header.top{position:fixed;top:0;left:0;right:0;z-index:30;
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  padding:var(--s3) var(--gut);mix-blend-mode:normal}
+header.top .mark{width:54px;display:block;flex:none}
+header.top .mark svg{display:block;width:100%;height:auto;fill:currentColor}
+header.top nav{display:flex;gap:var(--s4)}
+@media(max-width:760px){header.top nav{display:none}}
+
+/* ---------- le nuancier ---------- */
+.nuancier{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
+  padding-top:var(--sy)}
+.nu-head{padding:var(--s4) var(--gut) var(--s3);display:flex;flex-wrap:wrap;
+  align-items:flex-end;justify-content:space-between;gap:var(--s3)}
+.grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:color-mix(in oklab,var(--bone) 16%,transparent);
+  border-top:1px solid color-mix(in oklab,var(--bone) 16%,transparent)}
+@media(min-width:700px){.grid{grid-template-columns:repeat(5,1fr)}}
+.tile{position:relative;border:0;padding:0;cursor:pointer;overflow:hidden;
+  min-height:88px;display:block;font:inherit;color:inherit}
+.tile svg{position:absolute;inset:0;width:100%;height:100%;
+  transition:transform .7s var(--ease)}
+.tile:hover svg,.tile:focus-visible svg{transform:scale(1.06)}
+.tile .n{position:absolute;left:.6rem;top:.5rem;font-size:.625rem;font-weight:500;
+  letter-spacing:.12em;font-variant-numeric:tabular-nums;opacity:.9}
+.tile .l{position:absolute;left:.6rem;right:.6rem;bottom:.55rem;text-align:left;
+  font-size:.6875rem;line-height:1.35;opacity:0;transform:translateY(5px);
+  transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.tile:hover .l,.tile:focus-visible .l{opacity:1;transform:none}
+.tile .l b{display:block;font-weight:500}
+
+/* ---------- the drenched detail ---------- */
+dialog.sheet{border:0;padding:0;margin:0;width:100%;max-width:none;height:100%;
+  max-height:none;background:var(--navy);color:var(--bone);overflow:auto}
+dialog.sheet::backdrop{background:rgba(12,11,10,.6)}
+.sheet-in{min-height:100%;display:grid;grid-template-columns:1fr;
+  align-content:center;gap:var(--s4);padding:var(--sy) var(--gut) var(--s6)}
+@media(min-width:900px){
+  .sheet-in{grid-template-columns:1fr 1fr;align-items:center;gap:var(--sy);
+    padding-block:var(--s6)}
+}
+.sheet-plate{aspect-ratio:4/5;position:relative;justify-self:center;width:100%;
+  max-height:80svh}
+.sheet-plate .plate{position:absolute;inset:0;background:transparent}
+.sheet-no{font-family:var(--serif);font-weight:200;font-variation-settings:'opsz' 72;
+  font-size:clamp(3rem,6vw,4.5rem);line-height:.9;opacity:.5;margin:0}
+.sheet-tbl{width:100%;border-collapse:collapse;margin-top:var(--s4);max-width:32rem}
+.sheet-tbl th,.sheet-tbl td{text-align:left;padding:var(--s1) 0;font-weight:400;
+  font-size:.9rem;border-top:1px solid currentColor;vertical-align:baseline}
+.sheet-tbl th{font-size:.625rem;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:500;opacity:.62;width:36%}
+.sheet-price{font-family:var(--serif);font-size:clamp(1.9rem,3.4vw,2.6rem);
+  font-weight:300;font-variation-settings:'opsz' 36;display:block;margin-top:var(--s3)}
+.sheet-bar{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;
+  justify-content:space-between;padding:var(--s3) var(--gut);gap:var(--s3)}
+.sheet-bar button{background:none;border:0;color:inherit;font:inherit;cursor:pointer;
+  padding:var(--s1) var(--s0);font-size:.6875rem;letter-spacing:.19em;text-transform:uppercase;
+  font-weight:500}
+.sheet-bar button:hover{text-decoration:underline;text-underline-offset:4px}
+.sheet-nav{display:flex;gap:var(--s4)}
+
+/* ---------- the house ---------- */
+.house{border-top:1px solid var(--hair);padding:var(--sz) var(--gut);
+  display:grid;gap:var(--s5);grid-template-columns:1fr;max-width:1600px;margin-inline:auto}
+@media(min-width:960px){.house{grid-template-columns:1fr 1fr;gap:var(--sy)}}
+.house .plate{aspect-ratio:4/5;background:var(--claret)}
+.house-body{max-width:50ch;align-self:center}
+
+/* ---------- commission ---------- */
+.buy{border-top:1px solid var(--hair);padding:var(--sz) var(--gut);
+  max-width:1600px;margin-inline:auto}
+.routes{display:grid;grid-template-columns:1fr;gap:0;margin-top:var(--s6);
+  border-top:1px solid var(--hair)}
+@media(min-width:880px){.routes{grid-template-columns:repeat(3,1fr)}}
+.route{padding:var(--s5) 0;border-bottom:1px solid var(--hair)}
+@media(min-width:880px){
+  .route{padding:var(--s5) var(--s5) var(--s6);border-bottom:none;border-left:1px solid var(--hair)}
+  .route:first-child{padding-left:0;border-left:none}
+  .route:last-child{padding-right:0}
+}
+.route h3{margin:var(--s1) 0 var(--s2);font-family:var(--serif);font-weight:300;
+  font-variation-settings:'opsz' 28;font-size:1.6rem;letter-spacing:-.015em}
+.route p{font-size:.9rem;opacity:.82}
+.route .amt{font-family:var(--serif);font-size:1.3rem;display:block;margin-top:var(--s3)}
+.route.accent .amt{color:#D98A99}
+
+.tally{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-top:var(--sy);
+  background:var(--hair)}
+@media(min-width:760px){.tally{grid-template-columns:repeat(5,1fr)}}
+.tally div{background:var(--navy);padding:var(--s4) var(--s3)}
+.tally b{display:block;font-family:var(--serif);font-weight:300;
+  font-variation-settings:'opsz' 40;font-size:clamp(1.6rem,2.6vw,2.3rem);line-height:1}
+.tally span{display:block;margin-top:var(--s1);font-size:.625rem;letter-spacing:.19em;
+  text-transform:uppercase;opacity:.62}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--hair);padding:var(--sz) var(--gut) var(--s5);
+  background:var(--black)}
+.foot{max-width:1600px;margin-inline:auto;display:grid;gap:var(--s5);grid-template-columns:1fr}
+@media(min-width:820px){.foot{grid-template-columns:1.5fr 1fr 1fr}}
+footer .mark{width:84px;display:block;margin-bottom:var(--s3)}
+footer .mark svg{width:100%;height:auto;fill:currentColor}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:var(--s1)}
+footer a:hover{text-decoration:underline;text-underline-offset:4px}
+.colophon{max-width:1600px;margin:var(--s6) auto 0;padding-top:var(--s3);
+  border-top:1px solid color-mix(in oklab,var(--bone) 14%,transparent);
+  display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);justify-content:space-between;opacity:.55}
+
+@media(prefers-reduced-motion:reduce){
+  .tile svg,.tile .l{transition:none}
+  .tile:hover svg,.tile:focus-visible svg{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="mark" href="#top" aria-label="I Am Ratan — home"></a>
+  <nav class="micro">
+    <a href="#nuancier">Le nuancier</a>
+    <a href="#house">The house</a>
+    <a href="#buy">Commission</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <span class="micro dim fig">39–46</span>
+</header>
+
+<main id="top">
+
+  <section class="nuancier" id="nuancier">
+    <div class="nu-head">
+      <div>
+        <h1 class="d1">Twenty-five colours.<br>Twenty-five shirts.</h1>
+      </div>
+      <p class="micro dim" style="margin:0;max-width:30ch;letter-spacing:.14em">
+        Pick a colour. The room takes it.</p>
+    </div>
+    <div class="grid" id="grid" role="list"></div>
+  </section>
+
+  <section class="house" id="house">
+    <figure class="plate" data-plate="editorial-03" data-shirt="23" data-pos="42% 50%"
+      data-alt="Claret Hound houndstooth frozen mid-air against a pale ground"></figure>
+    <div class="house-body">
+      <h2 class="d2">Made for houses that never named us.</h2>
+      <p style="margin-top:var(--s4)">For over two decades these hands shaped luxury the world
+      admired. The garments were sold and worn under other names. Ours was not among them.</p>
+      <p>A father and daughter's promise ended that. The same cutting room, the same thirty
+      measurements, the same three weeks — a different label.</p>
+      <p class="d3" style="margin-top:var(--s5);max-width:24ch">Luxury is subtle, not loud.
+      Strength is calm, not performative. Legacy is worn, not announced.</p>
+    </div>
+  </section>
+
+  <section class="buy" id="buy">
+    <h2 class="d2">Three ways to buy.</h2>
+    <p style="margin-top:var(--s3);max-width:54ch">Ready to order and bespoke exist today. The
+    middle path is a commission — one payment, nothing recurring, nothing expiring.</p>
+    <div class="routes">
+      <div class="route">
+        <p class="micro dim">Ready to order</p>
+        <h3>From the twenty-five</h3>
+        <p>In stock, cut and finished. Sizes 39 to 46, shipped within three days.</p>
+        <span class="amt fig">₹2,999</span>
+      </div>
+      <div class="route accent">
+        <p class="micro dim">Commission</p>
+        <h3>A set of four, or more</h3>
+        <p>A pattern only amortises across a set, which is why Turnbull &amp; Asser, Emma Willis
+        and Hilditch &amp; Key have all asked for four since the nineteenth century. One shirt is
+        cut and sent first; the rest follow only once it fits.</p>
+        <span class="amt fig">30% across the set</span>
+      </div>
+      <div class="route">
+        <p class="micro dim">Bespoke</p>
+        <h3>Thirty measurements</h3>
+        <p>A pattern cut for one person and kept. Three weeks to the first fitting.</p>
+        <span class="amt">By appointment</span>
+      </div>
+    </div>
+    <div class="tally" id="tally"></div>
+  </section>
+
+</main>
+
+<footer id="contact">
+  <div class="foot">
+    <div>
+      <span class="mark" aria-hidden="true"></span>
+      <p class="d3" style="max-width:24ch">Say the specific thing, then stop.</p>
+    </div>
+    <div>
+      <p class="micro dim" style="margin-bottom:var(--s2)">The house</p>
+      <ul>
+        <li><a href="tel:+918282826264" class="fig">+91 82828 26264</a></li>
+        <li><a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a></li>
+        <li><a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="micro dim" style="margin-bottom:var(--s2)">Collections</p>
+      <ul id="footColl"></ul>
+    </div>
+  </div>
+  <div class="colophon micro">
+    <span>Artisan Apparels · Hyderabad</span>
+    <span>Under our own name, at last.</span>
+  </div>
+</footer>
+
+<dialog class="sheet" id="sheet" aria-label="Shirt detail">
+  <div class="sheet-bar">
+    <span class="micro" id="sheetColl"></span>
+    <div class="sheet-nav">
+      <button type="button" id="prev">← Previous</button>
+      <button type="button" id="next">Next →</button>
+      <button type="button" id="close">Close</button>
+    </div>
+  </div>
+  <div class="sheet-in" id="sheetIn"></div>
+</dialog>
+
+<script src="assets/brand.js?v=1786616451"></script>
+<script src="assets/garment.js?v=1786616451"></script>
+<script src="assets/media.js?v=1786616451"></script>
+<script>
+(function(){
+  'use strict';
+  var S=IAR.SHIRTS;
+  document.querySelectorAll('.mark').forEach(function(el){ el.innerHTML=IAR.mark({}); });
+
+  /* ---- the grid ---- */
+  var grid=document.getElementById('grid');
+  grid.innerHTML=S.map(function(s){
+    var ink=IAR.inkOn(s.hex);
+    return '<button class="tile" role="listitem" type="button" data-i="'+(s.n-1)+'" '+
+      'style="color:'+ink+'" aria-label="'+s.name+', '+IAR.rupees(s.price)+'. Open detail.">'+
+      IAR.swatch(s)+
+      '<span class="n">'+IAR.pad(s.n)+'</span>'+
+      '<span class="l"><b>'+s.name+'</b><span class="fig">'+IAR.rupees(s.price)+'</span></span>'+
+      '</button>';
+  }).join('');
+
+  /* ---- the drenched sheet ---- */
+  var sheet=document.getElementById('sheet'),
+      sheetIn=document.getElementById('sheetIn'),
+      sheetColl=document.getElementById('sheetColl'),
+      cur=0;
+
+  function render(i){
+    cur=(i+S.length)%S.length;
+    var s=S[cur], ink=IAR.inkOn(s.ground);
+    sheet.style.background=s.ground;
+    sheet.style.color=ink;
+    sheetColl.textContent=s.coll+' · '+IAR.pad(s.n)+' of 25';
+    sheetIn.innerHTML=
+      '<div>'+
+        '<p class="sheet-no fig">'+IAR.pad(s.n)+'</p>'+
+        '<h2 class="d2">'+s.name+'</h2>'+
+        '<table class="sheet-tbl"><tbody>'+
+          '<tr><th>Cloth</th><td>'+s.cloth+'</td></tr>'+
+          '<tr><th>Weave</th><td class="fig">'+s.spec+'</td></tr>'+
+          '<tr><th>Colour</th><td class="fig">'+s.hex+'</td></tr>'+
+          '<tr><th>Shown against</th><td class="fig">'+s.ground+'</td></tr>'+
+          '<tr><th>Sizes</th><td class="fig">39 · 40 · 41 · 42 · 43 · 44 · 45 · 46</td></tr>'+
+        '</tbody></table>'+
+        '<span class="sheet-price fig">'+IAR.rupees(s.price)+'</span>'+
+      '</div>'+
+      '<div class="sheet-plate">'+
+        '<figure class="plate" data-plate="shirt-'+IAR.pad(s.n)+'" data-shirt="'+s.n+'" '+
+        'data-alt="'+s.name+' — '+s.cloth.toLowerCase()+', suspended"></figure>'+
+      '</div>';
+    IAR.plates(sheetIn);
+  }
+
+  function open(i){
+    render(i);
+    if(typeof sheet.showModal==='function') sheet.showModal();
+    else sheet.setAttribute('open','');
+    document.getElementById('close').focus();
+  }
+  function close(){
+    if(typeof sheet.close==='function') sheet.close();
+    else sheet.removeAttribute('open');
+    var t=grid.querySelector('[data-i="'+cur+'"]'); if(t) t.focus();
+  }
+
+  grid.addEventListener('click',function(e){
+    var t=e.target.closest('.tile'); if(t) open(+t.dataset.i);
+  });
+  document.getElementById('next').addEventListener('click',function(){render(cur+1);});
+  document.getElementById('prev').addEventListener('click',function(){render(cur-1);});
+  document.getElementById('close').addEventListener('click',close);
+  sheet.addEventListener('cancel',function(){ setTimeout(close,0); });
+
+  /* arrows page through the range; the grid itself is a roving 2-D control */
+  sheet.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'){e.preventDefault();render(cur+1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();render(cur-1);}
+  });
+  grid.addEventListener('keydown',function(e){
+    var t=e.target.closest('.tile'); if(!t) return;
+    var i=+t.dataset.i, cols=window.innerWidth>=700?5:3, to=null;
+    if(e.key==='ArrowRight') to=i+1;
+    if(e.key==='ArrowLeft')  to=i-1;
+    if(e.key==='ArrowDown')  to=i+cols;
+    if(e.key==='ArrowUp')    to=i-cols;
+    if(to===null) return;
+    e.preventDefault();
+    var n=grid.querySelector('[data-i="'+Math.min(S.length-1,Math.max(0,to))+'"]');
+    if(n) n.focus();
+  });
+
+  /* ---- tally + footer ---- */
+  var H=IAR.HOUSE;
+  document.getElementById('tally').innerHTML=[
+    [H.stock,'shirts in stock'],[H.collections,'collections'],
+    [IAR.rupees(H.entry),'entry price'],[IAR.rupees(H.top),'top of range'],
+    [IAR.rupees(H.average),'catalogue average']
+  ].map(function(r){return '<div><b class="fig">'+r[0]+'</b><span>'+r[1]+'</span></div>';}).join('');
+
+  document.getElementById('footColl').innerHTML=IAR.COLLECTIONS.map(function(c){
+    return '<li>'+c.key+' <span class="fig dim">'+c.count+'</span></li>';
+  }).join('');
+
+  IAR.plates();
+})();
+</script>
+</body>
+</html>

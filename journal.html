@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The journal — I Am Ratan</title>
+<meta name="description" content="Notes from the house. On cloth, on colour, on the details that only show at arm's length.">
+<meta name="theme-color" content="#EDE9E0">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="I Am Ratan">
+<meta property="og:title" content="The journal — I Am Ratan">
+<meta property="og:description" content="Notes from the house. On cloth, on colour, and on the details that only show at arm's length.">
+<meta property="og:image" content="https://im-ratan.vercel.app/images/journal/road.jpg">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786616451">
+<style>
+/* THE JOURNAL
+   The homepage carries five of these as a sideways rail. Here they are a
+   column, alternating side to side, because a reading page wants a rhythm the
+   eye can settle into rather than one it has to drag through.
+
+   Each entry is an <article> with an id, so the rail on the homepage can link
+   straight to the one it was showing. */
+.head{padding:var(--clear) 0 0}
+.jrn-list{display:grid;gap:var(--sz);
+  margin:var(--sy) 0 var(--sz)}
+.entry{display:grid;gap:var(--sy);align-items:center;
+  scroll-margin-top:var(--sz)}
+@media(min-width:860px){
+  .entry{grid-template-columns:1fr 1fr}
+  /* every second entry turns around, so the column does not read as a list */
+  .entry:nth-child(even) .entry-shot{order:2}
+}
+.entry-shot{margin:0;position:relative;aspect-ratio:4/5;overflow:hidden;
+  background:var(--under)}
+@media(min-width:860px){.entry-shot{aspect-ratio:1/1}}
+.entry-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.entry-body{display:grid;gap:var(--s2);justify-items:start;max-width:44ch}
+.entry-kick{font-family:var(--mono);font-size:.5625rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);margin:0}
+.entry-name{font-weight:250;font-size:clamp(1.7rem,3.4vw,2.6rem);line-height:1.06;
+  letter-spacing:-.028em;margin:0;text-wrap:balance}
+.entry-note{margin:0;color:var(--muted);line-height:1.65}
+/* A standing note to the house, not decoration. These five have their pictures
+   and their headings; what they do not have yet is the writing. Saying so on
+   the page is better than five paragraphs of filler that read like an article
+   and are not one. */
+.pending{border:1px solid var(--hair);padding:var(--s4);
+  margin:0 0 var(--sy);max-width:60ch}
+/* the wrapper is a .label so the "For the house" line reads as a tag; the note
+   itself has to climb back out of it, or five lines of mono capitals is what
+   the house gets asked to read */
+.pending p{margin:var(--s1) 0 0;color:var(--muted);
+  font-family:inherit;font-size:.9375rem;letter-spacing:normal;
+  text-transform:none;line-height:1.6}
+</style>
+</head>
+<body data-no-grounds>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="bespoke.html">Bespoke</a>
+    <a href="house.html">About us</a>
+  </nav>
+  <span class="muted">Hyderabad</span>
+</header>
+
+<main id="main">
+  <section class="head">
+    <div class="wrap">
+      <p class="label muted">The journal</p>
+      <h1 class="display" style="max-width:14ch;margin-top:var(--s1)">Notes from
+      the house.</h1>
+      <p class="lede rise" style="margin-top:var(--s3);max-width:46ch;color:var(--muted)">
+        On cloth, on colour, and on the details that only show at arm's length.</p>
+
+      <div class="pending label" style="margin-top:var(--sy)">
+        <span>For the house</span>
+        <p>Five entries are laid out below with their photography and their
+        headings. The writing is still to come — send the copy and each one
+        becomes a page of its own.</p>
+      </div>
+
+      <div class="jrn-list">
+        <article class="entry" id="road">
+          <figure class="entry-shot rise">
+            <img src="images/journal/road.webp" alt="A stone shirt on the road, sleeves turned back"
+              loading="lazy" decoding="async">
+          </figure>
+          <div class="entry-body">
+            <p class="entry-kick rise">On wearing it</p>
+            <h2 class="entry-name rise d1">The long way round</h2>
+            <p class="entry-note rise d2">A shirt that only works behind a desk is
+            a uniform. This is about the other six days.</p>
+          </div>
+        </article>
+
+        <article class="entry" id="night">
+          <figure class="entry-shot rise">
+            <img src="images/journal/night.webp" alt="A black shirt against a car in low evening sun"
+              loading="lazy" decoding="async">
+          </figure>
+          <div class="entry-body">
+            <p class="entry-kick rise">On colour</p>
+            <h2 class="entry-name rise d1">Black is not one colour</h2>
+            <p class="entry-note rise d2">Why the darkest cloths in the range are
+            the hardest to weave, and the easiest to wear.</p>
+          </div>
+        </article>
+
+        <article class="entry" id="button">
+          <figure class="entry-shot rise">
+            <img src="images/journal/button.jpg" alt="A button with I AM RATAN engraved around the rim"
+              loading="lazy" decoding="async">
+          </figure>
+          <div class="entry-body">
+            <p class="entry-kick rise">On detail</p>
+            <h2 class="entry-name rise d1">What a button is for</h2>
+            <p class="entry-note rise d2">It fastens a shirt. It also tells you
+            how much of the maker's attention the rest of it got.</p>
+          </div>
+        </article>
+
+        <article class="entry" id="cuff">
+          <figure class="entry-shot rise">
+            <img src="images/journal/cuff.jpg" alt="The signature embroidered tone on tone at the cuff"
+              loading="lazy" decoding="async">
+          </figure>
+          <div class="entry-body">
+            <p class="entry-kick rise">On making</p>
+            <h2 class="entry-name rise d1">The signature at the cuff</h2>
+            <p class="entry-note rise d2">Embroidered in the cloth's own colour,
+            where only the wearer and the person shaking his hand will find it.</p>
+          </div>
+        </article>
+
+        <article class="entry" id="lobby">
+          <figure class="entry-shot rise">
+            <img src="images/journal/lobby.webp" alt="An olive shirt, photographed in a lobby"
+              loading="lazy" decoding="async">
+          </figure>
+          <div class="entry-body">
+            <p class="entry-kick rise">On the house</p>
+            <h2 class="entry-name rise d1">Twenty years, no name on the box</h2>
+            <p class="entry-note rise d2">The room in India that made luxury the
+            world admired, and never got to sign it.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <span class="mark mark--monogram" aria-hidden="true"></span>
+        <p class="lede" style="max-width:22ch">A brand made by Indians, for the world.</p>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">The house</p>
+        <ul>
+          <li><a href="tel:+918282826264" class="fig">+91 82828 26264</a></li>
+          <li><a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a></li>
+          <li><a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Explore</p>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="bespoke.html">Bespoke</a></li>
+          <li><a href="house.html">About us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Visit</p>
+        <ul>
+          <li>Artisan Apparels</li>
+          <li>Hyderabad, India</li>
+          <li><a href="https://iamratan.co.in" rel="noopener">iamratan.co.in</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon label">
+      <span>© <span id="year">2026</span> I Am Ratan · Artisan Apparels</span>
+      <span><a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="shipping.html">Shipping &amp; returns</a></span>
+      <span>Reclaim · Redefine · Resonate</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/catalogue.js?v=1786616451"></script>
+<script src="assets/site.js?v=1786616451"></script>
+<script src="assets/iar-house.js?v=1786616451"></script>
+<script src="assets/mark.js?v=1786616451"></script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

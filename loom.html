@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>I Am Ratan — the loom</title>
+<meta name="description" content="Twenty-five cloths, woven in real time. Move the light.">
+<meta name="theme-color" content="#0C0D0E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --room:#0C0D0E; --chalk:#D7DCD6; --navy:#1C254A; --card:#B9A882;
+  --sans:'Anek Latin',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --gut:clamp(1.1rem,3.6vw,3.5rem);
+  --swing:cubic-bezier(.2,.9,.25,1);
+  --muted:rgba(215,220,214,.66);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--room);color:var(--chalk);font-family:var(--sans);
+  font-weight:300;line-height:1.55;-webkit-font-smoothing:antialiased;overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--chalk);outline-offset:3px}
+.mono,.fig{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.label{font-family:var(--mono);font-size:.625rem;letter-spacing:.2em;
+  text-transform:uppercase}
+
+/* the loom fills the room */
+#loom{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+#fallback{position:fixed;inset:0;z-index:0;display:none;
+  background:radial-gradient(70% 60% at 30% 30%,#2A3550,#0C0D0E 70%)}
+.no-webgl #loom{display:none}
+.no-webgl #fallback{display:block}
+
+.shell{position:relative;z-index:2;height:100%;display:grid;
+  grid-template-rows:auto 1fr auto;padding:var(--gut);pointer-events:none}
+.shell>*{pointer-events:auto}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:var(--s3)}
+.loomnav{display:flex;gap:var(--s5)}
+.loomnav a{position:relative;padding-block:var(--s0);color:var(--chalk)}
+.loomnav a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:currentColor;transform:scaleX(0);transform-origin:left;
+  transition:transform .38s var(--swing)}
+.loomnav a:hover::after{transform:scaleX(1)}
+@media(max-width:700px){.loomnav{display:none}}
+.mark{width:38px;aspect-ratio:716/478;display:block;background:currentColor;
+  -webkit-mask:url('assets/mark-badger.png') no-repeat center/contain;
+  mask:url('assets/mark-badger.png') no-repeat center/contain}
+
+.read{align-self:center;justify-self:start;max-width:min(30rem,100%);position:relative}
+/* the copy sits on live cloth, so it carries its own falloff rather than
+   trusting whatever colour happens to be lit behind it */
+.read::before{content:'';position:absolute;inset:-2.5rem -6rem -2.5rem -6rem;z-index:-1;
+  background:radial-gradient(60% 70% at 22% 50%,rgba(8,9,10,.82),rgba(8,9,10,0) 72%)}
+.read h1{font-weight:200;font-size:clamp(2.4rem,6vw,4.6rem);line-height:.96;
+  letter-spacing:-.035em;margin:0}
+.read .no{font-family:var(--mono);font-size:.75rem;letter-spacing:.18em;
+  color:var(--muted);margin:0 0 var(--s1)}
+.read dl{display:grid;grid-template-columns:auto 1fr;gap:var(--s0) var(--s3);margin:var(--s4) 0 0;
+  border-top:1px solid rgba(215,220,214,.24);padding-top:var(--s2);max-width:24rem}
+.read dt{font-family:var(--mono);font-size:.5625rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted)}
+.read dd{margin:0;font-family:var(--mono);font-size:.8125rem}
+.read .price{display:block;font-family:var(--mono);font-size:1.5rem;margin-top:var(--s3)}
+.read .cta{display:inline-block;margin-top:var(--s3);border:1px solid currentColor;
+  padding:var(--s2) var(--s4);font-family:var(--mono);font-size:.625rem;letter-spacing:.18em;
+  text-transform:uppercase;transition:background-color .4s var(--swing),color .4s}
+.read .cta:hover{background:var(--chalk);color:var(--room)}
+
+/* the rail: twenty-five, always on screen */
+.bottom{display:grid;gap:var(--s2)}
+.rail{display:flex;gap:var(--s0);height:46px;align-items:stretch}
+.rail button{flex:1 1 0;min-width:0;border:0;padding:0;cursor:pointer;
+  background:var(--g);position:relative;
+  transition:transform .5s var(--swing),opacity .5s var(--swing);
+  opacity:.5;transform-origin:bottom}
+.rail button:hover,.rail button:focus-visible{opacity:1;transform:scaleY(1.22)}
+.rail button[aria-pressed="true"]{opacity:1;transform:scaleY(1.42)}
+.rail button::after{content:attr(data-n);position:absolute;left:50%;bottom:calc(100% + 6px);
+  transform:translateX(-50%);font-family:var(--mono);font-size:.5rem;
+  letter-spacing:.1em;color:var(--muted);opacity:0;transition:opacity .3s}
+.rail button:hover::after,.rail button[aria-pressed="true"]::after{opacity:1}
+.foot{display:flex;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;
+  color:var(--muted)}
+.hint{display:flex;align-items:center;gap:var(--s1)}
+.hint i{width:16px;height:16px;border:1px solid currentColor;border-radius:50%;
+  display:block;animation:puls 3.2s var(--swing) infinite}
+@keyframes puls{0%,100%{transform:scale(.6);opacity:.3}50%{transform:scale(1);opacity:.8}}
+
+@media(max-width:640px){
+  .read dl{display:none}
+  .rail{height:36px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hint i{animation:none}
+  .rail button{transition:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="loom" aria-label="Cloth woven in real time, lit by your pointer"></canvas>
+<div id="fallback" aria-hidden="true"></div>
+
+<div class="shell">
+  <div class="top">
+    <a href="index.html" aria-label="I Am Ratan — home"><span class="mark"></span></a>
+    <nav class="loomnav label">
+      <a href="range.html">The range</a>
+      <a href="bespoke.html">Bespoke</a>
+      <a href="house.html">The house</a>
+    </nav>
+    <span class="label" style="color:var(--muted)">Woven live</span>
+  </div>
+
+  <div class="read" id="read"></div>
+
+  <div class="bottom">
+    <div class="rail" id="rail" role="group" aria-label="The twenty-five cloths"></div>
+    <div class="foot label">
+      <span class="hint"><i></i> Move to light the cloth · ← → to change</span>
+      <span id="perf" class="fig"></span>
+    </div>
+  </div>
+</div>
+
+<script src="assets/catalogue.js?v=1786616451"></script>
+<script src="assets/site.js?v=1786616451"></script>
+<script src="assets/loom.js?v=1786616451"></script>
+<script>
+(function(){
+  'use strict';
+  var R=IAR.RANGE, cur=1;
+  var loom=new IAR.Loom(document.getElementById('loom'),{seg:140});
+
+  if(!loom.ok){
+    document.documentElement.classList.add('no-webgl');
+    console.warn('[loom] WebGL unavailable'+(loom.error?': '+loom.error:''));
+  }
+
+  var read=document.getElementById('read');
+  function write(p){
+    read.innerHTML=
+      '<p class="no">'+p.no+' / 25 &nbsp;·&nbsp; '+(p.cat||'The range')+'</p>'+
+      '<h1>'+p.name+'</h1>'+
+      '<dl>'+
+        '<dt>Colour</dt><dd>'+p.hex+'</dd>'+
+        '<dt>Sizes</dt><dd>'+p.sizes.join(' · ')+'</dd>'+
+        '<dt>Cut</dt><dd>30 measurements</dd>'+
+      '</dl>'+
+      '<span class="price">'+p.priceText+'</span>'+
+      '<a class="cta" href="'+p.url+'" rel="noopener">See the shirt</a>';
+  }
+
+  function select(i){
+    cur=(i+R.length)%R.length;
+    var p=R[cur];
+    loom.set(p);
+    write(p);
+    [].forEach.call(rail.children,function(b,k){
+      b.setAttribute('aria-pressed',String(k===cur));
+    });
+  }
+
+  var rail=document.getElementById('rail');
+  rail.innerHTML=R.map(function(p,i){
+    return '<button type="button" data-i="'+i+'" data-n="'+p.no+'" '+
+      'style="--g:'+p.hex+'" aria-pressed="false" '+
+      'aria-label="'+p.name+', '+p.priceText+'"></button>';
+  }).join('');
+  rail.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(b) select(+b.dataset.i);
+  });
+  rail.addEventListener('mouseover',function(e){
+    var b=e.target.closest('button'); if(b) select(+b.dataset.i);
+  });
+  rail.addEventListener('focusin',function(e){
+    var b=e.target.closest('button'); if(b) select(+b.dataset.i);
+  });
+
+  addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'){e.preventDefault();select(cur+1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();select(cur-1);}
+  });
+
+  addEventListener('pointermove',function(e){
+    loom.point(e.clientX/innerWidth, e.clientY/innerHeight);
+  },{passive:true});
+
+  /* phones have no pointer to follow, so the light keeps its own slow orbit */
+  if(!matchMedia('(hover:hover)').matches){
+    var t0=performance.now();
+    setInterval(function(){
+      var t=(performance.now()-t0)/2800;
+      loom.point(.5+Math.sin(t)*.34, .38+Math.cos(t*.8)*.18);
+    },50);
+  }
+
+  /* a frame counter, because a claim about 60fps should be checkable */
+  var perf=document.getElementById('perf'), n=0, last=performance.now();
+  (function tick(){
+    n++;
+    var now=performance.now();
+    if(now-last>1000){ perf.textContent=n+' fps'; n=0; last=now; }
+    requestAnimationFrame(tick);
+  })();
+
+  select(1);
+  loom.start();
+})();
+</script>
+</body>
+</html>

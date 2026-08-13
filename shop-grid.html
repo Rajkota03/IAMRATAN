@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shop — I Am Ratan</title>
+<meta name="description" content="Twenty-five cloths, cut in five sizes. Filter by collection, sort by tone.">
+<meta name="theme-color" content="#EDE9E0">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="I Am Ratan">
+<meta property="og:title" content="Shop — I Am Ratan">
+<meta property="og:description" content="Twenty-five cloths, cut in five sizes.">
+<meta property="og:image" content="https://im-ratan.vercel.app/images/cloth-stack.jpg">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786616451">
+<style>
+/* THE GRID
+   The shoppable one. Nine garments on the first screen, filters that actually
+   filter, and a card that shows the cloth colour even before its photograph
+   loads — so the range reads as colour at a glance and as product on approach. */
+.head{padding:var(--clear) 0 0}
+.tools{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s4);align-items:center;
+  justify-content:space-between;margin:var(--s5) 0 0;
+  padding-bottom:var(--s3);border-bottom:1px solid var(--hair)}
+.chips{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.chip{font-family:var(--mono);font-size:.625rem;letter-spacing:.16em;
+  text-transform:uppercase;padding:var(--s1) var(--s3);border-radius:2rem;
+  border:1px solid var(--hair);background:none;cursor:pointer;color:inherit;
+  transition:background-color .3s var(--settle),border-color .3s var(--settle)}
+.chip:hover{border-color:currentColor}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--room);
+  border-color:var(--ink)}
+.sortwrap{display:flex;align-items:center;gap:var(--s1)}
+.sortwrap select{background:none;border:0;border-bottom:1px solid var(--hair);
+  padding:var(--s0) var(--s0);font-family:var(--mono);font-size:.75rem;cursor:pointer}
+
+.grid{display:grid;gap:var(--s4);grid-template-columns:repeat(2,1fr);
+  margin:var(--sy) 0 0}
+@media(min-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1300px){.grid{grid-template-columns:repeat(4,1fr)}}
+
+.card{display:block;position:relative}
+/* display:block is load-bearing. aspect-ratio is ignored on a non-replaced
+   INLINE element, and this is a <span>, so without it the box collapses to its
+   line height and the photograph inside has nowhere to render. The range wall
+   lost its photographs to exactly this once already. */
+.card-shot{display:block;position:relative;aspect-ratio:3/4;overflow:hidden;
+  background:var(--g);margin-bottom:var(--s2)}
+.card-shot img{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 14%;
+  transition:transform 1s var(--settle)}
+.card:hover .card-shot img{transform:scale(1.035)}
+/* a ribbon of the true cloth colour along the foot of every photograph, so the
+   grid still reads as a colour range even when the photography is inconsistent */
+.card-shot::after{content:'';position:absolute;left:0;right:0;bottom:0;height:5px;
+  background:var(--g);z-index:2}
+.card-nm{display:block;font-weight:300;font-size:1.02rem;letter-spacing:-.014em}
+.card-meta{display:flex;justify-content:space-between;gap:var(--s3);
+  align-items:baseline;margin-top:var(--s0)}
+.card-cat{font-family:var(--mono);font-size:.5625rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted)}
+.card-pr{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:.8125rem}
+.card-sz{display:flex;gap:var(--s0);margin-top:var(--s1)}
+.card-sz i{width:.42rem;height:.42rem;border-radius:50%;
+  border:1px solid color-mix(in oklab,currentColor 45%,transparent)}
+.card-sz i.cut{background:currentColor;border-color:currentColor}
+.empty{padding:var(--sy) 0;color:var(--muted)}
+@media(prefers-reduced-motion:reduce){.card:hover .card-shot img{transform:none}}
+</style>
+</head>
+<body data-no-grounds>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="shop-grid.html" aria-current="page">Shop</a>
+    <a href="bespoke.html">Bespoke</a>
+    <a href="house.html">About us</a>
+  </nav>
+  <span class="muted">Hyderabad</span>
+</header>
+
+<main>
+  <section class="head">
+    <div class="wrap">
+      <p class="label muted">The range</p>
+      <h1 class="display" style="max-width:16ch;margin-top:var(--s1)">Twenty-five
+      cloths.</h1>
+
+      <div class="tools">
+        <div class="chips" id="chips" role="group" aria-label="Filter by collection"></div>
+        <div class="sortwrap">
+          <label class="label muted" for="sort">Order</label>
+          <select id="sort">
+            <option value="range">By the range</option>
+            <option value="light">Lightest first</option>
+            <option value="dark">Darkest first</option>
+            <option value="low">Price, low to high</option>
+            <option value="high">Price, high to low</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+      <p class="empty label" id="empty" hidden>Nothing in that collection.</p>
+
+      <p class="label muted" style="margin:var(--sy) 0 var(--sy)">
+        Showing <span class="fig" id="shown">25</span> of <span class="fig">25</span>
+        · <a href="bespoke.html" style="text-decoration:underline;text-underline-offset:4px">not your size? →</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="colophon label" style="margin-top:0;border-top:0;padding-top:0">
+      <span>© <span id="year">2026</span> I Am Ratan · Artisan Apparels</span>
+      <span><a href="contact.html">Speak to the house</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/catalogue.js?v=1786616451"></script>
+<script src="assets/site.js?v=1786616451"></script>
+<script src="assets/iar-house.js?v=1786616451"></script>
+<script src="assets/mark.js?v=1786616451"></script>
+<script>
+(function () {
+  'use strict';
+  var R = IAR.RANGE, grid = document.getElementById('grid'),
+      chips = document.getElementById('chips'), empty = document.getElementById('empty');
+  var CUT = ['39','40','42','44','46'], ALL = ['39','40','41','42','43','44','45','46'];
+  var filter = 'all', order = 'range';
+
+  var cats = [];
+  R.forEach(function (p) { if (p.cat && cats.indexOf(p.cat) < 0) cats.push(p.cat); });
+
+  chips.innerHTML =
+    '<button class="chip" type="button" data-c="all" aria-pressed="true">All ' +
+      R.length + '</button>' +
+    cats.map(function (c) {
+      var n = R.filter(function (p) { return p.cat === c; }).length;
+      return '<button class="chip" type="button" data-c="' + c + '" aria-pressed="false">' +
+        c + ' ' + n + '</button>';
+    }).join('');
+
+  function sorted(list) {
+    var a = list.slice();
+    if (order === 'light') a.sort(function (x, y) { return y.lum - x.lum; });
+    if (order === 'dark')  a.sort(function (x, y) { return x.lum - y.lum; });
+    if (order === 'low')   a.sort(function (x, y) { return x.price - y.price; });
+    if (order === 'high')  a.sort(function (x, y) { return y.price - x.price; });
+    return a;
+  }
+
+  function draw() {
+    var list = filter === 'all' ? R : R.filter(function (p) { return p.cat === filter; });
+    list = sorted(list);
+    document.getElementById('shown').textContent = list.length;
+    empty.hidden = list.length > 0;
+    grid.innerHTML = list.map(function (p) {
+      var run = ALL.map(function (z) {
+        return '<i class="' + (p.sizes.indexOf(z) > -1 ? 'cut' : '') + '"></i>';
+      }).join('');
+      return '<a class="card" href="product.html?p=' + encodeURIComponent(p.slug) + '" ' +
+        'style="--g:' + p.hex + '">' +
+        '<span class="card-shot"><img src="images/shirts/' + p.img +
+          '" alt="' + p.name + '" loading="lazy" decoding="async"></span>' +
+        '<span class="card-nm">' + p.name + '</span>' +
+        '<span class="card-meta"><span class="card-cat">' + (p.cat || 'The range') +
+          '</span><span class="card-pr">' + p.priceText + '</span></span>' +
+        '<span class="card-sz" aria-label="Cut in ' + p.sizes.join(', ') + '">' + run + '</span>' +
+      '</a>';
+    }).join('');
+  }
+
+  chips.addEventListener('click', function (e) {
+    var b = e.target.closest('.chip'); if (!b) return;
+    filter = b.dataset.c;
+    chips.querySelectorAll('.chip').forEach(function (c) {
+      c.setAttribute('aria-pressed', String(c === b));
+    });
+    draw();
+  });
+  document.getElementById('sort').addEventListener('change', function (e) {
+    order = e.target.value; draw();
+  });
+
+  draw();
+})();
+</script>
+</body>
+</html>

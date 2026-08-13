@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LAB — Bespoke under the lamp</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0C0B0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* The Aceternity "Lamp", ported to vanilla CSS/JS in the house's own colours.
+   framer-motion's whileInView becomes an IntersectionObserver adding .in;
+   every animated property is a CSS transition with the same 0.8s / 0.3s ease. */
+:root{
+  --room:#0C0B0A; --blue:#B7CAEE; --chalk:#D7DCD6; --navy:#1C254A;
+  --sans:'Anek Latin',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --ease:cubic-bezier(.45,0,.55,1);   /* easeInOut, as in the original */
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--room);color:var(--chalk);font-family:var(--sans);
+  font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.label{font-family:var(--mono);font-size:.625rem;letter-spacing:.2em;text-transform:uppercase}
+
+.labnote{position:fixed;left:0;right:0;top:0;z-index:99;display:flex;gap:1rem;
+  justify-content:center;padding:.5rem;background:#6B2F3A;color:#EDE9E0;
+  font-family:var(--mono);font-size:.5625rem;letter-spacing:.18em;text-transform:uppercase}
+
+/* ---------------- the lamp ---------------- */
+.lamp{position:relative;min-height:100svh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;overflow:hidden;isolation:isolate}
+.stage{position:absolute;inset:0;transform:scaleY(1.25);z-index:0}
+
+/* the two conic wings. Tailwind's bg-gradient-conic with from/via/to becomes a
+   plain conic-gradient; the interior masks become child gradients in room-black */
+.wing{position:absolute;top:50%;height:14rem;width:15rem;opacity:.5;
+  transition:width .8s var(--ease) .3s,opacity .8s var(--ease) .3s}
+.in .wing{width:min(30rem,86vw);opacity:1}
+.wing.l{right:50%;
+  background:conic-gradient(from 70deg at center top,var(--blue) 0deg,transparent 65deg,transparent 360deg)}
+.wing.r{left:50%;
+  background:conic-gradient(from 290deg at center top,transparent 0deg,transparent 295deg,var(--blue) 360deg)}
+.wing.l::before{content:'';position:absolute;left:0;bottom:0;width:100%;height:10rem;
+  background:var(--room);-webkit-mask-image:linear-gradient(to top,white,transparent);
+  mask-image:linear-gradient(to top,white,transparent)}
+.wing.l::after{content:'';position:absolute;left:0;bottom:0;width:10rem;height:100%;
+  background:var(--room);-webkit-mask-image:linear-gradient(to right,white,transparent);
+  mask-image:linear-gradient(to right,white,transparent)}
+.wing.r::before{content:'';position:absolute;right:0;bottom:0;width:100%;height:10rem;
+  background:var(--room);-webkit-mask-image:linear-gradient(to top,white,transparent);
+  mask-image:linear-gradient(to top,white,transparent)}
+.wing.r::after{content:'';position:absolute;right:0;bottom:0;width:10rem;height:100%;
+  background:var(--room);-webkit-mask-image:linear-gradient(to left,white,transparent);
+  mask-image:linear-gradient(to left,white,transparent)}
+
+.shelf{position:absolute;top:50%;width:100%;height:12rem;transform:translateY(3rem) scaleX(1.5);
+  background:var(--room);filter:blur(24px)}
+.veil{position:absolute;top:50%;width:100%;height:12rem;opacity:.1;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.glow{position:absolute;top:50%;left:50%;width:min(28rem,80vw);height:9rem;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:var(--blue);opacity:.5;filter:blur(64px)}
+.core{position:absolute;top:50%;left:50%;width:8rem;height:9rem;border-radius:50%;
+  transform:translate(-50%,-9rem);background:color-mix(in oklab,var(--blue) 88%,white);
+  filter:blur(32px);transition:width .8s var(--ease) .3s}
+.in .core{width:min(16rem,60vw)}
+.line{position:absolute;top:50%;left:50%;height:2px;width:15rem;
+  transform:translate(-50%,-10rem);background:var(--blue);
+  box-shadow:0 0 18px color-mix(in oklab,var(--blue) 70%,transparent);
+  transition:width .8s var(--ease) .3s}
+.in .line{width:min(30rem,86vw)}
+.cap{position:absolute;top:50%;width:100%;height:11rem;transform:translateY(-16.5rem);
+  background:var(--room)}
+
+/* the copy rises into the light */
+.copy{position:relative;z-index:5;transform:translateY(calc(4rem + 100px));
+  opacity:.5;padding:0 1.25rem;text-align:center;
+  transition:transform .8s var(--ease) .3s,opacity .8s var(--ease) .3s}
+.in .copy{transform:translateY(4rem);opacity:1}
+.copy .label{color:color-mix(in oklab,var(--chalk) 62%,transparent)}
+.copy h1{margin:.6rem 0 0;font-weight:200;letter-spacing:-.035em;line-height:1.02;
+  font-size:clamp(2.6rem,7vw,5.2rem);text-wrap:balance;
+  background:linear-gradient(to bottom right,#F2F2F0,#8FA0AD);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.copy p{margin:1.1rem auto 0;max-width:44ch;
+  color:color-mix(in oklab,var(--chalk) 72%,transparent)}
+.copy .cta{display:inline-block;margin-top:1.6rem;border:1px solid var(--chalk);
+  padding:.85rem 1.9rem;font-family:var(--mono);font-size:.6875rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--chalk);
+  transition:background-color .35s,color .35s}
+.copy .cta:hover{background:var(--chalk);color:var(--room)}
+
+/* context below, so the lamp is judged as a page top, not a poster */
+.below{max-width:64rem;margin:1rem auto 0;padding:0 clamp(1.25rem,4vw,3rem) 5rem;
+  position:relative;z-index:6}
+.steps{display:grid;gap:1.75rem;border-top:1px solid rgba(215,220,214,.16);
+  padding-top:2rem}
+.step{display:grid;gap:.4rem 2rem;grid-template-columns:1fr}
+@media(min-width:760px){.step{grid-template-columns:4rem 1fr;align-items:baseline}}
+.step b{font-family:var(--mono);font-weight:400;font-size:.8125rem;
+  color:rgba(215,220,214,.55)}
+.step h3{font-weight:300;font-size:1.35rem;margin:0 0 .3rem;letter-spacing:-.02em}
+.step p{margin:0;color:rgba(215,220,214,.66);max-width:56ch}
+
+@media(prefers-reduced-motion:reduce){
+  .wing,.core,.line,.copy{transition:none}
+  .lamp .wing{width:min(30rem,86vw);opacity:1}
+  .lamp .core{width:min(16rem,60vw)}
+  .lamp .line{width:min(30rem,86vw)}
+  .lamp .copy{transform:translateY(4rem);opacity:1}
+}
+</style>
+</head>
+<body>
+
+<div class="labnote">Private lab · not linked anywhere · the client versions are untouched</div>
+
+<section class="lamp" id="lamp">
+  <div class="stage">
+    <div class="wing l"></div>
+    <div class="wing r"></div>
+    <div class="shelf"></div>
+    <div class="veil"></div>
+    <div class="glow"></div>
+    <div class="core"></div>
+    <div class="line"></div>
+    <div class="cap"></div>
+  </div>
+  <div class="copy">
+    <p class="label">Made to measure</p>
+    <h1>The art of individual distinction.</h1>
+    <p>Where mastery meets measurement. Over thirty measurements, a pattern cut
+    for one person, and kept.</p>
+    <a class="cta" href="#exp">The experience ↓</a>
+  </div>
+</section>
+
+<div class="below" id="exp">
+  <div class="steps">
+    <div class="step"><b>01</b><div><h3>The consultation</h3>
+      <p>Your journey begins in privacy and refinement. Here, we listen.</p></div></div>
+    <div class="step"><b>02</b><div><h3>The selection</h3>
+      <p>Fabrics selected for their provenance, their hand, their ability to elevate.</p></div></div>
+    <div class="step"><b>03</b><div><h3>The measurement</h3>
+      <p>Over thirty individual measurements, accounting for posture, preference,
+      and the subtle asymmetries that make you uniquely you.</p></div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var lamp=document.getElementById('lamp');
+  if(reduce||!('IntersectionObserver' in window)){lamp.classList.add('in');return;}
+  new IntersectionObserver(function(es,io){
+    es.forEach(function(e){
+      if(e.isIntersecting){lamp.classList.add('in');io.disconnect();}
+    });
+  },{threshold:.2}).observe(lamp);
+  /* the reveal must never be the only path to a lit page: if the observer is
+     starved (zero-height embeds, odd webviews), the lamp turns on anyway */
+  setTimeout(function(){lamp.classList.add('in');},1500);
+})();
+</script>
+</body>
+</html>

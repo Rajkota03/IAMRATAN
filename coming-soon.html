@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>On the cutting table — I Am Ratan</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#22262A">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --table:#22262A; --chalk:#D7DCD6; --card:#B9A882; --navy:#1C254A;
+  --sans:'Anek Latin',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --swing:cubic-bezier(.2,.9,.25,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--table);color:var(--chalk);font-family:var(--sans);
+  font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;
+  display:grid;place-items:center;padding:var(--sy)}
+a{color:inherit;text-decoration:none}
+.grounds{display:none!important}
+.box{max-width:34rem;text-align:left}
+.mark{width:64px;aspect-ratio:716/478;display:block;background:currentColor;
+  margin-bottom:var(--s5);
+  -webkit-mask:url('assets/mark-badger.png') no-repeat center/contain;
+  mask:url('assets/mark-badger.png') no-repeat center/contain}
+.label{font-family:var(--mono);font-size:.625rem;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(215,220,214,.62)}
+h1{font-weight:200;font-size:clamp(2.2rem,7vw,3.6rem);line-height:1;
+  letter-spacing:-.032em;margin:var(--s1) 0 0;text-wrap:balance}
+.rule{height:1px;background:rgba(215,220,214,.22);margin:var(--s4) 0 var(--s4);
+  transform-origin:left;animation:snapline .5s var(--swing)}
+@keyframes snapline{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+p{margin:0;color:rgba(215,220,214,.72);max-width:44ch}
+.sw{display:inline-block;width:.8em;height:.8em;vertical-align:-.06em;
+  margin-right:var(--s1);box-shadow:inset 0 0 0 1.5px rgba(215,220,214,.5)}
+.ctas{display:flex;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s4)}
+.cta{display:inline-block;border:1px solid currentColor;padding:var(--s2) var(--s4);
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.16em;
+  text-transform:uppercase;cursor:pointer;background:none;color:inherit;
+  transition:background-color .35s,color .35s}
+.cta:hover{background:var(--chalk);color:var(--table)}
+@media(prefers-reduced-motion:reduce){.rule{animation:none}}
+</style>
+</head>
+<body>
+<div class="box">
+  <span class="mark" aria-hidden="true"></span>
+  <p class="label" id="tag">The full page</p>
+  <h1 id="line">Still on the cutting table.</h1>
+  <div class="rule"></div>
+  <p id="sub">This part of the site is being cut and sewn. Three weeks to a first
+  fitting; a little less to a first page.</p>
+  <div class="ctas">
+    <button class="cta" type="button" onclick="history.length>1?history.back():location.href='index.html'">← Back</button>
+    <a class="cta" href="index.html">Home</a>
+  </div>
+</div>
+<script src="assets/catalogue.js?v=1786616451"></script>
+<script>
+(function(){
+  /* if a garment sent you here, greet it by name */
+  try{
+    var slug=new URLSearchParams(location.search).get('p');
+    if(!slug)return;
+    var hit=(window.IAR_CATALOGUE||[]).filter(function(x){return x.slug===slug;})[0];
+    if(!hit)return;
+    document.getElementById('tag').innerHTML=
+      '<span class="sw" style="background:'+hit.hex+'"></span>'+hit.name+' · '+
+      '₹'+String(hit.price).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+    document.getElementById('line').textContent='Its page is still on the cutting table.';
+    document.title=hit.name+' — on the cutting table';
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

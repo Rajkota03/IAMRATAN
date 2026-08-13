@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en" class="js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>I Am Ratan — 2050</title>
+<meta name="description" content="All twenty-five, always visible. Language is a lens, not a door.">
+<meta name="theme-color" content="#07070A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500&family=Newsreader:opsz,wght@6..72,200;6..72,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bone:#EDE9E0; --black:#07070A; --navy:#1C254A; --claret:#6B2F3A;
+  --serif:'Newsreader',Georgia,serif;
+  --sans:'Archivo',system-ui,sans-serif;
+  --gut:clamp(1rem,3vw,2.75rem);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --swift:cubic-bezier(.22,1,.36,1);
+  --tone:#1C254A;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;min-height:100svh;background:var(--black);color:var(--bone);
+  font-family:var(--sans);font-weight:300;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.fig{font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.label{font-size:.625rem;letter-spacing:.24em;text-transform:uppercase;font-weight:500}
+.dim{opacity:.5}
+
+/* the room's colour follows whatever you are looking at */
+#wash{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120% 85% at 50% 0%,
+    color-mix(in oklab,var(--tone) 42%,transparent) 0%,transparent 62%);
+  transition:background 1.5s var(--ease);
+}
+
+.shell{position:relative;z-index:1}
+
+/* ---------- masthead: the store's inventory is stated immediately ---------- */
+.top{
+  position:sticky;top:0;z-index:30;background:rgba(7,7,10,.82);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(237,233,224,.12);
+}
+.top-in{
+  display:grid;gap:var(--s3);padding:var(--s3) var(--gut);
+  grid-template-columns:1fr;align-items:center;
+}
+@media(min-width:900px){
+  .top-in{grid-template-columns:auto 1fr auto;gap:var(--s4)}
+}
+.brand{display:flex;align-items:center;gap:var(--s2)}
+.mark{
+  width:38px;aspect-ratio:716/478;display:block;background:currentColor;flex:none;
+  -webkit-mask:url('assets/mark-badger.png') no-repeat center/contain;
+  mask:url('assets/mark-badger.png') no-repeat center/contain;
+}
+.count{white-space:nowrap}
+.count b{font-family:var(--serif);font-weight:300;font-size:1.05rem}
+
+/* the lens */
+.lens{display:flex;align-items:center;gap:var(--s2);
+  border-bottom:1px solid rgba(237,233,224,.24);padding-bottom:var(--s0)}
+.lens svg{width:14px;height:14px;flex:none;opacity:.5}
+.lens input{
+  flex:1;background:none;border:0;outline:none;padding:var(--s0) 0;
+  font-size:.95rem;min-width:0;
+}
+.lens input::placeholder{color:rgba(237,233,224,.4)}
+.lens button{background:none;border:0;cursor:pointer;opacity:.5;padding:var(--s0)}
+.lens button:hover{opacity:1}
+
+.filters{display:flex;gap:var(--s1);flex-wrap:wrap}
+.filters button{
+  background:none;border:1px solid rgba(237,233,224,.2);border-radius:2rem;
+  padding:var(--s0) var(--s2);font-size:.6875rem;letter-spacing:.14em;text-transform:uppercase;
+  cursor:pointer;opacity:.62;transition:opacity .3s,border-color .3s,background-color .3s;
+}
+.filters button:hover{opacity:1}
+.filters button[aria-pressed="true"]{
+  opacity:1;border-color:var(--bone);background:rgba(237,233,224,.1);
+}
+
+/* ---------- the field: all twenty-five, always ---------- */
+.field{
+  padding:var(--sy) var(--gut) var(--sz);
+  display:grid;gap:var(--s3);
+  grid-template-columns:repeat(2,1fr);
+  max-width:1800px;margin-inline:auto;
+}
+@media(min-width:560px){.field{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.field{grid-template-columns:repeat(5,1fr)}}
+
+.tile{
+  position:relative;border:0;padding:0;background:none;cursor:pointer;
+  aspect-ratio:3/4;overflow:hidden;display:block;text-align:left;
+  transition:opacity .55s var(--ease),transform .55s var(--ease),filter .55s var(--ease);
+  animation:float var(--dur,9s) ease-in-out var(--del,0s) infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.tile canvas,.tile svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.tile .meta{
+  position:absolute;inset:auto 0 0 0;padding:var(--s1) var(--s2);z-index:2;
+  display:grid;gap:var(--s0);
+  background:linear-gradient(to top,rgba(7,7,10,.78),transparent);
+  opacity:0;transform:translateY(6px);
+  transition:opacity .4s var(--ease),transform .4s var(--ease);
+}
+.tile:hover .meta,.tile:focus-visible .meta{opacity:1;transform:none}
+.tile .nm{font-family:var(--serif);font-size:.9rem;line-height:1.15}
+.tile .pr{font-size:.6875rem;opacity:.75}
+.tile .no{
+  position:absolute;top:.5rem;left:.6rem;z-index:2;font-size:.5625rem;
+  letter-spacing:.16em;font-variant-numeric:tabular-nums;opacity:.75;
+}
+.tile:hover,.tile:focus-visible{transform:scale(1.03);z-index:3}
+/* a lens miss recedes — it never disappears, so the store stays whole */
+.tile.miss{opacity:.16;filter:saturate(.3)}
+.tile.miss:hover{opacity:.5}
+
+.empty{
+  grid-column:1/-1;padding:var(--s5) 0;font-family:var(--serif);font-size:1.1rem;opacity:.6;
+}
+
+/* ---------- the record: one garment, filling the room ---------- */
+.record{
+  position:fixed;inset:0;z-index:50;display:none;
+  background:var(--rbg,#111);
+  opacity:0;transition:opacity .5s var(--ease);
+}
+.record.open{display:block}
+.record.shown{opacity:1}
+.record-in{
+  height:100%;display:grid;grid-template-rows:auto 1fr auto;
+  padding:var(--gut);gap:var(--s3);max-width:1800px;margin-inline:auto;
+}
+.record-bar{display:flex;justify-content:space-between;align-items:center;gap:var(--s3)}
+.record-bar button{
+  background:none;border:0;cursor:pointer;padding:var(--s1) var(--s0);
+  font-size:.625rem;letter-spacing:.24em;text-transform:uppercase;font-weight:500;
+}
+.record-bar button:hover{text-decoration:underline;text-underline-offset:5px}
+.record-nav{display:flex;gap:var(--s4)}
+.record-body{
+  display:grid;grid-template-columns:1fr;gap:var(--s4);align-items:center;
+  overflow-y:auto;min-height:0;
+}
+@media(min-width:900px){
+  .record-body{grid-template-columns:1fr 1fr;gap:var(--sy)}
+}
+.record-rig{position:relative;justify-self:center;width:min(100%,26rem)}
+.record-rig canvas{width:100%;height:auto;display:block;
+  filter:drop-shadow(0 2.5rem 3.5rem rgba(0,0,0,.55))}
+.record-rig .detail{position:absolute;inset:0;pointer-events:none}
+.record-no{font-family:var(--serif);font-weight:200;font-variation-settings:'opsz' 72;
+  font-size:clamp(2.5rem,5vw,4rem);line-height:.9;opacity:.42;margin:0}
+.record-name{font-family:var(--serif);font-weight:300;font-variation-settings:'opsz' 48;
+  font-size:clamp(2rem,4vw,3.2rem);line-height:1;letter-spacing:-.03em;margin:var(--s0) 0 var(--s3)}
+.record dl{display:grid;grid-template-columns:auto 1fr;gap:var(--s1) var(--s4);margin:0;max-width:30rem}
+.record dt{font-size:.5625rem;letter-spacing:.2em;text-transform:uppercase;opacity:.55}
+.record dd{margin:0;font-size:.875rem}
+.record .price{font-family:var(--serif);font-size:clamp(1.7rem,3vw,2.3rem);
+  display:block;margin-top:var(--s4)}
+.sizes{display:flex;gap:var(--s0);flex-wrap:wrap;margin-top:var(--s3)}
+.sizes button{
+  background:none;border:1px solid currentColor;border-radius:0;
+  width:2.4rem;height:2.4rem;font-size:.75rem;cursor:pointer;opacity:.5;
+  font-variant-numeric:tabular-nums;transition:opacity .25s,background-color .25s;
+}
+.sizes button:hover{opacity:1}
+.sizes button[aria-pressed="true"]{opacity:1;background:currentColor}
+.sizes button[aria-pressed="true"] span{mix-blend-mode:difference;color:#fff}
+.cta{
+  margin-top:var(--s4);display:inline-block;border:1px solid currentColor;
+  padding:var(--s2) var(--s5);font-size:.6875rem;letter-spacing:.24em;text-transform:uppercase;
+  font-weight:500;cursor:pointer;background:none;
+  transition:background-color .4s var(--ease),color .4s var(--ease);
+}
+.cta:hover{background:currentColor}
+.cta:hover span{mix-blend-mode:difference;color:#fff}
+
+/* the tile flies into the record rather than the page cutting */
+.ghost{
+  position:fixed;z-index:60;pointer-events:none;overflow:hidden;
+  transition:transform .62s var(--swift),opacity .62s var(--swift);
+  transform-origin:top left;
+}
+.ghost svg,.ghost canvas{width:100%;height:100%;display:block}
+
+.foot{
+  border-top:1px solid rgba(237,233,224,.12);
+  padding:var(--s5) var(--gut);display:flex;flex-wrap:wrap;gap:var(--s3) var(--s5);
+  justify-content:space-between;
+}
+.foot a{color:inherit;text-decoration:none}
+.foot a:hover{text-decoration:underline;text-underline-offset:4px}
+
+.js .tile{opacity:0}
+.js .tile.in{opacity:1}
+.js .tile.in.miss{opacity:.16}
+
+@media(prefers-reduced-motion:reduce){
+  .tile{animation:none}
+  .tile,.ghost,.record,#wash{transition-duration:.01ms!important}
+  .js .tile{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<div id="wash"></div>
+
+<div class="shell">
+
+  <header class="top">
+    <div class="top-in">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"></span>
+        <span class="count label"><b class="fig" id="cShown">25</b> of
+          <span class="fig">25</span> in the house</span>
+      </div>
+
+      <div class="lens">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>
+        </svg>
+        <input id="q" type="search" autocomplete="off" spellcheck="false"
+          placeholder="Say what you need — “something for an evening”, “houndstooth”, “under 3,500”"
+          aria-label="Filter the range">
+        <button type="button" id="clear" hidden aria-label="Clear">✕</button>
+      </div>
+
+      <div class="filters" id="filters" role="group" aria-label="Collections"></div>
+    </div>
+  </header>
+
+  <main class="field" id="field"></main>
+
+  <footer class="foot label dim">
+    <span>Artisan Apparels · Hyderabad · <span class="fig">₹2,999–₹6,999</span> · sizes 39–46</span>
+    <a href="index.html">← The house today</a>
+  </footer>
+
+</div>
+
+<section class="record" id="record" role="dialog" aria-modal="true" aria-label="Shirt record">
+  <div class="record-in">
+    <div class="record-bar">
+      <span class="label" id="rColl"></span>
+      <div class="record-nav">
+        <button type="button" id="rPrev">← Previous</button>
+        <button type="button" id="rNext">Next →</button>
+        <button type="button" id="rClose">Close</button>
+      </div>
+    </div>
+    <div class="record-body">
+      <div>
+        <p class="record-no fig" id="rNo"></p>
+        <h2 class="record-name" id="rName"></h2>
+        <dl>
+          <dt>Cloth</dt><dd id="rCloth"></dd>
+          <dt>Weave</dt><dd class="fig" id="rSpec"></dd>
+          <dt>Colour</dt><dd class="fig" id="rHex"></dd>
+          <dt>Collection</dt><dd id="rColl2"></dd>
+          <dt>Cut</dt><dd class="fig">30 measurements · 3 weeks</dd>
+        </dl>
+        <span class="price fig" id="rPrice"></span>
+        <div class="sizes" id="rSizes"></div>
+        <button class="cta" type="button"><span>Reserve this cloth</span></button>
+      </div>
+      <div class="record-rig">
+        <canvas id="rCanvas" aria-label="The cloth, rendered live"></canvas>
+        <div class="detail" id="rDetail"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="assets/brand.js?v=1786616451"></script>
+<script src="assets/garment.js?v=1786616451"></script>
+<script src="assets/cloth.js?v=1786616451"></script>
+<script>
+(function(){
+  'use strict';
+  var S=IAR.SHIRTS;
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* ---------------- the field: every shirt, on screen, always ---------------- */
+  var field=document.getElementById('field');
+  field.innerHTML=S.map(function(s,i){
+    return '<button class="tile" type="button" data-i="'+i+'" '+
+      'style="color:'+IAR.inkOn(s.hex)+';--dur:'+(7+(i%5)*1.3).toFixed(1)+'s;'+
+      '--del:'+(i*0.13).toFixed(2)+'s" '+
+      'aria-label="'+s.name+', '+s.cloth+', '+IAR.rupees(s.price)+'">'+
+      IAR.swatch(s)+
+      '<span class="no">'+IAR.pad(s.n)+'</span>'+
+      '<span class="meta"><span class="nm">'+s.name+'</span>'+
+      '<span class="pr fig">'+IAR.rupees(s.price)+'</span></span>'+
+      '</button>';
+  }).join('');
+  var tiles=[].slice.call(field.children);
+
+  /* staggered arrival, then they simply exist */
+  tiles.forEach(function(t,i){ setTimeout(function(){ t.classList.add('in'); }, reduce?0:60+i*34); });
+
+  /* ---------------- collections ---------------- */
+  var coll='All';
+  var fbox=document.getElementById('filters');
+  fbox.innerHTML=['All'].concat(IAR.COLLECTIONS.map(function(c){return c.key;}))
+    .map(function(k){
+      var n=k==='All'?25:IAR.byCollection(k).length;
+      return '<button type="button" data-k="'+k+'" aria-pressed="'+(k==='All')+'">'+
+        k+' <span class="fig dim">'+n+'</span></button>';
+    }).join('');
+  fbox.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    coll=b.dataset.k;
+    [].forEach.call(fbox.children,function(x){ x.setAttribute('aria-pressed',String(x===b)); });
+    apply();
+  });
+
+  /* ---------------- the lens ----------------
+     It dims what does not match. It never removes anything, because a shop you
+     cannot see the whole of is not a shop. */
+  var HUE={
+    blue:['Azur'],navy:['Midnight Navy','Harbour Blue','Indigo Oak'],
+    black:['Obsidian','Onyx Hound','Phantom Stripe','Midnight Speckle'],
+    white:['Blanc Celestia','Blanc Dewdrop','Blanc Canvas','Moonlight Speckle'],
+    grey:['Storm Grey','Pebble Mist','Aegean Haze'],gray:['Storm Grey','Pebble Mist'],
+    brown:['Cognac Drift','Warm Dune','Dune Sand'],tan:['Dune Sand','Warm Dune'],
+    green:['Forest Weave'],red:['Claret Hound'],claret:['Claret Hound'],
+    burgundy:['Claret Hound'],cognac:['Cognac Drift'],sand:['Dune Sand','Warm Dune'],
+    cream:['Ivory Grid','Moonlight Speckle'],ivory:['Ivory Grid']
+  };
+  var WV={stripe:'stripe',striped:'stripe',stripes:'stripe',check:'grid',checked:'grid',
+    checks:'grid',grid:'grid',houndstooth:'hound',hound:'hound',herringbone:'weave',
+    textured:'weave',plain:'solid',solid:'solid',speckle:'speckle',speckled:'speckle',
+    oxford:'solid',poplin:'solid',twill:'solid',chambray:'solid',linen:'solid'};
+
+  function matches(s,q){
+    if(!q) return true;
+    var hit=false;
+    if(s.name.toLowerCase().indexOf(q)>-1) hit=true;
+    if(s.cloth.toLowerCase().indexOf(q)>-1) hit=true;
+    if(s.coll.toLowerCase()===q) hit=true;
+    Object.keys(HUE).forEach(function(w){
+      if(q.indexOf(w)>-1 && (HUE[w].indexOf(s.name)>-1||HUE[w].indexOf(s.coll)>-1)) hit=true;
+    });
+    Object.keys(WV).forEach(function(w){
+      if(q.indexOf(w)>-1 && (WV[w]===s.weave||s.cloth.toLowerCase().indexOf(w)>-1)) hit=true;
+    });
+    if(/\b(evening|formal|black.?tie|wedding|dinner|night)\b/.test(q) && IAR.luminance(s.hex)<0.13) hit=true;
+    if(/\b(summer|hot|light|day)\b/.test(q) && IAR.luminance(s.hex)>0.5) hit=true;
+    if(/\b(office|work|meeting|business)\b/.test(q) && s.coll==='Azur') hit=true;
+    /* "under 3500", "below 4,000" */
+    var m=q.match(/(?:under|below|less than|<)\s*₹?\s*([\d,]+)/);
+    if(m && s.price<=parseInt(m[1].replace(/,/g,''),10)) hit=true;
+    var m2=q.match(/(?:over|above|more than|>)\s*₹?\s*([\d,]+)/);
+    if(m2 && s.price>=parseInt(m2[1].replace(/,/g,''),10)) hit=true;
+    return hit;
+  }
+
+  var q='', shown=document.getElementById('cShown');
+  function apply(){
+    var n=0;
+    tiles.forEach(function(t,i){
+      var s=S[i];
+      var ok=(coll==='All'||s.coll===coll) && matches(s,q);
+      t.classList.toggle('miss',!ok);
+      if(ok) n++;
+    });
+    shown.textContent=n;
+    var e=document.getElementById('emptyNote');
+    if(e) e.remove();
+    if(n===0){
+      var d=document.createElement('p');
+      d.className='empty'; d.id='emptyNote';
+      d.textContent='Nothing in the house answers to that — everything is still here.';
+      field.appendChild(d);
+    }
+  }
+
+  var qi=document.getElementById('q'), clear=document.getElementById('clear'), deb;
+  qi.addEventListener('input',function(){
+    clear.hidden=!qi.value;
+    clearTimeout(deb);
+    deb=setTimeout(function(){ q=qi.value.trim().toLowerCase(); apply(); },200);
+  });
+  clear.addEventListener('click',function(){ qi.value=''; q=''; clear.hidden=true; apply(); qi.focus(); });
+
+  /* ---------------- the record ---------------- */
+  var rec=document.getElementById('record'), cur=0, lastTile=null, size=42;
+  var cloth=new IAR.Cloth(document.getElementById('rCanvas'),{w:reduce?190:225});
+  var running=false;
+  function loop(){ if(!running) return; cloth.render(); requestAnimationFrame(loop); }
+
+  function fill(i){
+    cur=(i+S.length)%S.length;
+    var s=S[cur], ink=IAR.inkOn(s.ground);
+    rec.style.setProperty('--rbg',s.ground);
+    rec.style.color=ink;
+    document.documentElement.style.setProperty('--tone',s.hex);
+    document.getElementById('rColl').textContent=s.coll+' · '+IAR.pad(s.n)+' of 25';
+    document.getElementById('rNo').textContent=IAR.pad(s.n);
+    document.getElementById('rName').textContent=s.name;
+    document.getElementById('rCloth').textContent=s.cloth;
+    document.getElementById('rSpec').textContent=s.spec;
+    document.getElementById('rHex').textContent=s.hex;
+    document.getElementById('rColl2').textContent=s.coll;
+    document.getElementById('rPrice').textContent=IAR.rupees(s.price);
+    document.getElementById('rSizes').innerHTML=IAR.SIZES.map(function(z){
+      return '<button type="button" data-z="'+z+'" aria-pressed="'+(z===size)+'">'+
+        '<span class="fig">'+z+'</span></button>';
+    }).join('');
+    cloth.set(s);
+    document.getElementById('rDetail').innerHTML=IAR.garment(s,{detail:true});
+  }
+
+  document.getElementById('rSizes').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    size=+b.dataset.z;
+    [].forEach.call(this.children,function(x){ x.setAttribute('aria-pressed',String(x===b)); });
+  });
+
+  /* the tile flies to the record so you never lose your place in the field */
+  function open(i,tile){
+    lastTile=tile;
+    fill(i);
+    rec.classList.add('open');
+    running=true; loop();
+    if(!reduce && tile){
+      var r=tile.getBoundingClientRect();
+      var g=document.createElement('div');
+      g.className='ghost';
+      g.style.cssText='left:0;top:0;width:'+r.width+'px;height:'+r.height+'px;'+
+        'transform:translate('+r.left+'px,'+r.top+'px)';
+      g.innerHTML=IAR.swatch(S[i]);
+      document.body.appendChild(g);
+      requestAnimationFrame(function(){
+        g.style.transform='translate('+(innerWidth/2-r.width*2.6)+'px,'+
+          (innerHeight/2-r.height*2.6)+'px) scale(5.2)';
+        g.style.opacity='0';
+      });
+      setTimeout(function(){ g.remove(); },660);
+    }
+    requestAnimationFrame(function(){ rec.classList.add('shown'); });
+    document.getElementById('rClose').focus();
+    document.body.style.overflow='hidden';
+  }
+  function close(){
+    rec.classList.remove('shown');
+    setTimeout(function(){ rec.classList.remove('open'); running=false; },500);
+    document.body.style.overflow='';
+    document.documentElement.style.setProperty('--tone','#1C254A');
+    if(lastTile) lastTile.focus();
+  }
+
+  field.addEventListener('click',function(e){
+    var t=e.target.closest('.tile'); if(!t) return;
+    open(+t.dataset.i,t);
+  });
+  document.getElementById('rNext').addEventListener('click',function(){fill(cur+1);});
+  document.getElementById('rPrev').addEventListener('click',function(){fill(cur-1);});
+  document.getElementById('rClose').addEventListener('click',close);
+  addEventListener('keydown',function(e){
+    if(!rec.classList.contains('open')) return;
+    if(e.key==='Escape'){e.preventDefault();close();}
+    if(e.key==='ArrowRight'){e.preventDefault();fill(cur+1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();fill(cur-1);}
+  });
+
+  /* the light in the record follows the pointer, as in 2040 */
+  if(!reduce){
+    rec.addEventListener('pointermove',function(e){
+      var r=document.getElementById('rCanvas').getBoundingClientRect();
+      cloth.aim((e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height);
+    },{passive:true});
+  }
+
+  apply();
+})();
+</script>
+</body>
+</html>

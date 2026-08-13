@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en" class="js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>I Am Ratan — Le Vestiaire</title>
+<meta name="description" content="Twenty-five shirts, catalogued. Cloth, weave, size run and price for each.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600&family=Newsreader:opsz,wght@6..72,200;6..72,300;6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1C254A; --blue:#B7CAEE; --bone:#EDE9E0;
+  --claret:#6B2F3A; --nacre:#E2DBE1; --black:#0C0B0A;
+  --rule:color-mix(in oklab,var(--navy) 20%,transparent);
+  --rule-soft:color-mix(in oklab,var(--navy) 11%,transparent);
+  --serif:'Newsreader',Georgia,serif;
+  --sans:'Archivo',system-ui,-apple-system,sans-serif;
+  --gut:clamp(1.25rem,3.4vw,3.5rem);
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bone);color:var(--navy);
+  font-family:var(--sans);font-size:1rem;line-height:1.65;font-weight:300;
+  -webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img,svg{max-width:100%}
+:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
+
+.fig{font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.micro{font-size:.6875rem;letter-spacing:.19em;text-transform:uppercase;font-weight:500}
+.dim{color:color-mix(in oklab,var(--navy) 62%,transparent)}
+.d1{font-family:var(--serif);font-weight:200;font-variation-settings:'opsz' 72;
+  font-size:clamp(3rem,8.5vw,5.75rem);line-height:.95;letter-spacing:-.035em;margin:0;
+  text-wrap:balance}
+.d2{font-family:var(--serif);font-weight:300;font-variation-settings:'opsz' 40;
+  font-size:clamp(1.9rem,4vw,3rem);line-height:1.06;letter-spacing:-.025em;margin:0;
+  text-wrap:balance}
+.d3{font-family:var(--serif);font-weight:300;font-variation-settings:'opsz' 24;
+  font-size:1.4rem;line-height:1.25;letter-spacing:-.015em;margin:0}
+p{margin:0 0 1em;max-width:66ch}
+
+/* ---------- masthead ---------- */
+header.top{position:sticky;top:0;z-index:40;background:var(--bone);
+  border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:var(--s3);padding:var(--s2) var(--gut)}
+header.top .mark{width:52px;display:block;flex:none}
+header.top .mark svg{display:block;width:100%;height:auto;fill:var(--navy)}
+header.top nav{display:flex;gap:var(--s4)}
+header.top nav a:hover{text-decoration:underline;text-underline-offset:4px}
+@media(max-width:760px){header.top nav{display:none}}
+
+.masthead{padding:var(--sz) var(--gut) var(--sy);
+  display:grid;gap:var(--s5);grid-template-columns:1fr;max-width:1680px;margin-inline:auto}
+@media(min-width:960px){.masthead{grid-template-columns:1.35fr .65fr;align-items:end;gap:var(--gut)}}
+.masthead-meta{display:grid;gap:var(--s1);align-content:end}
+.masthead-meta div{display:flex;justify-content:space-between;gap:var(--s3);
+  border-top:1px solid var(--rule-soft);padding-top:var(--s1)}
+
+/* ---------- le vestiaire ---------- */
+.vitrine{border-top:1px solid var(--rule)}
+.vit-stage{display:grid;grid-template-columns:1fr}
+@media(min-width:960px){.vit-stage{grid-template-columns:minmax(280px,30%) 1fr}}
+
+.vit-rec{padding:var(--s5) var(--gut) var(--s5);border-bottom:1px solid var(--rule)}
+@media(min-width:960px){
+  .vit-rec{border-bottom:none;border-right:1px solid var(--rule);
+    display:flex;flex-direction:column;justify-content:space-between;height:100%}
+}
+.rec-no{font-family:var(--serif);font-weight:200;font-variation-settings:'opsz' 72;
+  font-size:clamp(3.5rem,7vw,5.5rem);line-height:.9;letter-spacing:-.04em}
+.rec-name{margin:var(--s0) 0 0}
+.rec-tbl{width:100%;border-collapse:collapse;margin-top:var(--s4)}
+.rec-tbl th,.rec-tbl td{text-align:left;padding:var(--s1) 0;border-top:1px solid var(--rule-soft);
+  font-weight:400;font-size:.875rem;vertical-align:baseline}
+.rec-tbl th{font-size:.625rem;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:500;color:color-mix(in oklab,var(--navy) 58%,transparent);width:38%}
+.rec-price{font-family:var(--serif);font-size:2rem;font-weight:300;
+  font-variation-settings:'opsz' 32;margin-top:var(--s4);display:block}
+.rec-swatch{width:100%;height:38px;margin-top:var(--s3);position:relative;
+  border:1px solid var(--rule-soft)}
+.rec-swatch svg{position:absolute;inset:0;width:100%;height:100%}
+.rec-fade{transition:opacity .32s var(--ease)}
+.rec-fade.out{opacity:0}
+
+/* the track */
+.vit-view{overflow:hidden;position:relative}
+.vit-track{display:flex;will-change:transform}
+.cell{flex:0 0 auto;width:clamp(200px,25vw,360px);
+  aspect-ratio:3/4;position:relative;border-right:1px solid rgba(0,0,0,.10);
+  display:grid;place-items:center;padding:6% 8%;cursor:pointer}
+.cell .plate{position:absolute;inset:0;background:transparent}
+.cell .tag{position:absolute;left:.85rem;top:.85rem;font-size:.625rem;letter-spacing:.16em;
+  font-variant-numeric:tabular-nums;font-weight:500;z-index:2;opacity:.75}
+.cell .nm{position:absolute;left:.85rem;bottom:.85rem;right:.85rem;z-index:2;
+  font-size:.75rem;letter-spacing:.02em;opacity:0;transform:translateY(6px);
+  transition:opacity .4s var(--ease),transform .4s var(--ease)}
+.cell:hover .nm,.cell:focus-visible .nm,.cell.on .nm{opacity:1;transform:none}
+.cell::after{content:'';position:absolute;inset:0;background:var(--navy);opacity:.16;
+  transition:opacity .5s var(--ease);pointer-events:none}
+.cell.on::after,.cell:hover::after{opacity:0}
+
+/* pinned mode: the cabinet is dragged past a fixed record */
+.vitrine.pinned .vit-wrap{position:relative}
+.vitrine.pinned .vit-stage{position:sticky;top:0;height:100svh;align-items:stretch}
+.vitrine.pinned .vit-view{display:flex;align-items:center}
+/* Size is written inline per cell by JS, in real pixels, so the scroll mapping
+   and the rendered cell can never disagree about how wide a cell is. */
+.vitrine.pinned .cell{aspect-ratio:auto}
+
+.vit-prog{height:2px;background:var(--rule-soft);position:relative;overflow:hidden}
+.vit-prog i{position:absolute;inset:0 auto 0 0;background:var(--navy);width:0;display:block}
+
+/* fallback mode: native horizontal scroller */
+.vitrine:not(.pinned) .vit-view{overflow-x:auto;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch}
+.vitrine:not(.pinned) .cell{scroll-snap-align:start}
+.vitrine:not(.pinned) .cell::after{opacity:0}
+
+/* ---------- the house ---------- */
+.house{padding:var(--sz) var(--gut);border-top:1px solid var(--rule);
+  display:grid;gap:var(--s5);grid-template-columns:1fr;max-width:1680px;margin-inline:auto}
+@media(min-width:960px){.house{grid-template-columns:.9fr 1.1fr;gap:var(--gut)}}
+.house .plate{aspect-ratio:1/1;background:var(--navy)}
+.house-body{max-width:52ch}
+
+/* ---------- commission ---------- */
+.buy{border-top:1px solid var(--rule);padding:var(--sz) var(--gut);
+  max-width:1680px;margin-inline:auto}
+.buy-tbl{width:100%;border-collapse:collapse;margin-top:var(--s5)}
+.buy-tbl th,.buy-tbl td{text-align:left;padding:var(--s4) var(--s3) var(--s4) 0;
+  border-top:1px solid var(--rule);vertical-align:top;font-weight:400}
+.buy-tbl thead th{font-size:.625rem;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:500;padding-bottom:var(--s2);color:color-mix(in oklab,var(--navy) 58%,transparent)}
+.buy-tbl td:first-child{width:22%}
+.buy-tbl .nm{font-family:var(--serif);font-size:1.3rem;font-variation-settings:'opsz' 24}
+.buy-tbl td p{font-size:.9rem;margin:0;max-width:52ch;
+  color:color-mix(in oklab,var(--navy) 78%,transparent)}
+.buy-tbl .amt{text-align:right;white-space:nowrap;font-family:var(--serif);font-size:1.15rem}
+.buy-tbl tr.accent .amt{color:var(--claret)}
+@media(max-width:760px){
+  .buy-tbl,.buy-tbl tbody,.buy-tbl tr,.buy-tbl td{display:block;width:auto}
+  .buy-tbl thead{display:none}
+  .buy-tbl td{padding:var(--s0) 0;border-top:none}
+  .buy-tbl tr{border-top:1px solid var(--rule);padding:var(--s3) 0}
+  .buy-tbl .amt{text-align:left}
+}
+
+/* ---------- the catalogue ---------- */
+.cat{border-top:1px solid var(--rule);padding:var(--sz) var(--gut) 0;
+  max-width:1680px;margin-inline:auto}
+/* The catalogue keeps its columns on narrow screens by scrolling inside itself.
+   Letting it push the page wide would put a horizontal scrollbar on the body. */
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:var(--s5)}
+.cat-tbl{width:100%;min-width:22rem;border-collapse:collapse}
+.cat-tbl th{font-size:.625rem;letter-spacing:.18em;text-transform:uppercase;font-weight:500;
+  text-align:left;padding-bottom:var(--s2);color:color-mix(in oklab,var(--navy) 58%,transparent);
+  border-bottom:1px solid var(--rule)}
+.cat-tbl td{padding:var(--s2) var(--s2) var(--s2) 0;border-bottom:1px solid var(--rule-soft);
+  font-size:.875rem;vertical-align:middle}
+.cat-tbl tbody tr{transition:background-color .3s}
+.cat-tbl tbody tr:hover{background:color-mix(in oklab,var(--navy) 5%,transparent)}
+.cat-tbl .sw{width:46px}
+.cat-tbl .sw span{display:block;width:38px;height:26px;position:relative;
+  border:1px solid var(--rule-soft)}
+.cat-tbl .sw svg{position:absolute;inset:0;width:100%;height:100%}
+.cat-tbl .nm{font-family:var(--serif);font-size:1.05rem;white-space:nowrap}
+.cat-tbl .amt{text-align:right;white-space:nowrap}
+.cat-tbl .hexc{font-size:.75rem;letter-spacing:.06em}
+@media(max-width:760px){
+  .cat-tbl .cl,.cat-tbl .sp,.cat-tbl .hexc{display:none}
+}
+
+/* ---------- footer ---------- */
+footer{margin-top:var(--sz);background:var(--navy);color:var(--bone);
+  padding:var(--sz) var(--gut) var(--s5)}
+.foot{max-width:1680px;margin-inline:auto;display:grid;gap:var(--s5);grid-template-columns:1fr}
+@media(min-width:820px){.foot{grid-template-columns:1.5fr 1fr 1fr}}
+footer .mark{width:86px;display:block;margin-bottom:var(--s3)}
+footer .mark svg{width:100%;height:auto;fill:var(--bone)}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:var(--s1)}
+footer a:hover{text-decoration:underline;text-underline-offset:4px}
+.colophon{max-width:1680px;margin:var(--s6) auto 0;padding-top:var(--s3);
+  border-top:1px solid color-mix(in oklab,var(--bone) 22%,transparent);
+  display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);justify-content:space-between;opacity:.62}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .rec-fade,.cell .nm,.cell::after{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="mark" href="#top" aria-label="I Am Ratan — home"></a>
+  <nav class="micro">
+    <a href="#vestiaire">Le vestiaire</a>
+    <a href="#house">The house</a>
+    <a href="#buy">Commission</a>
+    <a href="#catalogue">Catalogue</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <span class="micro dim fig">25 shirts · 39–46</span>
+</header>
+
+<main id="top">
+
+  <section class="masthead">
+    <div>
+      <h1 class="d1">Twenty-five shirts,<br>catalogued.</h1>
+      <p style="margin-top:var(--s4);max-width:44ch;font-size:1.0625rem">
+        Cloth, weave, size run and price for each. Nothing is described as
+        exceptional; the measurements are on the page instead.</p>
+    </div>
+    <div class="masthead-meta micro">
+      <div><span class="dim">Collections</span><span class="fig">3</span></div>
+      <div><span class="dim">Entry</span><span class="fig">₹2,999</span></div>
+      <div><span class="dim">Top of range</span><span class="fig">₹6,999</span></div>
+      <div><span class="dim">Catalogue average</span><span class="fig">₹3,991</span></div>
+      <div><span class="dim">Measurements</span><span class="fig">30</span></div>
+      <div><span class="dim">To first fitting</span><span class="fig">3 weeks</span></div>
+    </div>
+  </section>
+
+  <section class="vitrine" id="vestiaire">
+    <div class="vit-prog"><i id="prog"></i></div>
+    <div class="vit-wrap" id="vitWrap">
+      <div class="vit-stage">
+        <aside class="vit-rec" id="rec"></aside>
+        <div class="vit-view" id="view">
+          <div class="vit-track" id="track"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="house" id="house">
+    <figure class="plate" data-plate="editorial-02" data-shirt="16"
+      data-alt="Dune Sand linen-cotton against a saturated ground, one shaft of light"></figure>
+    <div class="house-body">
+      <h2 class="d2">Made for houses that never named us.</h2>
+      <p style="margin-top:var(--s4)">For over two decades these hands shaped luxury the world
+      admired. The garments were sold and worn under other names. Ours was not among them.</p>
+      <p>A father and daughter's promise ended that. The same cutting room, the same thirty
+      measurements, the same three weeks — a different label.</p>
+      <p class="d3" style="margin-top:var(--s5);max-width:26ch">Luxury is subtle, not loud.
+      Strength is calm, not performative. Legacy is worn, not announced.</p>
+    </div>
+  </section>
+
+  <section class="buy" id="buy">
+    <h2 class="d2">Three ways to buy.</h2>
+    <p style="margin-top:var(--s3)">Ready to order and bespoke exist today. The middle path is a
+    commission — one payment, nothing recurring, nothing expiring.</p>
+    <table class="buy-tbl">
+      <thead><tr><th>Route</th><th>What it is</th><th style="text-align:right">From</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="nm">Ready to order</td>
+          <td><p>One of the twenty-five, in stock and finished. Sizes 39 to 46,
+            shipped within three days.</p></td>
+          <td class="amt fig">₹2,999</td>
+        </tr>
+        <tr class="accent">
+          <td class="nm">Commission</td>
+          <td><p>A set of four or more. A pattern only amortises across a set, which is why
+            Turnbull &amp; Asser, Emma Willis and Hilditch &amp; Key have all asked for four
+            since the nineteenth century. One shirt is cut and sent first; the rest follow
+            only once it fits.</p></td>
+          <td class="amt fig">30% across the set</td>
+        </tr>
+        <tr>
+          <td class="nm">Bespoke</td>
+          <td><p>Thirty measurements, a pattern cut for one person and kept.
+            Three weeks to the first fitting.</p></td>
+          <td class="amt">By appointment</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="cat" id="catalogue">
+    <h2 class="d2">The range is the identity.</h2>
+    <p style="margin-top:var(--s3)">No competitor can copy the palette without copying the
+    catalogue.</p>
+    <div class="tscroll">
+    <table class="cat-tbl">
+      <thead><tr>
+        <th></th><th>№</th><th>Colour</th><th class="hexc">Hex</th>
+        <th class="cl">Cloth</th><th class="sp">Weave</th><th>Collection</th>
+        <th style="text-align:right">Price</th>
+      </tr></thead>
+      <tbody id="catBody"></tbody>
+    </table>
+    </div>
+  </section>
+
+</main>
+
+<footer id="contact">
+  <div class="foot">
+    <div>
+      <span class="mark" aria-hidden="true"></span>
+      <p class="d3" style="max-width:24ch">Say the specific thing, then stop.</p>
+    </div>
+    <div>
+      <p class="micro" style="opacity:.62;margin-bottom:var(--s2)">The house</p>
+      <ul>
+        <li><a href="tel:+918282826264" class="fig">+91 82828 26264</a></li>
+        <li><a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a></li>
+        <li><a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="micro" style="opacity:.62;margin-bottom:var(--s2)">Collections</p>
+      <ul id="footColl"></ul>
+    </div>
+  </div>
+  <div class="colophon micro">
+    <span>Artisan Apparels · Hyderabad</span>
+    <span>Under our own name, at last.</span>
+  </div>
+</footer>
+
+<script src="assets/brand.js?v=1786616451"></script>
+<script src="assets/garment.js?v=1786616451"></script>
+<script src="assets/media.js?v=1786616451"></script>
+<script>
+(function(){
+  'use strict';
+  var S=IAR.SHIRTS;
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  document.querySelectorAll('.mark').forEach(function(el){ el.innerHTML=IAR.mark({}); });
+
+  /* ---- the cabinet ---- */
+  var track=document.getElementById('track');
+  track.innerHTML=S.map(function(s){
+    var ink=IAR.inkOn(s.ground);
+    return '<button class="cell" type="button" data-i="'+(s.n-1)+'" '+
+      'style="background:'+s.ground+';color:'+ink+'" aria-label="'+s.name+', '+
+      IAR.rupees(s.price)+'">'+
+      '<span class="tag">'+IAR.pad(s.n)+'</span>'+
+      '<figure class="plate" data-plate="shirt-'+IAR.pad(s.n)+'" data-shirt="'+s.n+'" '+
+      'data-alt="'+s.name+' — '+s.cloth.toLowerCase()+'"></figure>'+
+      '<span class="nm">'+s.name+' · <span class="fig">'+IAR.rupees(s.price)+'</span></span>'+
+      '</button>';
+  }).join('');
+
+  /* ---- the record ---- */
+  var rec=document.getElementById('rec'), cur=-1;
+  function record(i){
+    if(i===cur) return;
+    cur=i;
+    var s=S[i];
+    var body='<div class="rec-fade">'+
+      '<p class="rec-no fig">'+IAR.pad(s.n)+'</p>'+
+      '<h2 class="d2 rec-name">'+s.name+'</h2>'+
+      '<div class="rec-swatch">'+IAR.swatch(s)+'</div>'+
+      '<table class="rec-tbl"><tbody>'+
+        '<tr><th>Cloth</th><td>'+s.cloth+'</td></tr>'+
+        '<tr><th>Weave</th><td class="fig">'+s.spec+'</td></tr>'+
+        '<tr><th>Colour</th><td class="fig">'+s.hex+'</td></tr>'+
+        '<tr><th>Collection</th><td>'+s.coll+'</td></tr>'+
+        '<tr><th>Sizes</th><td class="fig">39 · 40 · 41 · 42 · 43 · 44 · 45 · 46</td></tr>'+
+      '</tbody></table>'+
+      '<span class="rec-price fig">'+IAR.rupees(s.price)+'</span>'+
+      '</div>';
+    var old=rec.querySelector('.rec-fade');
+    if(old && !reduce){
+      old.classList.add('out');
+      setTimeout(function(){ rec.innerHTML=body; },200);
+    } else { rec.innerHTML=body; }
+    track.querySelectorAll('.cell').forEach(function(c,k){ c.classList.toggle('on',k===i); });
+  }
+  record(1);
+
+  track.addEventListener('mouseover',function(e){
+    var c=e.target.closest('.cell'); if(c) record(+c.dataset.i);
+  });
+  track.addEventListener('focusin',function(e){
+    var c=e.target.closest('.cell'); if(c) record(+c.dataset.i);
+  });
+
+  /* ---- the catalogue table ---- */
+  document.getElementById('catBody').innerHTML=S.map(function(s){
+    return '<tr>'+
+      '<td class="sw"><span>'+IAR.swatch(s)+'</span></td>'+
+      '<td class="fig dim">'+IAR.pad(s.n)+'</td>'+
+      '<td class="nm">'+s.name+'</td>'+
+      '<td class="hexc fig dim">'+s.hex+'</td>'+
+      '<td class="cl">'+s.cloth+'</td>'+
+      '<td class="sp fig dim">'+s.spec+'</td>'+
+      '<td>'+s.coll+'</td>'+
+      '<td class="amt fig">'+IAR.rupees(s.price)+'</td>'+
+    '</tr>';
+  }).join('');
+
+  document.getElementById('footColl').innerHTML=IAR.COLLECTIONS.map(function(c){
+    return '<li>'+c.key+' <span class="fig" style="opacity:.6">'+c.count+'</span></li>';
+  }).join('');
+
+  IAR.plates();
+
+  /* ---- pinned horizontal drag, desktop only ----
+     Scroll-jacking is only ever acceptable when it replaces a gesture the user
+     already wanted. Below 960px, or with reduced motion, this stays a native
+     swipeable scroller instead. */
+  var vit=document.querySelector('.vitrine'),
+      wrap=document.getElementById('vitWrap'),
+      view=document.getElementById('view'),
+      prog=document.getElementById('prog');
+  var pinned=false, dist=0, cw=280, vwid=0, top=0;
+
+  /* offsetTop/offsetWidth/scrollY all live in the same coordinate space.
+     getBoundingClientRect does not, once any ancestor carries a zoom or scale,
+     so the pinned maths deliberately never touches it. */
+  function absTop(el){ var y=0; while(el){ y+=el.offsetTop; el=el.offsetParent; } return y; }
+
+  function layout(){
+    var want = window.innerWidth>=960 && !reduce;
+    if(want!==pinned){ vit.classList.toggle('pinned',want); pinned=want; }
+    var kids=track.children, i;
+    if(!pinned){
+      wrap.style.height=''; track.style.transform='';
+      for(i=0;i<kids.length;i++){ kids[i].style.width=''; kids[i].style.height=''; }
+      return;
+    }
+    vwid = view.clientWidth;
+    cw = Math.round(Math.min(310, Math.max(215, vwid * 0.27)));
+    var ch = Math.min(660, Math.round(window.innerHeight * 0.62));
+    for(i=0;i<kids.length;i++){
+      kids[i].style.width = cw + 'px';
+      kids[i].style.height = ch + 'px';
+    }
+    dist = Math.max(0, S.length * cw - vwid);
+    wrap.style.height = (dist + window.innerHeight) + 'px';
+    top = absTop(wrap);
+    onScroll();
+  }
+
+  function onScroll(){
+    if(!pinned || !dist) return;
+    var p = Math.min(1, Math.max(0, (window.scrollY - top) / dist));
+    var x = p * dist;
+    track.style.transform = 'translate3d(' + (-x).toFixed(2) + 'px,0,0)';
+    prog.style.width = (p*100).toFixed(2) + '%';
+    /* Whichever cell sits under the middle of the view — not a straight
+       remap of progress, which runs ahead by however many cells are on screen. */
+    var i = Math.round((x + vwid/2 - cw/2) / cw);
+    record(Math.min(S.length-1, Math.max(0, i)));
+  }
+
+  var tick=false;
+  addEventListener('scroll',function(){
+    if(tick) return; tick=true;
+    requestAnimationFrame(function(){ onScroll(); tick=false; });
+  },{passive:true});
+  addEventListener('resize',layout);
+  /* the cells are sized from viewport units, so wait for fonts and layout to settle */
+  layout();
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+  addEventListener('load',layout);
+
+  /* non-pinned mode still tracks which cell is centred */
+  view.addEventListener('scroll',function(){
+    if(pinned) return;
+    var i=Math.round(view.scrollLeft/(track.firstElementChild.offsetWidth||1));
+    record(Math.min(S.length-1,Math.max(0,i)));
+  },{passive:true});
+})();
+</script>
+</body>
+</html>

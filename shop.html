@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shop — I Am Ratan</title>
+<meta name="description" content="Twenty-five cloths, cut in five sizes. Filter by collection, sort by tone.">
+<meta name="theme-color" content="#EDE9E0">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="I Am Ratan">
+<meta property="og:title" content="Shop — I Am Ratan">
+<meta property="og:description" content="Twenty-five cloths, cut in five sizes.">
+<meta property="og:image" content="https://im-ratan.vercel.app/images/cloth-stack.jpg">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786616451">
+<style>
+/* THE GRID
+   The shoppable one. Nine garments on the first screen, filters that actually
+   filter, and a card that shows the cloth colour even before its photograph
+   loads — so the range reads as colour at a glance and as product on approach. */
+.head{padding:var(--clear) 0 0}
+.tools{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s4);align-items:center;
+  justify-content:space-between;margin:var(--s5) 0 0;
+  padding-bottom:var(--s3);border-bottom:1px solid var(--hair)}
+.chips{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.chip{font-family:var(--mono);font-size:.625rem;letter-spacing:.16em;
+  text-transform:uppercase;padding:var(--s1) var(--s3);border-radius:2rem;
+  border:1px solid var(--hair);background:none;cursor:pointer;color:inherit;
+  transition:background-color .3s var(--settle),border-color .3s var(--settle)}
+.chip:hover{border-color:currentColor}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--room);
+  border-color:var(--ink)}
+.sortwrap{display:flex;align-items:center;gap:var(--s1)}
+.sortwrap select{background:none;border:0;border-bottom:1px solid var(--hair);
+  padding:var(--s0) var(--s0);font-family:var(--mono);font-size:.75rem;cursor:pointer}
+
+.grid{display:grid;gap:var(--s4);grid-template-columns:repeat(2,1fr);
+  margin:var(--sy) 0 0}
+@media(min-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1300px){.grid{grid-template-columns:repeat(4,1fr)}}
+
+.card{display:block;position:relative}
+/* display:block is load-bearing. aspect-ratio is ignored on a non-replaced
+   INLINE element, and this is a <span>, so without it the box collapses to its
+   line height and the photograph inside has nowhere to render. The range wall
+   lost its photographs to exactly this once already. */
+.card-shot{display:block;position:relative;aspect-ratio:3/4;overflow:hidden;
+  background:var(--g);margin-bottom:var(--s2)}
+.card-shot img{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 14%;
+  transition:transform 1.1s var(--settle),opacity .5s var(--settle)}
+
+/* The second frame, under the first, revealed on hover. Every cloth now carries
+   a back or a second view, so the grid can show the garment turning without a
+   click — which is the one interaction a range of shirts actually wants, and it
+   costs nothing but an image that was already photographed.
+
+   The card still reads as a colour range before anything loads: the box carries
+   the cloth's own hex as its background, which is what the placeholder always
+   was. What has gone is the hard 5px ribbon of that colour across the foot of
+   every photograph — it was there to hold the range together when the
+   photography was inconsistent, and now that all twenty-seven are shot in one
+   room it reads as a UI artefact laid over the picture rather than design. */
+.card-alt{opacity:0}
+.card.flip .card-alt{opacity:1}
+@media(hover:hover){
+  .card:hover .card-alt,.card:focus-visible .card-alt{opacity:1}
+  .card:hover .card-shot img,.card:focus-visible .card-shot img{transform:scale(1.03)}
+}
+
+/* On a phone there is no hover, so the second frame would never be seen. The
+   card takes a horizontal swipe instead. The hint is two short rules rather than
+   dots — the same mark the hero uses to count its frames, and deliberately not
+   the little circles that used to close every card. */
+.card-turn{position:absolute;left:var(--s2);bottom:var(--s2);z-index:2;
+  display:none;gap:var(--s0)}
+.card-turn i{width:1.1rem;height:2px;background:rgba(237,233,224,.45);
+  transition:background-color .3s var(--settle)}
+.card-turn i:first-child{background:#EDE9E0}
+.card.flip .card-turn i:first-child{background:rgba(237,233,224,.45)}
+.card.flip .card-turn i:last-child{background:#EDE9E0}
+@media(hover:none){
+  .card-turn{display:flex}
+  /* the gesture belongs to the card, not to the page scrolling sideways */
+  .card-shot{touch-action:pan-y}
+}
+
+.card-nm{display:flex;justify-content:space-between;align-items:baseline;
+  gap:var(--s3);font-weight:300;font-size:1.02rem;letter-spacing:-.014em}
+.card-pr{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:.8125rem;white-space:nowrap}
+/* the collection sits under the name, not beside the price. The eight size dots
+   that used to close every card are gone: eight of them on twenty-seven cards is
+   two hundred and sixteen marks arguing with the photographs, to say something
+   the product page says properly. */
+.card-cat{display:block;margin-top:var(--s0);font-family:var(--mono);
+  font-size:.5625rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted)}
+.empty{padding:var(--sy) 0;color:var(--muted)}
+@media(prefers-reduced-motion:reduce){
+  .card:hover .card-shot img{transform:none}
+  .card-alt,.card:hover .card-alt{transition:none}
+}
+</style>
+</head>
+<body data-no-grounds>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html" aria-current="page">Shop</a>
+    <a href="bespoke.html">Bespoke</a>
+    <a href="house.html">About us</a>
+  </nav>
+  <span class="muted">Hyderabad</span>
+</header>
+
+<main id="main">
+  <section class="head">
+    <div class="wrap">
+      <p class="label muted">The range</p>
+      <h1 class="display" style="max-width:16ch;margin-top:var(--s1)">Twenty-five
+      cloths.</h1>
+
+      <div class="tools">
+        <div class="chips" id="chips" role="group" aria-label="Filter by collection"></div>
+        <div class="sortwrap">
+          <label class="label muted" for="sort">Order</label>
+          <select id="sort">
+            <option value="range">By the range</option>
+            <option value="light">Lightest first</option>
+            <option value="dark">Darkest first</option>
+            <option value="low">Price, low to high</option>
+            <option value="high">Price, high to low</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+      <p class="empty label" id="empty" hidden>Nothing in that collection.</p>
+
+      <p class="label muted" style="margin:var(--sy) 0 var(--sy)">
+        Showing <span class="fig" id="shown">25</span> of <span class="fig" id="total">25</span>
+        · <a href="bespoke.html" style="text-decoration:underline;text-underline-offset:4px">not your size? →</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <span class="mark mark--monogram" aria-hidden="true"></span>
+        <p class="lede" style="max-width:22ch">A brand made by Indians, for the world.</p>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">The house</p>
+        <ul>
+          <li><a href="tel:+918282826264" class="fig">+91 82828 26264</a></li>
+          <li><a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a></li>
+          <li><a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Explore</p>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="bespoke.html">Bespoke</a></li>
+          <li><a href="house.html">About us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Visit</p>
+        <ul>
+          <li>Artisan Apparels</li>
+          <li>Hyderabad, India</li>
+          <li><a href="https://iamratan.co.in" rel="noopener">iamratan.co.in</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon label">
+      <span>© <span id="year">2026</span> I Am Ratan · Artisan Apparels</span>
+      <span><a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="shipping.html">Shipping &amp; returns</a></span>
+      <span>Reclaim · Redefine · Resonate</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/catalogue.js?v=1786616451"></script>
+<script src="assets/shots.js?v=1786616451"></script>
+<script src="assets/site.js?v=1786616451"></script>
+<script src="assets/iar-house.js?v=1786616451"></script>
+<script src="assets/mark.js?v=1786616451"></script>
+<script>
+(function () {
+  'use strict';
+  var R = IAR.RANGE, grid = document.getElementById('grid'),
+      chips = document.getElementById('chips'), empty = document.getElementById('empty');
+  var filter = 'all', order = 'range';
+
+  /* the total is counted, not typed — it was hardcoded at 25 and went stale the
+     first time a cloth was added */
+  document.getElementById('total').textContent = R.length;
+
+  var cats = [];
+  R.forEach(function (p) { if (p.cat && cats.indexOf(p.cat) < 0) cats.push(p.cat); });
+
+  chips.innerHTML =
+    '<button class="chip" type="button" data-c="all" aria-pressed="true">All ' +
+      R.length + '</button>' +
+    cats.map(function (c) {
+      var n = R.filter(function (p) { return p.cat === c; }).length;
+      return '<button class="chip" type="button" data-c="' + c + '" aria-pressed="false">' +
+        c + ' ' + n + '</button>';
+    }).join('');
+
+  /* A cloth that has been shot on the model leads with that frame; the rest
+     keep their catalogue photograph, so the grid fills in one cloth at a time
+     rather than waiting for all twenty-five. */
+  /* the frame the card leads with, and the one it turns to on hover. A cloth
+     without a shot set has neither, and falls back to its catalogue photograph. */
+  function card(p) {
+    var s = (window.IAR_SHOTS || {})[p.slug];
+    return s ? 'images/set/' + p.slug + '/1-hero.jpg'
+             : 'images/shirts/' + p.img;
+  }
+  function cardAlt(p) {
+    var s = (window.IAR_SHOTS || {})[p.slug];
+    return s && s.shots[1] ? 'images/set/' + p.slug + '/' + s.shots[1].src + '.jpg' : '';
+  }
+
+  function sorted(list) {
+    var a = list.slice();
+    if (order === 'light') a.sort(function (x, y) { return y.lum - x.lum; });
+    if (order === 'dark')  a.sort(function (x, y) { return x.lum - y.lum; });
+    if (order === 'low')   a.sort(function (x, y) { return x.price - y.price; });
+    if (order === 'high')  a.sort(function (x, y) { return y.price - x.price; });
+    return a;
+  }
+
+  function draw() {
+    var list = filter === 'all' ? R : R.filter(function (p) { return p.cat === filter; });
+    list = sorted(list);
+    document.getElementById('shown').textContent = list.length;
+    empty.hidden = list.length > 0;
+    grid.innerHTML = list.map(function (p) {
+      var alt = cardAlt(p);
+      return '<a class="card" href="product.html?p=' + encodeURIComponent(p.slug) + '" ' +
+        'style="--g:' + p.hex + '">' +
+        '<span class="card-shot">' +
+          '<img src="' + card(p) + '" alt="' + p.name +
+            '" loading="lazy" decoding="async">' +
+          /* the second frame carries no src until the card is hovered or
+             touched, so a phone scrolling past twenty-seven cards downloads
+             twenty-seven photographs rather than fifty-four */
+          (alt ? '<img class="card-alt" data-src="' + alt + '" alt="" ' +
+                 'aria-hidden="true" decoding="async">' +
+                 '<span class="card-turn" aria-hidden="true"><i></i><i></i></span>' : '') +
+        '</span>' +
+        '<span class="card-nm">' + p.name +
+          '<span class="card-pr">' + p.priceText + '</span></span>' +
+        '<span class="card-cat">' + (p.cat || 'The range') + '</span>' +
+      '</a>';
+    }).join('');
+  }
+
+  chips.addEventListener('click', function (e) {
+    var b = e.target.closest('.chip'); if (!b) return;
+    filter = b.dataset.c;
+    chips.querySelectorAll('.chip').forEach(function (c) {
+      c.setAttribute('aria-pressed', String(c === b));
+    });
+    draw();
+  });
+  document.getElementById('sort').addEventListener('change', function (e) {
+    order = e.target.value; draw();
+  });
+
+  /* The second frame is fetched the first time a card is approached — hovered on
+     a desktop, touched on a phone — so scrolling past twenty-seven cards costs
+     twenty-seven photographs, not fifty-four. */
+  function hydrate(el) {
+    var alt = el.querySelector('.card-alt[data-src]');
+    if (alt) { alt.src = alt.getAttribute('data-src'); alt.removeAttribute('data-src'); }
+  }
+  grid.addEventListener('pointerover', function (e) {
+    var c = e.target.closest && e.target.closest('.card');
+    if (c) hydrate(c);
+  });
+
+  var sx = 0, sy = 0, swiped = false;
+  grid.addEventListener('touchstart', function (e) {
+    var c = e.target.closest && e.target.closest('.card');
+    if (!c) return;
+    hydrate(c);
+    swiped = false;
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+  }, { passive: true });
+
+  grid.addEventListener('touchend', function (e) {
+    var c = e.target.closest && e.target.closest('.card');
+    if (!c) return;
+    var dx = e.changedTouches[0].clientX - sx,
+        dy = e.changedTouches[0].clientY - sy;
+    /* a sideways drag turns the garment. Anything more vertical than horizontal
+       is the page being scrolled, and is none of this handler's business */
+    if (Math.abs(dx) > 34 && Math.abs(dx) > Math.abs(dy)) {
+      c.classList.toggle('flip');
+      swiped = true;
+    }
+  }, { passive: true });
+
+  /* the card is a link, so a swipe would otherwise also open the product page */
+  grid.addEventListener('click', function (e) {
+    if (swiped) { e.preventDefault(); e.stopPropagation(); swiped = false; }
+  }, true);
+
+  draw();
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

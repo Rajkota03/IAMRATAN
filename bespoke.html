@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bespoke — I Am Ratan</title>
+<meta name="description" content="Made to Measure and Wardrobe Management. Book a consultation with the house in Hyderabad.">
+<meta name="theme-color" content="#EDE9E0">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="I Am Ratan">
+<meta property="og:title" content="Bespoke — I Am Ratan">
+<meta property="og:description" content="Made to Measure and Wardrobe Management. Book a consultation.">
+<meta property="og:image" content="https://im-ratan.vercel.app/images/atelier.jpg">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786616451">
+<style>
+/* ---------- BESPOKE ----------
+   Bespoke is the umbrella. Two services sit under it — Made to Measure and
+   Wardrobe Management — and then a form.
+
+   This replaced a configurator with a live drawing, three collar options and a
+   cuff picker. The house asked for none of it: a client arriving here wants to
+   know what the two services are and to leave their number. Everything that was
+   not that has gone.                                                          */
+
+/* --clear, not a calc of its own. This page had been opening on bar + 40px
+   while every other page opened on bar + 24px, so bespoke sat lower than the
+   rest of the site for no reason anyone chose — the sweep skipped it because it
+   was hidden inside a calc(). */
+.bh{padding-top:var(--clear);padding-bottom:var(--sy)}
+.bh h1{margin:var(--s1) 0 0}
+.bh .lede{margin-top:var(--s3)}
+
+/* ---------- the two doors ----------
+   Two boxes, side by side at every width, and the whole box is the link. No
+   reading order to obey, no scrolling from one service to the other to compare
+   them — both are on screen at once and either one takes you to the form.
+
+   Side by side on a phone means each is about 163px across, so the boxes are
+   TALL (3:4) rather than wide. A tall box carries a two-word name and a short
+   line comfortably at that width; a wide one would not. The type sits at the
+   foot over a veil, the way the doors on the home page do, so the picture is
+   never interrupted by a caption bar. */
+.svcs{margin:var(--sy) 0 0;display:grid;
+  grid-template-columns:1fr 1fr;gap:var(--s2)}
+.door{position:relative;display:grid;align-content:end;isolation:isolate;
+  overflow:hidden;aspect-ratio:3/4;padding:var(--s4);
+  background:#0B0C0E;color:#EDE9E0}
+/* At 1440 each door is ~735px wide, so a 4/5 portrait makes it 918px tall and
+   pushes its own name past the fold — and those two names are the entire
+   decision this page asks for. Capping with max-height does not work: paired
+   with aspect-ratio it makes the box take its WIDTH from the capped height, so
+   the doors shrink sideways and stop filling their columns. So the ratio itself
+   turns landscape once there is width to spare. */
+@media(min-width:820px){.door{aspect-ratio:4/5}}
+@media(min-width:1150px){.door{aspect-ratio:5/4}}
+.door img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:var(--pos,center);z-index:-2;transform:scale(1.03);
+  transition:transform 1.3s var(--settle)}
+.door::after{content:'';position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(to top,rgba(8,9,11,.92) 0%,rgba(8,9,11,.55) 42%,
+    rgba(8,9,11,.12) 78%)}
+.door:hover img,.door:focus-visible img{transform:scale(1.09)}
+.door-n{font-weight:250;font-size:clamp(1.15rem,3.6vw,1.9rem);line-height:1.1;
+  letter-spacing:-.022em;margin:0}
+.door-p{margin:var(--s1) 0 0;font-size:clamp(.85rem,2.4vw,1rem);line-height:1.45;
+  color:rgba(237,233,224,.84)}
+/* the whole box is the target, so this is a signal rather than a button */
+.door-go{display:inline-flex;align-items:center;gap:var(--s1);margin:var(--s2) 0 0;
+  font-family:var(--mono);font-size:.5625rem;letter-spacing:.18em;
+  text-transform:uppercase}
+.door-go i{font-style:normal;transition:transform .45s var(--swing)}
+.door:hover .door-go i{transform:translateX(5px)}
+@media(prefers-reduced-motion:reduce){
+  .door img,.door:hover img{transform:none}
+  .door:hover .door-go i{transform:none}
+}
+
+/* ---------- the form ----------
+   Sized, not guessed. The version before this made everything big in the name
+   of being friendly and ended up clumsy: 54px inputs, 15px labels, 22px between
+   rows, and — the real culprit — eighteen pixels of error space reserved under
+   every field whether or not there was an error. That is 72px of dead air in a
+   four-field form, and it is why the spacing read as disproportionate.
+
+   The numbers now:
+     input   46px — above the 44px a thumb needs, and no taller than it must be
+     font    16px exactly. Below 16 and iOS Safari zooms the page on focus,
+             which is a worse problem than a slightly large field
+     label   13px, sitting close to its own input rather than floating
+     rows    17px apart, which is about a third of a field: enough to separate,
+             not enough to drift
+     error   takes no space until there is something to say
+
+   First and last name share a row at every width. They are short values, and
+   two half-width boxes read as a name where two full-width ones read as a
+   queue. Mobile and email keep the full width — an email in a 164px box is
+   where tidy layout starts costing the person typing. */
+.book{display:grid;gap:var(--sy);align-items:start}
+@media(min-width:900px){.book{grid-template-columns:1fr 1fr}}
+.form{display:grid;gap:var(--s3)}
+.pair{display:grid;gap:var(--s2);grid-template-columns:1fr 1fr}
+.f{display:grid;gap:var(--s0);margin:0}
+.f label{font-size:.8125rem;color:var(--muted);line-height:1.3}
+.f input{width:100%;background:var(--room);border:1px solid var(--hair);
+  padding:0 var(--s2);min-height:2.875rem;font-size:1rem;color:var(--ink);
+  transition:border-color .25s var(--settle)}
+.f input:focus{outline:0;border-color:var(--ink)}
+.f input[aria-invalid="true"]{border-color:var(--claret)}
+/* no min-height: an empty error is not a layout feature */
+.f .err{font-size:.75rem;line-height:1.4;color:var(--claret)}
+.f .err:empty{display:none}
+/* the honeypot. Real people never see it, so anything typed into it is a bot */
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+.which{display:grid;gap:var(--s1);margin:0}
+.which > span{font-size:.8125rem;color:var(--muted)}
+.which-opts{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.which input{position:absolute;opacity:0;pointer-events:none}
+.which span.pill{display:inline-flex;align-items:center;min-height:2.6rem;
+  border:1px solid var(--hair);border-radius:2rem;padding:0 var(--s3);
+  font-size:.85rem;cursor:pointer;
+  transition:background-color .25s var(--settle),border-color .25s var(--settle),
+             color .25s var(--settle)}
+.which label:hover span.pill{border-color:currentColor}
+.which input:focus-visible + span.pill{outline:2px solid currentColor;outline-offset:3px}
+.which input:checked + span.pill{background:var(--ink);color:var(--room);
+  border-color:var(--ink)}
+
+.send{margin:var(--s1) 0 0}
+.send .cta{width:100%;min-height:3.125rem;display:inline-flex;
+  align-items:center;justify-content:center;font-size:.75rem}
+.send[aria-busy="true"] .cta{opacity:.55;pointer-events:none}
+.said{margin:var(--s2) 0 0;font-size:.94rem;line-height:1.55}
+.said:empty{display:none}
+.said.ok{color:var(--ink)}
+.said.bad{color:var(--claret)}
+.callbox{margin:var(--s3) 0 0;padding-top:var(--s3);border-top:1px solid var(--hair);
+  display:flex;align-items:baseline;gap:var(--s1);flex-wrap:wrap;font-size:.875rem}
+.callbox span{color:var(--muted)}
+.callbox a{font-family:var(--mono);font-size:.95rem;
+  border-bottom:1px solid var(--hair);padding-bottom:var(--s0)}
+.callbox a:hover{border-color:currentColor}
+
+.aside-shot{display:none;margin:0;position:relative;aspect-ratio:4/5;
+  overflow:hidden;background:var(--under)}
+@media(min-width:900px){.aside-shot{display:block}}
+.aside-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+</style>
+</head>
+<body data-no-grounds>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="bespoke.html" aria-current="page">Bespoke</a>
+    <a href="house.html">About us</a>
+  </nav>
+  <span class="muted">Hyderabad</span>
+</header>
+
+<main id="main">
+  <section class="bh">
+    <div class="wrap">
+      <p class="label muted rise">Bespoke</p>
+      <h1 class="display rise d1" style="max-width:16ch">Made to fit a person,
+      not a size.</h1>
+      <p class="lede rise d1" style="max-width:46ch;color:var(--muted)">
+        Two ways to work with the house. Both begin the same way — with a
+        conversation, and a measure taken once.</p>
+
+      <div class="svcs">
+        <a class="door rise d1" href="#book" data-pick="Made to Measure">
+          <img src="images/bespoke/made-to-measure.webp"
+            alt="A half-made shirt on a tailor's dress form, the paper pattern still pinned to it"
+            loading="lazy" decoding="async">
+          <h2 class="door-n">Made to Measure</h2>
+          <p class="door-p">One shirt, made only for you.</p>
+          <span class="door-go">Book a consultation <i aria-hidden="true">&rarr;</i></span>
+        </a>
+
+        <a class="door rise d2" href="#book" data-pick="Wardrobe Management">
+          <img src="images/bespoke/wardrobe-management.webp"
+            alt="A rail of finished shirts on walnut hangers, graduating in colour"
+            loading="lazy" decoding="async">
+          <h2 class="door-n">Wardrobe Management</h2>
+          <p class="door-p">We look after your shirts over time.</p>
+          <span class="door-go">Book a consultation <i aria-hidden="true">&rarr;</i></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--under" id="book">
+    <div class="wrap">
+      <div class="book">
+        <div>
+          <p class="label muted rise">Book a consultation</p>
+          <h2 class="h1 rise d1" style="max-width:18ch;margin:var(--s1) 0 var(--s3)">
+            Leave your details and we will call you.</h2>
+          <p class="rise d1" style="color:var(--muted);max-width:40ch">
+            No payment and no obligation. The consultation is a conversation
+            first — the measure comes after.</p>
+
+          <form class="form rise d2" id="bookForm" novalidate>
+            <p class="which">
+              <span>What would you like to talk about?</span>
+              <span class="which-opts">
+                <label><input type="radio" name="service" value="Made to Measure" checked><span class="pill">Made to Measure</span></label>
+                <label><input type="radio" name="service" value="Wardrobe Management"><span class="pill">Wardrobe Management</span></label>
+              </span>
+            </p>
+
+            <div class="pair">
+              <p class="f">
+                <label for="fn">First name</label>
+                <input id="fn" name="first_name" type="text" autocomplete="given-name" required>
+                <span class="err" id="e-fn" aria-live="polite"></span>
+              </p>
+              <p class="f">
+                <label for="ln">Last name</label>
+                <input id="ln" name="last_name" type="text" autocomplete="family-name" required>
+                <span class="err" id="e-ln" aria-live="polite"></span>
+              </p>
+            </div>
+            <p class="f">
+              <label for="ph">Mobile number</label>
+              <input id="ph" name="mobile" type="tel" inputmode="tel"
+                autocomplete="tel" required>
+              <span class="err" id="e-ph" aria-live="polite"></span>
+            </p>
+            <p class="f">
+              <label for="em">Email</label>
+              <input id="em" name="email" type="email" inputmode="email"
+                autocomplete="email" required>
+              <span class="err" id="e-em" aria-live="polite"></span>
+            </p>
+
+            <div class="hp" aria-hidden="true">
+              <label for="company">Company</label>
+              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off">
+            </div>
+
+            <p class="send" id="send">
+              <button class="cta cta--fill" type="submit">Book a consultation</button>
+            </p>
+            <p class="said" id="said" role="status" aria-live="polite"></p>
+            <p class="callbox"><span>Would rather talk?</span>
+              <a href="tel:+918282826264">+91 82828 26264</a></p>
+          </form>
+        </div>
+
+        <figure class="aside-shot rise d2">
+          <img src="images/cuff-monogram.webp"
+            alt="The I Am Ratan signature, embroidered at the cuff"
+            loading="lazy" decoding="async">
+        </figure>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <span class="mark mark--monogram" aria-hidden="true"></span>
+        <p class="lede" style="max-width:22ch">A brand made by Indians, for the world.</p>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">The house</p>
+        <ul>
+          <li><a href="tel:+918282826264" class="fig">+91 82828 26264</a></li>
+          <li><a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a></li>
+          <li><a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Explore</p>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="journal.html">Journal</a></li>
+          <li><a href="house.html">About us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Visit</p>
+        <ul>
+          <li>Artisan Apparels</li>
+          <li>Hyderabad, India</li>
+          <li><a href="https://iamratan.co.in" rel="noopener">iamratan.co.in</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon label">
+      <span>© <span id="year">2026</span> I Am Ratan · Artisan Apparels</span>
+      <span><a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="shipping.html">Shipping &amp; returns</a></span>
+      <span>Reclaim · Redefine · Resonate</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js?v=1786616451"></script>
+<script src="assets/iar-house.js?v=1786616451"></script>
+<script src="assets/mark.js?v=1786616451"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* =====================================================================
+     WHERE THE ENQUIRIES GO
+
+     Paste the Web3Forms access key between the quotes and every submission
+     lands in the manager's inbox. It is free for 250 enquiries a month, it
+     needs no account and no server — you request a key with an email address
+     at web3forms.com and it arrives by return.
+
+     Until that key is here, the form still works: it validates exactly the
+     same way and then hands the details to WhatsApp on the house number, so
+     nothing is ever collected and dropped. A visitor sees no difference.
+     ===================================================================== */
+  var ACCESS_KEY = '';
+  var PHONE = '918282826264';
+
+  var form = document.getElementById('bookForm');
+  if (!form) return;
+
+  /* Tapping a service's button carries that choice into the form, so nobody has
+     to make the same decision twice. The <a href="#book"> does the travelling on
+     its own — this only sets the radio, which means it still works with
+     JavaScript off, just without the pre-selection. */
+  [].slice.call(document.querySelectorAll('[data-pick]')).forEach(function (a) {
+    a.addEventListener('click', function () {
+      var r = form.querySelector('input[value="' + a.dataset.pick + '"]');
+      if (r) r.checked = true;
+    });
+  });
+  var said = document.getElementById('said');
+  var send = document.getElementById('send');
+
+  var F = [
+    { id: 'fn', label: 'first name',
+      test: function (v) { return v.length >= 2; },
+      why: 'Please give your first name.' },
+    { id: 'ln', label: 'last name',
+      test: function (v) { return v.length >= 1; },
+      why: 'Please give your last name.' },
+    /* Ten digits after the country code and any spaces, brackets or dashes are
+       stripped. Deliberately loose: a real number typed in an unexpected shape
+       is far more common than a fake one, and the house would rather ring a
+       messy number than lose a client to a rejected form. */
+    { id: 'ph', label: 'mobile number',
+      test: function (v) { return v.replace(/[^0-9]/g, '').length >= 10; },
+      why: 'That does not look like a full mobile number — ten digits or more.' },
+    { id: 'em', label: 'email',
+      test: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); },
+      why: 'That email address is missing something — check for a typo.' }
+  ];
+
+  function mark(f, ok) {
+    var el = document.getElementById(f.id);
+    var err = document.getElementById('e-' + f.id);
+    el.setAttribute('aria-invalid', String(!ok));
+    err.textContent = ok ? '' : f.why;
+  }
+
+  /* clear a complaint as soon as the person fixes it, rather than making them
+     submit again to find out */
+  F.forEach(function (f) {
+    var el = document.getElementById(f.id);
+    el.addEventListener('input', function () {
+      if (el.getAttribute('aria-invalid') === 'true' && f.test(el.value.trim())) mark(f, true);
+    });
+  });
+
+  function values() {
+    var v = {};
+    F.forEach(function (f) { v[f.id] = document.getElementById(f.id).value.trim(); });
+    var r = form.querySelector('input[name="service"]:checked');
+    v.service = r ? r.value : 'Not stated';
+    return v;
+  }
+
+  function done(msg, good) {
+    said.textContent = msg;
+    said.className = 'said ' + (good ? 'ok' : 'bad');
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    said.textContent = '';
+    said.className = 'said';
+
+    var bad = null;
+    F.forEach(function (f) {
+      var ok = f.test(document.getElementById(f.id).value.trim());
+      mark(f, ok);
+      if (!ok && !bad) bad = f;
+    });
+    if (bad) {
+      document.getElementById(bad.id).focus();
+      done('Check the ' + bad.label + ' and try again.', false);
+      return;
+    }
+    if (document.getElementById('company').value) return;   /* a bot filled the honeypot */
+
+    var v = values();
+    var line = v.fn + ' ' + v.ln + ' · ' + v.ph + ' · ' + v.em + ' · ' + v.service;
+
+    if (!ACCESS_KEY) {
+      var s = 'Consultation request\n\n' + v.fn + ' ' + v.ln + '\n' + v.ph + '\n' +
+              v.em + '\n\nInterested in: ' + v.service;
+      window.open('https://wa.me/' + PHONE + '?text=' + encodeURIComponent(s), '_blank', 'noopener');
+      done('Thank you, ' + v.fn + '. Your details are on their way to the house — we will be in touch.', true);
+      form.reset();
+      return;
+    }
+
+    send.setAttribute('aria-busy', 'true');
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: ACCESS_KEY,
+        subject: 'Consultation request — ' + v.fn + ' ' + v.ln,
+        from_name: 'I Am Ratan website',
+        'First name': v.fn, 'Last name': v.ln,
+        Mobile: v.ph, Email: v.em, Service: v.service,
+        Summary: line
+      })
+    }).then(function (r) { return r.json(); }).then(function (r) {
+      send.removeAttribute('aria-busy');
+      if (r && r.success) {
+        done('Thank you, ' + v.fn + '. We have your details and will be in touch.', true);
+        form.reset();
+      } else {
+        /* never a dead end: if the service refuses, hand them the phone */
+        done('That did not send. Please call the house on +91 82828 26264 and we will book you in.', false);
+      }
+    }).catch(function () {
+      send.removeAttribute('aria-busy');
+      done('That did not send — you may be offline. Please try again, or call +91 82828 26264.', false);
+    });
+  });
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

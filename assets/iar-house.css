@@ -1,0 +1,398 @@
+/* I AM RATAN — house system, v1 language.
+
+   This is the vocabulary of the approved home page (index.html), extracted so the
+   long-form pages share it instead of each carrying a copy. index.html keeps its
+   own inline styles until the polish pass migrates it here; the tokens below are
+   byte-identical to its own, so that migration is a delete, not a redesign.
+
+   One rule this file exists to hold: the twenty-five garment colours are the only
+   chroma in the system. The chrome is a workroom. The cloth is the colour. */
+
+:root{
+  --room:#EDE9E0;           /* bone — the house ground                        */
+  --under:#E3DFD4;          /* one step under, for alternating bands          */
+  --deep:#DAD5C8;           /* the footer floor                               */
+  --ink:#1A1C1E;            /* 14.1:1 on bone                                 */
+  --navy:#1C254A;
+  --card:#B9A882;           /* stiff manila pattern card — surfaces only      */
+  --claret:#6B2F3A;         /* one accent, a FILL and never text on the room  */
+
+  /* .70 is the floor on bone: below it muted text drops under 4.5:1 */
+  --muted:rgba(26,28,30,.70);
+  --hair:rgba(26,28,30,.20);
+
+  --sans:'Anek Latin',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+
+  /* ---------- the spacing scale ----------
+     Measured before writing it: the site was using 144 distinct spacing values,
+     84 of them one-off clamp() expressions invented at the point of use. That
+     is why the spacing never felt settled — every section was picking its own
+     rhythm, so no amount of fixing one block made the next one agree.
+
+     Nine steps, and nothing else. Roughly a 1.5x ratio, so two steps apart is
+     always clearly different and one step apart is a nudge. The last two are
+     fluid because section rhythm should breathe with the screen; the small ones
+     are fixed because 8px is 8px on any device.
+
+       --s0   4px   inside a control
+       --s1   8px   label to its own field
+       --s2  12px   between lines of a group
+       --s3  16px   between fields
+       --s4  24px   between small blocks
+       --s5  32px   between blocks
+       --s6  48px   between groups
+       --sy  40-64  within a section
+       --sz  56-96  between sections
+
+     Run iar-lab/space.py to see what still does not use them. */
+  --s0:.25rem; --s1:.5rem; --s2:.75rem; --s3:1rem;
+  --s4:1.5rem; --s5:2rem;  --s6:3rem;
+  /* The two fluid steps. The floors were the bug, not the flatness: at 40px and
+     56px a 375px phone was being handed section padding sized for a tablet, and
+     because 5vw/7vw do not reach those floors until an 800px viewport, EVERY
+     phone got the same tablet-sized gap. That is what made the site read as
+     over-spaced on a phone however often the numbers were nudged.
+     Floors down about a quarter, coefficients up so they start growing around
+     500px instead of 800px, and both still land on the same 64px and 96px once
+     there is a desktop to fill — so nothing above 1100px moves at all. */
+  --sy:clamp(1.875rem,6vw,4rem);
+  --sz:clamp(2.625rem,9vw,6rem);
+
+  --gut:clamp(1.1rem,4vw,4.5rem);
+  --max:1500px;
+  /* The height of the fixed bar, derived from the mark rather than guessed at:
+     two rems of bar padding, the mark's own height at this width, and the
+     hairline. Anything that begins at the top of the page has to clear it or
+     the bar sits on top of it — which is how the hero kept losing heads. */
+  --bar:calc(2rem + 1px + clamp(92px,9.5vw,128px) * 620 / 1430);
+  /* What the first block on a page needs above it. Not a spacing choice — it is
+     the bar's height plus one step of air — so it gets a name instead of a
+     number. Typed as a number it was 6.5rem, which cleared the bar on a desktop
+     and hid the eyebrow underneath it on a phone, because the bar grows with the
+     mark and a fixed 6.5rem does not. */
+  --clear:calc(var(--bar) + var(--s4));
+  /* a damped pendulum, not a UI curve: cloth has mass */
+  --swing:cubic-bezier(.2,.9,.25,1);
+  --settle:cubic-bezier(.16,1,.3,1);
+}
+
+/* ---------- grounds ----------
+   The client's own references (100Hands, 11.11) both stand on white. The house
+   was built on near-black. Switching is a token change and nothing else, because
+   the twenty-five garment colours were never separated by the ground in the
+   first place — measured, the best flat ground still leaves ten of them under
+   3:1, so separation has always come from the computed per-swatch edge. That
+   edge re-runs against whatever ground is set.
+
+   Measured for each ground below: ink, muted text, and the hairline.
+     room   ink 15.49  muted(.64) 6.81
+     bone   ink 14.11  muted(.70) 5.75
+     white  ink 17.09  muted(.68) 6.30
+   All clear 4.5:1. Set with <html data-ground="bone">. */
+:root[data-ground="dark"]{
+  --room:#101214; --under:#0D0F11; --deep:#0A0B0C; --ink:#EDE9E0;
+  --muted:rgba(237,233,224,.64); --hair:rgba(237,233,224,.16);
+}
+:root[data-ground="white"]{
+  --room:#FFFFFF; --under:#F5F5F5; --deep:#EDEDED; --ink:#1A1C1E;
+  --muted:rgba(26,28,30,.68); --hair:rgba(26,28,30,.17);
+}
+/* A plate is a photograph under a dark scrim, so its type stays chalk on every
+   ground — dark ink over a darkened image is the one combination that fails. */
+.plate-copy{color:#EDE9E0}
+.plate-copy .muted{color:rgba(237,233,224,.64)}
+.plate-copy .rule{background:rgba(237,233,224,.22)}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--room);color:var(--ink);
+  font-family:var(--sans);font-size:1rem;line-height:1.62;font-weight:300;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+/* The rest of the button reset used to live inline in index.html and a handful
+   of others, which meant any NEW page got grey system buttons with a bevel —
+   found exactly that way on the bespoke drafts. It belongs in the shared sheet.
+   Safe to make global: every button in the house draws its own border and
+   ground, so there is nothing here relying on the default. */
+button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+
+/* Every page cross-fades into the next, so the site reads as one continuous
+   room rather than a stack of documents. This used to live only on the home
+   page — but a transition needs to be declared on BOTH pages of a navigation,
+   so in the shared sheet it actually happens everywhere. */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.5s}
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+
+/* The first tab stop on every page. Invisible until a keyboard asks for it,
+   then it sits above the fixed bar. */
+.skip{position:fixed;top:var(--s2);left:var(--s2);z-index:99;
+  background:var(--ink);color:var(--room);padding:var(--s2) var(--s3);
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.14em;
+  text-transform:uppercase;transform:translateY(-200%)}
+.skip:focus-visible{transform:none}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--gut)}
+
+/* ---------- type ----------
+   One Indian-drawn family carries display and text. A house that made European
+   luxury anonymously for twenty years does not wear a European editorial serif. */
+.fig{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.label{font-family:var(--mono);font-size:.625rem;letter-spacing:.2em;
+  text-transform:uppercase;line-height:1.5}
+.muted{color:var(--muted)}
+.display{font-weight:200;font-size:clamp(2.7rem,7vw,5.4rem);line-height:.95;
+  letter-spacing:-.035em;margin:0;text-wrap:balance}
+.h1{font-weight:250;font-size:clamp(1.9rem,4vw,3rem);line-height:1.05;
+  letter-spacing:-.028em;margin:0;text-wrap:balance}
+.h2{font-weight:300;font-size:clamp(1.35rem,2.2vw,1.85rem);line-height:1.15;
+  letter-spacing:-.022em;margin:0;text-wrap:balance}
+.lede{font-weight:250;font-size:clamp(1.05rem,1.5vw,1.3rem);line-height:1.5;
+  margin:0;max-width:42ch}
+/* long-form measure: 62ch is the limit before the eye loses the line return */
+.prose p{margin:0 0 1.15em;max-width:62ch}
+.prose p:last-child{margin-bottom:0}
+.prose--wide p{max-width:70ch}
+.prose em{font-style:normal;color:var(--muted)}
+
+/* ---------- rules and reveals ---------- */
+.rule{height:1px;background:var(--hair);width:100%}
+.snap{transform:scaleX(0);transform-origin:left}
+.snap.in{transform:scaleX(1);transition:transform .42s var(--swing)}
+.rise{opacity:0;transform:translateY(14px)}
+.rise.in{opacity:1;transform:none;
+  transition:opacity .7s var(--settle),transform .7s var(--settle)}
+
+/* ---------- header ----------
+   A solid bar in the house ground, not a scrim. The old version faded out over
+   whatever was beneath it, which meant the ink had to keep switching between
+   dark and chalk and the nav sat at whatever contrast the photograph happened
+   to give it.
+
+   Solid also means the walk-in film always works: it has bone baked into its
+   background, so on a translucent header over dark media it showed as a bone
+   rectangle — which is why mark.js used to skip it on any non-bone ground.
+   Against a bone bar it simply blends.                                       */
+/* A grid, not space-between. With space-between the nav's position depended on
+   whatever the third slot held — "Hyderabad" on most pages, nothing on phones
+   (display:none), the Customize count on product — so the menu sat somewhere
+   different on every tab. Fixed columns pin the nav to the centre regardless
+   of what its neighbours are doing. */
+.top{position:fixed;inset:0 0 auto 0;z-index:50;display:grid;
+  grid-template-columns:1fr max-content 1fr;align-items:center;gap:var(--s3);
+  padding:var(--s3) var(--gut);
+  background:var(--room);color:var(--ink);
+  border-bottom:1px solid var(--hair)}
+.top>:first-child{justify-self:start}
+.top>:last-child{justify-self:end}
+.mark{width:36px;aspect-ratio:716/478;display:block;background:currentColor;
+  -webkit-mask:url('mark-badger.png') no-repeat center/contain;
+  mask:url('mark-badger.png') no-repeat center/contain}
+
+/* ---------- the mark, in three layers ----------
+   The monogram was one flat PNG. It is now split by connected-component analysis
+   into letterforms, badger body and badger head, each exported as an alpha mask
+   so every layer still paints in currentColor and follows the ground.
+
+   The badger in the finished mark is already looking back over its shoulder —
+   that IS the logo. So the animation earns that pose rather than inventing one:
+   the badger walks in with its head forward, stops, and turns to look back.
+   Head and body overlap by twelve pixels so the neck never opens a seam. */
+.mk{position:relative;display:block;width:clamp(92px,9.5vw,128px);
+  aspect-ratio:1430/620;color:inherit}
+/* Only the three masked layers take the fill. .mk-badger is a positioning
+   wrapper — giving it currentColor with no mask painted a solid block over the
+   whole mark, which is exactly what it did the first time. */
+.mk-letters,.mk-body,.mk-head{position:absolute;inset:0;display:block;
+  background:currentColor;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center;
+  -webkit-mask-size:contain;mask-size:contain}
+.mk-badger{background:none}
+.mk-letters{-webkit-mask-image:url('mark-letters.png');mask-image:url('mark-letters.png')}
+.mk-body{-webkit-mask-image:url('mark-body.png');mask-image:url('mark-body.png')}
+.mk-head{-webkit-mask-image:url('mark-head.png');mask-image:url('mark-head.png');
+  transform-origin:73.6% 50.2%}
+
+.mk-badger{position:absolute;inset:0}
+
+/* ---------- the clips ----------
+   The walk-in and the three reactions are real film — generated cycles with an
+   articulated gait, which a CSS transform cannot produce. They are pinned at
+   both ends to frames composited from these same masked layers, so the
+   letterforms never drift, and each one crossfades back to the mask mark while
+   the badger is still. The resting logo is always the true one.
+
+   They are animated IMAGES with an alpha channel, not video. Video autoplay is
+   refused outright by iOS in Low Power Mode, and the clips used to carry the
+   house bone baked into their background at rgb(231,229,219) — against the
+   header's #EDE9E0 that showed as a pale rectangle pasted in behind the logo.
+   With the ground keyed out there is nothing left to match.
+
+   object-fit:contain, and the clips are cropped to the mark's own 1430:620, so
+   the logo inside them fills the frame the way the mask does. Before that fit
+   the film's logo sat at 93% width against the mask's 100% and the handover at
+   the end of the walk visibly jumped in scale.                                */
+.mk-clip{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  pointer-events:none}
+.mk--clip .mk-letters,.mk--clip .mk-badger{opacity:0}
+.mk-letters,.mk-badger{transition:opacity .3s linear}
+
+
+/* The lingering glance on the true mask mark, once the entry is done — the
+   breathing between the filmed reactions rather than a reaction itself.
+   It ran on a 13s loop, which is four and a half glances a minute: often
+   enough that the eye starts watching the logo instead of the page. At 34s it
+   is something you catch rather than something you notice. The percentages are
+   retuned with it so the glance itself still takes about three seconds; left
+   alone they would have stretched it to nine. */
+.mk--idle .mk-head{animation:mk-glance 34s var(--settle) infinite}
+@keyframes mk-glance{
+  0%,89%{transform:rotate(0)}
+  93%,96%{transform:rotate(12deg)}
+  100%{transform:rotate(0)}
+}
+.markwrap{-webkit-tap-highlight-color:transparent}
+
+@media(prefers-reduced-motion:reduce){
+  .mk-letters,.mk-badger,.mk-head,.mk-body,.mk-clip{animation:none!important;
+    transition:none!important}
+  .mk-head{transform:rotate(0)}
+  .mk-clip{display:none}
+}
+.nav{display:flex;gap:var(--s5)}
+.nav a{position:relative;padding-block:var(--s0)}
+.nav a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:currentColor;transform:scaleX(0);transform-origin:left;
+  transition:transform .38s var(--swing)}
+.nav a:hover::after,.nav a[aria-current]::after{transform:scaleX(1)}
+@media(max-width:640px){
+  .nav{gap:var(--s1)}.nav a{font-size:.5625rem}
+  /* the mark, four links and whatever sits on the right have to share 375px */
+  .top{gap:var(--s1)}
+  .top>span:last-child{display:none}
+}
+
+/* ---------- bands ----------
+   The rhythm is driven by WIDTH, not height. It used to be 9vh, which has it
+   backwards: a phone has the tallest viewport and the least room to spare, so
+   it was being given 81px of padding top and bottom while a laptop got 72px.
+   Between two full-bleed frames that came to 162px of empty ground per picture.
+   Off width, a phone gets 48px and a wide screen still gets its 104px.        */
+.band{padding:var(--sz) 0}
+.band--tight{padding:var(--sy) 0}
+.band--under{background:var(--under)}
+.band--card{background:var(--card);color:#0C0B0A}
+.band--card .muted{color:rgba(12,11,10,.7)}
+.band--card .rule{background:rgba(12,11,10,.2)}
+.band--card .prose em{color:rgba(12,11,10,.7)}
+
+/* ---------- calls to action ---------- */
+.cta{display:inline-block;border:1px solid currentColor;padding:var(--s2) var(--s5);
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+  text-transform:uppercase;cursor:pointer;background:none;
+  transition:background-color .4s var(--settle),color .4s var(--settle)}
+.cta:hover{background:var(--ink);color:var(--room)}
+.band--card .cta:hover{background:#0C0B0A;color:var(--card)}
+.cta--fill{background:var(--claret);border-color:var(--claret);color:#EDE9E0}
+.cta--fill:hover{background:var(--ink);border-color:var(--ink);color:var(--room)}
+
+/* ---------- figures ---------- */
+.shot{position:relative;display:block;overflow:hidden;margin:0;
+  aspect-ratio:4/3;background:#191C1F}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:center 16%;
+  transition:transform 1.2s var(--settle)}
+.shot--tall{aspect-ratio:4/5}
+.shot--square{aspect-ratio:1/1}
+a.shot:hover img{transform:scale(1.03)}
+.shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:var(--s3) var(--s3);
+  font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+  text-transform:uppercase;color:#EDE9E0;
+  background:linear-gradient(to top,rgba(12,13,15,.72),transparent)}
+
+/* full-bleed film or plate with copy sitting in its lower gutter */
+.plate{position:relative;min-height:62svh;display:grid;align-items:end;
+  overflow:hidden;isolation:isolate;background:#191C1F}
+.plate--tall{min-height:100svh}
+.plate>img,.plate>video{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;z-index:0}
+/* Two scrims, not one. A bottom-only gradient assumes a dark photograph; the
+   moment the image is pale the display type lands on white and disappears.
+   The copy column gets its own field from the left, the bottom gradient stays
+   for the lede.
+
+   Measured over atelier.jpg (a deliberately hard case — pale cloth filling the
+   frame): bottom gradient alone gives 1.00:1 worst / 1.82:1 median for muted
+   ink. Two scrims give 1.16:1 worst / 4.07:1 median. Better, and still a fail.
+
+   So the rule this file enforces is not a stronger veil — it is that PLATES
+   CARRY TYPE ONLY OVER IMAGES WHOSE COPY REGION IS ALREADY DARK. A pale
+   photograph runs full-bleed with no type on it, and the headline sits on the
+   room, where ink measures 15.5:1 and muted ink 6.8:1. */
+.plate::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(to top,rgba(12,13,15,.88) 0%,
+      rgba(12,13,15,.34) 34%,rgba(12,13,15,0) 66%),
+    linear-gradient(to right,rgba(12,13,15,.84) 0%,
+      rgba(12,13,15,.46) 40%,rgba(12,13,15,0) 72%)}
+/* narrow screens have no side column to hide in, so the veil goes flat */
+@media(max-width:760px){
+  .plate::after{background:linear-gradient(to top,rgba(12,13,15,.9) 0%,
+    rgba(12,13,15,.66) 46%,rgba(12,13,15,.5) 100%)}
+}
+.plate-copy{position:relative;z-index:2;padding:var(--gut);display:grid;gap:var(--s3);
+  justify-items:start;width:100%;max-width:var(--max);margin-inline:auto}
+
+/* ---------- split ---------- */
+.split{display:grid;gap:var(--s5);grid-template-columns:1fr}
+@media(min-width:900px){
+  .split{grid-template-columns:1fr 1fr;align-items:center;
+    gap:var(--sz)}
+  .split--flip>*:first-child{order:2}
+}
+
+/* ---------- footer ---------- */
+.foot{background:var(--deep);padding:var(--sz) 0 var(--s5);
+  border-top:1px solid var(--hair)}
+/* Four stacked columns and a 200px monogram came to 956px on a phone — taller
+   than the bespoke page's own content, and the same on every page of the site.
+   The three link lists sit two-up below 860px, which halves it and still leaves
+   every link a comfortable tap target. */
+.foot-grid{display:grid;gap:var(--s5);grid-template-columns:1fr}
+/* Four stacked columns and a 200px monogram came to 956px on a phone — taller
+   than the bespoke page's own content, and the same on every page of the site.
+
+   Only the last two lists pair up. Explore and Visit are short lines that sit
+   happily in half of a 340px column; The house is not, because
+   prashanth@iamratan.co.in is twenty-four characters and would wrap into a mess
+   beside anything. So the brand block and the contact block keep the full
+   width, and the two that can share, share. */
+@media(max-width:859px){
+  .foot-grid{grid-template-columns:1fr 1fr;gap:var(--s5) var(--s4)}
+  .foot-grid>:nth-child(1),.foot-grid>:nth-child(2){grid-column:1/-1}
+  /* the monogram is a signature here, not a billboard */
+  .mark--monogram{width:min(150px,42vw);margin-bottom:var(--s3)}
+}
+@media(min-width:860px){.foot-grid{grid-template-columns:1.5fr 1fr 1fr 1fr}}
+.mark--monogram{width:min(200px,56vw);aspect-ratio:1430/620;display:block;
+  background:currentColor;margin-bottom:var(--s4);
+  -webkit-mask:url('mark-monogram.png') no-repeat center/contain;
+  mask:url('mark-monogram.png') no-repeat center/contain}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:var(--s1)}
+.foot a:hover{text-decoration:underline;text-underline-offset:5px}
+.colophon{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--hair);
+  display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);justify-content:space-between;
+  color:var(--muted)}
+
+@media(prefers-reduced-motion:reduce){
+  .snap,.snap.in,.rise,.rise.in{transform:none;opacity:1;transition:none}
+  a.shot:hover img{transform:none}
+}

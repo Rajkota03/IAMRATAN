@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en" class="js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>I Am Ratan — Suspension</title>
+<meta name="description" content="Twenty-five shirts. A shirtmaking house showing its own name.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600&family=Newsreader:opsz,wght@6..72,200;6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1C254A; --blue:#B7CAEE; --bone:#EDE9E0;
+  --claret:#6B2F3A; --nacre:#E2DBE1; --black:#0C0B0A;
+
+  --ground:var(--black);
+  --ink:var(--bone);
+
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'Archivo',system-ui,-apple-system,'Helvetica Neue',sans-serif;
+
+  --gut:clamp(1.25rem,4vw,4.5rem);
+  --ease:cubic-bezier(.16,1,.3,1);
+
+  --z-nav:60; --z-cue:50;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--black); color:var(--ink);
+  font-family:var(--sans); font-size:1.0625rem; line-height:1.7;
+  font-weight:300; -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img,svg{max-width:100%}
+a{color:inherit;text-decoration:none}
+
+/* The drench. One fixed field behind everything; folds hand it their colour. */
+#ground{position:fixed;inset:0;background:var(--black);z-index:-1;
+  transition:background-color 1s var(--ease)}
+
+/* ---------- type ---------- */
+.d1{font-family:var(--serif);font-weight:300;font-variation-settings:'opsz' 60;
+  font-size:clamp(3.25rem,10vw,6rem);line-height:.94;letter-spacing:-.03em;
+  text-wrap:balance;margin:0}
+.d2{font-family:var(--serif);font-weight:300;font-variation-settings:'opsz' 44;
+  font-size:clamp(2.25rem,5.5vw,3.75rem);line-height:1.04;letter-spacing:-.025em;
+  text-wrap:balance;margin:0}
+.lede{font-family:var(--serif);font-weight:300;font-variation-settings:'opsz' 20;
+  font-size:clamp(1.25rem,2.1vw,1.6rem);line-height:1.5;letter-spacing:-.01em;
+  max-width:26ch;margin:0}
+p{margin:0 0 1.1em;max-width:64ch}
+.micro{font-size:.6875rem;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:500;line-height:1.6}
+.fig{font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.dim{opacity:.62}
+
+/* ---------- nav ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:var(--z-nav);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--s4) var(--gut);color:var(--ink);
+  transition:color .9s var(--ease)}
+nav .mark{width:64px;flex:none;display:block}
+nav .mark svg{display:block;width:100%;height:auto;fill:currentColor}
+nav ul{display:flex;gap:var(--s5);list-style:none;margin:0;padding:0}
+nav a{position:relative;padding-block:var(--s0)}
+nav a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:currentColor;transform:scaleX(0);transform-origin:left;
+  transition:transform .5s var(--ease)}
+nav a:hover::after,nav a:focus-visible::after{transform:scaleX(1)}
+@media(max-width:820px){nav ul{display:none}}
+
+:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+
+/* ---------- ouverture ---------- */
+.ouverture{min-height:100svh;display:grid;align-items:center;
+  grid-template-columns:1fr;gap:var(--s5);padding:var(--sz) var(--gut) var(--sy);
+  position:relative}
+@media(min-width:900px){
+  .ouverture{grid-template-columns:1.15fr .85fr;gap:var(--gut)}
+}
+.ouverture h1 .l{display:block;overflow:hidden}
+.ouverture h1 .l>span{display:block}
+.ouverture h1 .l:nth-child(2){color:color-mix(in oklab,var(--ink) 74%,transparent)}
+.ouverture h1 .l:nth-child(3){color:color-mix(in oklab,var(--ink) 48%,transparent)}
+.ouv-sub{margin-top:var(--s5);display:flex;flex-wrap:wrap;gap:var(--s4) var(--s5);align-items:baseline}
+
+/* Warm brown against a cold blue — the house's own example, drenched. */
+.hero-plate{aspect-ratio:4/5;background:#8A6244}
+
+.cue{position:absolute;left:var(--gut);bottom:1.75rem;display:flex;gap:var(--s2);
+  align-items:center;z-index:var(--z-cue)}
+.cue i{display:block;width:1px;height:38px;background:currentColor;opacity:.5;
+  transform-origin:top;animation:drop 2.4s var(--ease) infinite}
+@keyframes drop{0%{transform:scaleY(0)}45%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ---------- origin ---------- */
+.origin{padding:var(--sz) var(--gut);display:grid;gap:var(--s6);
+  grid-template-columns:1fr;max-width:1500px;margin-inline:auto}
+@media(min-width:900px){.origin{grid-template-columns:1fr 1fr;gap:var(--gut);align-items:end}}
+.origin .plate{aspect-ratio:5/6;background:color-mix(in oklab,var(--navy) 55%,var(--black))}
+.origin-body{max-width:46ch}
+.origin-body p{color:color-mix(in oklab,var(--ink) 80%,transparent)}
+
+/* ---------- le défilé ---------- */
+.fold{min-height:100svh;display:grid;grid-template-columns:1fr;
+  align-content:center;gap:var(--s5);padding:var(--sz) var(--gut) var(--sy);position:relative}
+@media(min-width:900px){
+  .fold{grid-template-columns:.9fr 1.1fr;align-items:center;gap:var(--gut)}
+  .fold.flip>.fold-plate{order:-1}
+  /* Height-led, not width-led: a fold must never outgrow the viewport it stages. */
+  .fold-plate{height:min(72svh,820px);width:auto;justify-self:center}
+}
+.fold-plate{aspect-ratio:4/5;position:relative}
+.fold-plate .plate{position:absolute;inset:0;background:transparent}
+/* the specular sweep, once, as the garment arrives */
+.fold-plate::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.14) 48%,transparent 58%);
+  transform:translateX(-120%)}
+.fold.in .fold-plate::after{transform:translateX(120%);transition:transform 1.5s .25s var(--ease)}
+
+.fold-rec{display:grid;gap:var(--s4);justify-items:start}
+.fold-no{font-family:var(--serif);font-size:clamp(3rem,7vw,5rem);line-height:1;
+  font-weight:200;font-variation-settings:'opsz' 60;opacity:.42}
+.spec{display:grid;grid-template-columns:auto 1fr;gap:var(--s0) var(--s5);
+  border-top:1px solid currentColor;padding-top:var(--s3);width:min(100%,30rem)}
+.spec dt{font-size:.6875rem;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:500;opacity:.6;align-self:center}
+.spec dd{margin:0;font-size:.95rem}
+.price{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.25rem);font-weight:300;
+  font-variation-settings:'opsz' 32}
+
+/* ---------- commission ---------- */
+.ways{background:var(--bone);color:var(--navy);padding:var(--sz) var(--gut);
+  position:relative;z-index:1}
+.ways-head{max-width:1500px;margin:0 auto var(--sy)}
+.ways-grid{max-width:1500px;margin-inline:auto;display:grid;gap:0;
+  grid-template-columns:1fr;border-top:1px solid color-mix(in oklab,var(--navy) 22%,transparent)}
+@media(min-width:860px){.ways-grid{grid-template-columns:repeat(3,1fr)}}
+.way{padding:var(--s5) 0;border-bottom:1px solid color-mix(in oklab,var(--navy) 22%,transparent)}
+@media(min-width:860px){
+  .way{padding:var(--s5) var(--s5) var(--s6);border-bottom:none;
+    border-left:1px solid color-mix(in oklab,var(--navy) 22%,transparent)}
+  .way:first-child{padding-left:0;border-left:none}
+  .way:last-child{padding-right:0}
+}
+.way h3{font-family:var(--serif);font-weight:300;font-variation-settings:'opsz' 30;
+  font-size:1.75rem;margin:var(--s1) 0 var(--s3);letter-spacing:-.015em}
+.way p{font-size:.95rem;color:color-mix(in oklab,var(--navy) 82%,transparent)}
+.way .from{font-family:var(--serif);font-size:1.35rem}
+.way.accent .from{color:var(--claret)}
+
+.tally{max-width:1500px;margin:var(--sy) auto 0;display:grid;gap:1px;
+  grid-template-columns:repeat(2,1fr);background:color-mix(in oklab,var(--navy) 20%,transparent)}
+@media(min-width:760px){.tally{grid-template-columns:repeat(5,1fr)}}
+.tally div{background:var(--bone);padding:var(--s4) var(--s3)}
+.tally b{display:block;font-family:var(--serif);font-weight:300;
+  font-variation-settings:'opsz' 40;font-size:clamp(1.75rem,3vw,2.5rem);line-height:1}
+.tally span{display:block;margin-top:var(--s1);font-size:.625rem;letter-spacing:.2em;
+  text-transform:uppercase;opacity:.66}
+
+/* ---------- le nuancier ---------- */
+.range{padding:var(--sz) 0 0}
+.range-head{padding-inline:var(--gut);max-width:1500px;margin:0 auto var(--s6)}
+.strip{display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+@media(min-width:760px){.strip{grid-template-columns:repeat(13,1fr)}}
+.chip{position:relative;aspect-ratio:1/2.4;border:0;padding:0;cursor:pointer;
+  display:block;transition:transform .5s var(--ease);transform-origin:bottom}
+.chip:hover,.chip:focus-visible{transform:scaleY(1.14);z-index:2}
+.chip svg{position:absolute;inset:0;width:100%;height:100%}
+.chip em{position:absolute;left:.5rem;bottom:.6rem;font-style:normal;
+  font-size:.5625rem;letter-spacing:.12em;opacity:0;transition:opacity .35s;
+  font-variant-numeric:tabular-nums}
+.chip:hover em,.chip:focus-visible em{opacity:1}
+.range-note{padding:var(--s5) var(--gut) 0;max-width:1500px;margin-inline:auto}
+
+/* ---------- footer ---------- */
+footer{padding:var(--sz) var(--gut) var(--s6);
+  border-top:1px solid color-mix(in oklab,var(--bone) 20%,transparent);
+  margin-top:var(--sz);background:var(--black);color:var(--bone);
+  position:relative;z-index:1}
+.foot-grid{max-width:1500px;margin-inline:auto;display:grid;gap:var(--s5);
+  grid-template-columns:1fr}
+@media(min-width:800px){.foot-grid{grid-template-columns:1.4fr 1fr 1fr}}
+footer .mark{width:88px;display:block;margin-bottom:var(--s4)}
+footer .mark svg{width:100%;height:auto;fill:currentColor}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:var(--s1)}
+.colophon{max-width:1500px;margin:var(--sy) auto 0;padding-top:var(--s4);
+  border-top:1px solid color-mix(in oklab,var(--bone) 14%,transparent);
+  display:flex;flex-wrap:wrap;gap:var(--s3) var(--s5);justify-content:space-between;opacity:.55}
+
+/* ---------- reveal ---------- */
+.js .rv{opacity:0;transform:translateY(18px)}
+.js .rv.in{opacity:1;transform:none;
+  transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.js .ouverture h1 .l>span{transform:translateY(103%)}
+.js .ouverture h1.in .l>span{transform:none;transition:transform 1.1s var(--ease)}
+.js .ouverture h1.in .l:nth-child(2)>span{transition-delay:.09s}
+.js .ouverture h1.in .l:nth-child(3)>span{transition-delay:.18s}
+
+@media(prefers-reduced-motion:reduce){
+  .js .rv,.js .ouverture h1 .l>span{opacity:1;transform:none;transition:none}
+  #ground{transition:none}
+  .cue i{animation:none;transform:scaleY(1)}
+  .fold.in .fold-plate::after{display:none}
+  .chip:hover,.chip:focus-visible{transform:none}
+}
+</style>
+</head>
+<body>
+
+<div id="ground"></div>
+
+<nav id="nav">
+  <a class="mark" href="#top" aria-label="I Am Ratan — home"></a>
+  <ul class="micro">
+    <li><a href="#range">The range</a></li>
+    <li><a href="#house">The house</a></li>
+    <li><a href="#ways">Commission</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<main id="top">
+
+  <section class="ouverture">
+    <div>
+      <h1 class="d1" id="ouv">
+        <span class="l"><span>Reclaim.</span></span>
+        <span class="l"><span>Redefine.</span></span>
+        <span class="l"><span>Resonate.</span></span>
+      </h1>
+      <div class="ouv-sub rv">
+        <p class="lede" style="margin:0">Twenty-five shirts, and only four of them are white.</p>
+        <p class="micro dim" style="margin:0">Sizes 39–46 · <span class="fig">₹2,999</span>–<span class="fig">₹6,999</span></p>
+      </div>
+    </div>
+    <figure class="plate hero-plate rv" data-plate="hero" data-shirt="2"
+      data-alt="Ratan's Blue poplin suspended in a dark field, lit hard from the left"></figure>
+    <div class="cue micro"><i></i><span>Scroll</span></div>
+  </section>
+
+  <section class="origin" id="house">
+    <figure class="plate rv" data-plate="editorial-01" data-shirt="13" data-pos="74% 50%"
+      data-alt="Midnight Navy twill against raw concrete, cut by one shaft of light"></figure>
+    <div class="origin-body">
+      <h2 class="d2 rv">Made for houses<br>that never named us.</h2>
+      <div class="rv" style="margin-top:var(--s5)">
+        <p>For over two decades these hands shaped luxury the world admired. The
+        garments were sold, worn and admired under other names. Ours was not among them.</p>
+        <p>A father and daughter's promise ended that. The same cutting room, the same
+        thirty measurements, the same three weeks. A different label.</p>
+        <p class="micro" style="margin-top:var(--s5);opacity:.6">Luxury is subtle, not loud.<br>
+        Strength is calm, not performative.<br>Legacy is worn, not announced.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="defile"></div>
+
+  <section class="ways" id="ways">
+    <div class="ways-head">
+      <h2 class="d2 rv">Three ways to buy.</h2>
+      <p class="rv" style="margin-top:var(--s3);max-width:52ch;opacity:.8">Ready to order and
+      bespoke exist today. The middle path is a commission, not a subscription — one payment,
+      nothing recurring, nothing expiring.</p>
+    </div>
+    <div class="ways-grid">
+      <div class="way rv">
+        <p class="micro dim">Ready to order</p>
+        <h3>From the twenty-five</h3>
+        <p>In stock, cut and finished. Sizes 39 to 46. Shipped within three days.</p>
+        <p class="from fig">₹2,999</p>
+      </div>
+      <div class="way accent rv">
+        <p class="micro dim">Commission</p>
+        <h3>A set of four, or more</h3>
+        <p>A pattern only amortises across a set, which is why Turnbull &amp; Asser, Emma Willis
+        and Hilditch &amp; Key have all asked for four since the nineteenth century. One shirt is
+        cut and sent first. The rest follow only once it fits.</p>
+        <p class="from fig">₹3,991 average · 30% across the set</p>
+      </div>
+      <div class="way rv">
+        <p class="micro dim">Bespoke</p>
+        <h3>Thirty measurements</h3>
+        <p>A pattern cut for one person and kept. Three weeks to the first fitting.</p>
+        <p class="from">By appointment</p>
+      </div>
+    </div>
+    <div class="tally rv" id="tally"></div>
+  </section>
+
+  <section class="range" id="range">
+    <div class="range-head">
+      <h2 class="d2 rv">The range is the identity.</h2>
+      <p class="rv" style="margin-top:var(--s3);max-width:54ch;opacity:.78">No competitor can copy
+      the palette without copying the catalogue. Twenty-five colours, twenty-five shirts.</p>
+    </div>
+    <div class="strip" id="strip"></div>
+    <div class="range-note micro dim rv">Hover a colour for its name and price.</div>
+  </section>
+
+</main>
+
+<footer id="contact">
+  <div class="foot-grid">
+    <div>
+      <span class="mark" aria-hidden="true"></span>
+      <p class="lede" style="max-width:22ch">Say the specific thing, then stop.</p>
+    </div>
+    <div>
+      <p class="micro dim" style="margin-bottom:var(--s2)">The house</p>
+      <ul>
+        <li><a href="tel:+918282826264" class="fig">+91 82828 26264</a></li>
+        <li><a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a></li>
+        <li><a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="micro dim" style="margin-bottom:var(--s2)">Collections</p>
+      <ul id="foot-coll"></ul>
+    </div>
+  </div>
+  <div class="colophon micro">
+    <span>Artisan Apparels · Hyderabad</span>
+    <span>Twenty-five shirts. Under our own name, at last.</span>
+  </div>
+</footer>
+
+<script src="assets/brand.js?v=1786616451"></script>
+<script src="assets/garment.js?v=1786616451"></script>
+<script src="assets/media.js?v=1786616451"></script>
+<script>
+(function(){
+  'use strict';
+  var S=IAR.SHIRTS, reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* the mark, wherever it is asked for */
+  document.querySelectorAll('.mark').forEach(function(el){ el.innerHTML=IAR.mark({}); });
+
+  /* ---- le défilé: six folds, each drenched in its garment's counterpoint ---- */
+  var PICK=[2,15,23,25,21,10];
+  document.getElementById('defile').innerHTML = PICK.map(function(n,i){
+    var s=S[n-1], ink=IAR.inkOn(s.ground);
+    return '<section class="fold'+(i%2?' flip':'')+'" data-ground="'+s.ground+'" data-ink="'+ink+'" '+
+      'style="color:'+ink+'">'+
+      '<div class="fold-rec">'+
+        '<p class="fold-no fig rv">'+IAR.pad(s.n)+'</p>'+
+        '<h2 class="d2 rv">'+s.name+'</h2>'+
+        '<dl class="spec rv">'+
+          '<dt>Cloth</dt><dd>'+s.cloth+'</dd>'+
+          '<dt>Weave</dt><dd class="fig">'+s.spec+'</dd>'+
+          '<dt>Collection</dt><dd>'+s.coll+'</dd>'+
+          '<dt>Sizes</dt><dd class="fig">'+IAR.SIZES[0]+'–'+IAR.SIZES[IAR.SIZES.length-1]+'</dd>'+
+        '</dl>'+
+        '<p class="price fig rv">'+IAR.rupees(s.price)+'</p>'+
+      '</div>'+
+      '<div class="fold-plate rv">'+
+        '<figure class="plate" data-plate="shirt-'+IAR.pad(s.n)+'" data-shirt="'+s.n+'" '+
+        'data-alt="'+s.name+' — '+s.cloth.toLowerCase()+', suspended against '+s.ground+'"></figure>'+
+      '</div>'+
+    '</section>';
+  }).join('');
+
+  /* ---- the tally. Numbers instead of adjectives. ---- */
+  var H=IAR.HOUSE;
+  document.getElementById('tally').innerHTML=[
+    [H.stock,'shirts in stock'],[H.collections,'collections'],
+    [IAR.rupees(H.entry),'entry price'],[IAR.rupees(H.top),'top of range'],
+    [IAR.rupees(H.average),'catalogue average']
+  ].map(function(r){return '<div><b class="fig">'+r[0]+'</b><span>'+r[1]+'</span></div>';}).join('');
+
+  /* ---- le nuancier ---- */
+  document.getElementById('strip').innerHTML = S.map(function(s){
+    return '<button class="chip" type="button" title="'+s.name+' · '+IAR.rupees(s.price)+'" '+
+      'aria-label="'+s.name+', '+IAR.rupees(s.price)+'">'+IAR.swatch(s)+
+      '<em style="color:'+IAR.inkOn(s.hex)+'">'+IAR.pad(s.n)+'</em></button>';
+  }).join('');
+
+  document.getElementById('foot-coll').innerHTML = IAR.COLLECTIONS.map(function(c){
+    return '<li>'+c.key+' <span class="dim fig">'+c.count+'</span></li>';
+  }).join('');
+
+  IAR.plates();
+
+  /* ---- reveals. Content is visible by default; this only sharpens arrival. ---- */
+  var rv=document.querySelectorAll('.rv');
+  function showAll(){ rv.forEach(function(el){el.classList.add('in');}); }
+  if(reduce || !('IntersectionObserver' in window)){ showAll(); }
+  else{
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    },{rootMargin:'0px 0px -12% 0px'});
+    rv.forEach(function(el){io.observe(el);});
+    setTimeout(showAll,3000);           /* nothing stays hidden, ever */
+  }
+
+  var h1=document.getElementById('ouv');
+  requestAnimationFrame(function(){ h1.classList.add('in'); });
+
+  /* ---- the drench: folds hand their colour to the fixed ground ---- */
+  var ground=document.getElementById('ground'), nav=document.getElementById('nav');
+  var folds=document.querySelectorAll('.fold');
+  var BASE={g:'#0C0B0A',i:IAR.CORE.bone};
+  function paint(g,i){
+    ground.style.backgroundColor=g;
+    document.body.style.setProperty('--ink',i);
+    nav.style.color=i;
+  }
+  if('IntersectionObserver' in window){
+    var go=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return;
+        e.target.classList.add('in');
+        paint(e.target.dataset.ground,e.target.dataset.ink);
+      });
+    },{threshold:.55});
+    folds.forEach(function(f){go.observe(f);});
+
+    /* the sections either side of the défilé take the shell back */
+    var so=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting) paint(e.target.dataset.ground||BASE.g,e.target.dataset.ink||BASE.i);
+      });
+    },{threshold:.4});
+    ['.ouverture','.origin','.range'].forEach(function(sel){
+      so.observe(document.querySelector(sel));
+    });
+    /* Bone sections need navy ink on the nav while they own the viewport */
+    var wo=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting) nav.style.color=IAR.CORE.navy; });
+    },{threshold:.5});
+    wo.observe(document.querySelector('.ways'));
+  }
+})();
+</script>
+</body>
+</html>

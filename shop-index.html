@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shop — I Am Ratan</title>
+<meta name="description" content="Twenty-five cloths, cut in five sizes. The whole range on one screen.">
+<meta name="theme-color" content="#EDE9E0">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="I Am Ratan">
+<meta property="og:title" content="Shop — I Am Ratan">
+<meta property="og:description" content="Twenty-five cloths, cut in five sizes.">
+<meta property="og:image" content="https://im-ratan.vercel.app/images/cloth-stack.jpg">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786616451">
+<style>
+/* THE INDEX
+   Every cloth is a line of type. All twenty-five fit one screen, so nothing is
+   hidden behind a scroll, and the plate on the right is the only thing that
+   moves. A shop that reads like a contents page rather than a catalogue. */
+html,body{height:100%}
+body{overflow:hidden}
+@media(max-width:900px){body{overflow:auto}}
+
+.stage{height:100svh;display:grid;grid-template-columns:1fr;
+  padding-top:var(--sy)}
+@media(min-width:900px){.stage{grid-template-columns:1fr 1.05fr}}
+
+/* ---- the list ---- */
+.idx{display:flex;flex-direction:column;min-height:0;
+  padding:0 0 var(--s3) var(--gut)}
+.idx-head{display:flex;justify-content:space-between;align-items:baseline;
+  gap:var(--s3);padding:0 var(--gut) var(--s2) 0}
+.idx-scroll{overflow-y:auto;scrollbar-width:thin;min-height:0;
+  padding-right:var(--gut)}
+.idx-scroll::-webkit-scrollbar{width:3px}
+.idx-scroll::-webkit-scrollbar-thumb{background:var(--hair)}
+
+.row{display:grid;grid-template-columns:1.6rem 1fr auto;gap:var(--s3);
+  align-items:baseline;padding:var(--s1) 0;width:100%;text-align:left;
+  border:0;background:none;cursor:pointer;position:relative;
+  border-bottom:1px solid transparent;
+  transition:border-color .3s var(--settle),padding-left .3s var(--settle)}
+.row .n{font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+  color:var(--muted)}
+.row .nm{font-weight:300;font-size:clamp(.98rem,1.5vw,1.22rem);
+  letter-spacing:-.015em;line-height:1.2}
+.row .pr{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:.8125rem;color:var(--muted)}
+/* the cloth itself marks the active line */
+.row::before{content:'';position:absolute;left:-.55rem;top:50%;
+  width:4px;height:0;background:var(--g);transform:translateY(-50%);
+  transition:height .32s var(--swing)}
+.row:hover::before,.row:focus-visible::before,.row[aria-current]::before{height:76%}
+.row:hover,.row:focus-visible,.row[aria-current]{border-bottom-color:var(--hair)}
+.row[aria-current] .pr{color:var(--ink)}
+
+/* ---- the plate ---- */
+.plate-wrap{position:relative;overflow:hidden;
+  background:var(--pc,var(--under));
+  transition:background-color .7s var(--settle)}
+.plate-wrap img{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 14%;opacity:0;
+  transition:opacity .45s var(--settle)}
+.plate-wrap img.on{opacity:1}
+.plate-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:var(--s5);display:grid;gap:var(--s1);justify-items:start;
+  color:var(--pk,var(--ink));
+  background:linear-gradient(to top,
+    color-mix(in oklab,var(--pc,var(--under)) 88%,transparent),transparent)}
+.plate-cap h2{font-weight:200;font-size:clamp(1.6rem,3.4vw,2.8rem);
+  letter-spacing:-.03em;line-height:1;margin:0}
+.plate-go{font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+  text-transform:uppercase;border:1px solid currentColor;padding:var(--s2) var(--s4);
+  margin-top:var(--s1);transition:background-color .35s,color .35s}
+.plate-go:hover{background:var(--pk,var(--ink));color:var(--pc,var(--under))}
+
+@media(max-width:900px){
+  .stage{height:auto}
+  .plate-wrap{aspect-ratio:4/5;order:-1}
+  .idx{padding-right:var(--gut)}
+  .idx-scroll{overflow:visible}
+}
+@media(prefers-reduced-motion:reduce){
+  .plate-wrap,.plate-wrap img,.row,.row::before{transition:none}
+}
+</style>
+</head>
+<body data-no-grounds>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="shop-index.html" aria-current="page">Shop</a>
+    <a href="bespoke.html">Bespoke</a>
+    <a href="house.html">About us</a>
+  </nav>
+  <span class="muted">Hyderabad</span>
+</header>
+
+<main class="stage">
+  <section class="idx">
+    <div class="idx-head">
+      <p class="label muted">The range · <span class="fig" id="count">25</span> cloths</p>
+      <p class="label muted fig">₹2,999–₹6,999</p>
+    </div>
+    <div class="idx-scroll" id="list" role="listbox" aria-label="The range"></div>
+  </section>
+
+  <figure class="plate-wrap" id="plate">
+    <div class="plate-cap">
+      <p class="label" id="pCat">Working hours</p>
+      <h2 id="pName">Blanc Celestia</h2>
+      <p class="fig" id="pPrice">₹6,999</p>
+      <a class="plate-go" id="pGo" href="product.html?p=blanc-celestia-2">See the shirt</a>
+    </div>
+  </figure>
+</main>
+
+<script src="assets/catalogue.js?v=1786616451"></script>
+<script src="assets/site.js?v=1786616451"></script>
+<script src="assets/iar-house.js?v=1786616451"></script>
+<script src="assets/mark.js?v=1786616451"></script>
+<script>
+(function () {
+  'use strict';
+  var R = IAR.RANGE, list = document.getElementById('list'),
+      plate = document.getElementById('plate');
+  document.getElementById('count').textContent = R.length;
+
+  list.innerHTML = R.map(function (p, i) {
+    return '<button class="row" type="button" role="option" data-i="' + i + '" ' +
+      'style="--g:' + p.hex + '"' + (i === 0 ? ' aria-current="true"' : '') + '>' +
+      '<span class="n">' + p.no + '</span>' +
+      '<span class="nm">' + p.name + '</span>' +
+      '<span class="pr">' + p.priceText + '</span></button>';
+  }).join('');
+
+  /* Both plates live in the DOM and crossfade, so switching never shows an
+     empty box while the next photograph decodes. */
+  var imgs = [document.createElement('img'), document.createElement('img')];
+  imgs.forEach(function (im) { im.alt = ''; im.decoding = 'async'; plate.insertBefore(im, plate.firstChild); });
+  var front = 0, cur = -1;
+
+  function show(i) {
+    if (i === cur) return;
+    cur = i;
+    var p = R[i];
+    plate.style.setProperty('--pc', p.hex);
+    plate.style.setProperty('--pk', p.ink);
+    document.getElementById('pCat').textContent = p.cat || 'The range';
+    document.getElementById('pName').textContent = p.name;
+    document.getElementById('pPrice').textContent = p.priceText;
+    document.getElementById('pGo').setAttribute('href',
+      'product.html?p=' + encodeURIComponent(p.slug));
+
+    var next = imgs[1 - front];
+    next.alt = p.name;
+    next.onload = function () {
+      next.classList.add('on');
+      imgs[front].classList.remove('on');
+      front = 1 - front;
+    };
+    next.src = 'images/shirts/' + p.img;
+
+    list.querySelectorAll('.row').forEach(function (b) { b.removeAttribute('aria-current'); });
+    list.children[i].setAttribute('aria-current', 'true');
+  }
+
+  list.addEventListener('mouseover', function (e) {
+    var b = e.target.closest('.row'); if (b) show(+b.dataset.i);
+  });
+  list.addEventListener('focusin', function (e) {
+    var b = e.target.closest('.row'); if (b) show(+b.dataset.i);
+  });
+  list.addEventListener('click', function (e) {
+    var b = e.target.closest('.row'); if (!b) return;
+    location.href = 'product.html?p=' + encodeURIComponent(R[+b.dataset.i].slug);
+  });
+
+  show(0);
+})();
+</script>
+</body>
+</html>

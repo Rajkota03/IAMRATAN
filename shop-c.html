@@ -169,8 +169,8 @@ dialog.bag::backdrop{background:rgba(20,20,24,.45);backdrop-filter:blur(6px)}
       <a href="shop-b.html">Vitrine</a>
       <a href="shop-c.html" aria-current="page">Rideau</a>
     </nav>
-    <button class="bagbtn" id="bagBtn" type="button" aria-label="Open Customize">
-      Customize <span class="fig" data-bag-count>0</span>
+    <button class="bagbtn" id="bagBtn" type="button" aria-label="Open cart">
+      Cart <span class="fig" data-bag-count>0</span>
     </button>
   </div>
 </header>
@@ -203,9 +203,9 @@ dialog.bag::backdrop{background:rgba(20,20,24,.45);backdrop-filter:blur(6px)}
   </div>
 </section>
 
-<script src="assets/catalogue.js?v=1786616451"></script>
-<script src="assets/site.js?v=1786616451"></script>
-<script src="assets/shop.js?v=1786616451"></script>
+<script src="assets/catalogue.js?v=1786793410"></script>
+<script src="assets/site.js?v=1786793410"></script>
+<script src="assets/shop.js?v=1786793410"></script>
 <script>
 (function(){
   'use strict';
@@ -247,7 +247,7 @@ dialog.bag::backdrop{background:rgba(20,20,24,.45);backdrop-filter:blur(6px)}
       '<p class="detail-pr">'+p.priceText+'</p>'+
       '<div class="sizes">'+SHOP.sizes(p)+'</div>'+
       '<div class="detail-ctas">'+
-        '<button class="add" type="button" data-add>Add to Customize</button>'+
+        '<button class="add" type="button" data-add>Add to Cart</button>'+
         '<a class="buy" href="'+p.url+'" rel="noopener">Buy ready-to-wear ↗</a>'+
       '</div>';
     document.getElementById('dInfo').removeAttribute('data-size');

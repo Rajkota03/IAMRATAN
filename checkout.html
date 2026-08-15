@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checkout — I Am Ratan</title>
+<meta name="description" content="Complete your order with the house.">
+<meta name="theme-color" content="#EDE9E0">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
+<style>
+/* ---------- CHECKOUT ----------
+   Guest by default, and there is no account to make. Forced sign-in is the
+   second-highest cause of abandoned checkouts — a quarter of people leave over
+   it — and on a shop where a man buys two shirts a year an account earns
+   nothing. The order is looked up later by its number, not by a password.
+
+   One column on a phone, summary beside the form on a desktop. Nothing here is
+   a step or a wizard: every field a buyer must fill is visible at once, because
+   a hidden second page is where carts die. */
+.head{padding:var(--clear) 0 0}
+.co{display:grid;gap:var(--sy);margin:var(--sy) 0 var(--sz);align-items:start}
+@media(min-width:900px){.co{grid-template-columns:1.1fr .9fr}}
+
+/* the order, so the buyer can see what they are paying for while they type */
+.sum{border:1px solid var(--hair);padding:var(--s4);display:grid;gap:var(--s3)}
+.sum h2{margin:0;font-weight:300;font-size:1.15rem;letter-spacing:-.018em}
+.line{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s2);
+  align-items:center;padding-bottom:var(--s2);
+  border-bottom:1px solid var(--hair)}
+.line:last-of-type{border-bottom:0;padding-bottom:0}
+.sw{width:1.9rem;height:1.9rem;background:var(--g,#888)}
+.ln-nm{display:grid;line-height:1.3;min-width:0}
+.ln-nm b{font-weight:300;font-size:.95rem}
+.ln-nm span{font-family:var(--mono);font-size:.6875rem;color:var(--muted)}
+.ln-pr{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.8125rem}
+.qty{display:inline-flex;align-items:center;gap:var(--s1)}
+.qty button{width:1.9rem;height:1.9rem;border:1px solid var(--hair);
+  font-family:var(--mono);font-size:.875rem;display:grid;place-items:center}
+.qty button:hover{border-color:currentColor}
+.qty b{font-family:var(--mono);font-size:.8125rem;min-width:1.2rem;text-align:center}
+.tot{display:flex;justify-content:space-between;align-items:baseline;
+  padding-top:var(--s3);border-top:1px solid var(--ink);font-size:1.15rem}
+.tot .fig{font-size:1.3rem}
+.inc{font-size:.75rem;color:var(--muted);margin:var(--s0) 0 0}
+
+/* the form. Same proportions as the bespoke one — it was measured there. */
+.form{display:grid;gap:var(--s3)}
+.pair{display:grid;gap:var(--s2);grid-template-columns:1fr 1fr}
+.f{display:grid;gap:var(--s0);margin:0}
+.f label{font-size:.8125rem;color:var(--muted);line-height:1.3}
+.f input,.f textarea{width:100%;background:var(--room);border:1px solid var(--hair);
+  padding:var(--s2);min-height:2.875rem;font-size:1rem;color:var(--ink);
+  font-family:inherit;transition:border-color .25s var(--settle)}
+.f textarea{min-height:5rem;resize:vertical}
+.f input:focus,.f textarea:focus{outline:0;border-color:var(--ink)}
+.f input[aria-invalid="true"]{border-color:var(--claret)}
+.f .err{font-size:.75rem;line-height:1.4;color:var(--claret)}
+.f .err:empty{display:none}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+.pay{width:100%;min-height:3.25rem;background:var(--ink);color:var(--room);
+  border:0;font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+  text-transform:uppercase;cursor:pointer;margin-top:var(--s1)}
+.pay[disabled]{opacity:.45;cursor:not-allowed}
+.trust{margin:var(--s2) 0 0;font-size:.75rem;color:var(--muted);line-height:1.6}
+.empty-cart{padding:var(--sz) 0;display:grid;gap:var(--s3);justify-items:start}
+</style>
+</head>
+<body data-no-grounds>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="bespoke.html">Bespoke</a>
+    <a href="house.html">About us</a>
+  </nav>
+  <span class="muted">Hyderabad</span>
+</header>
+
+<main id="main">
+  <section class="head">
+    <div class="wrap">
+      <p class="label muted">Checkout</p>
+      <h1 class="display" style="max-width:14ch;margin-top:var(--s1)">Your order.</h1>
+      <div id="co"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="colophon label" style="margin-top:0;border-top:0;padding-top:0">
+      <span>&copy; <span id="year">2026</span> I Am Ratan &middot; Artisan Apparels</span>
+      <span><a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="shipping.html">Shipping &amp; returns</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/store.js?v=1786793410"></script>
+<script src="assets/catalogue.js?v=1786793410"></script>
+<script src="assets/site.js?v=1786793410"></script>
+<script src="assets/shop.js?v=1786793410"></script>
+<script src="assets/iar-house.js?v=1786793410"></script>
+<script src="assets/mark.js?v=1786793410"></script>
+<script src="assets/track.js?v=1786793410"></script>
+<script>
+(function () {
+  'use strict';
+  var root = document.getElementById('co');
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+
+  function draw() {
+    if (!SHOP.bag.length) {
+      root.innerHTML =
+        '<div class="empty-cart">' +
+          '<p class="lede">Your cart is empty.</p>' +
+          '<a class="cta" href="shop.html">See the range</a>' +
+        '</div>';
+      return;
+    }
+
+    var lines = SHOP.bag.map(function (b, i) {
+      var p = SHOP.find(b.slug);
+      return '<div class="line">' +
+        '<span class="sw" style="--g:' + (p ? p.hex : '#888') + '"></span>' +
+        '<span class="ln-nm"><b>' + esc(p ? p.name : b.slug) + '</b>' +
+          '<span>Neck ' + esc(b.size) + '</span></span>' +
+        '<span class="qty">' +
+          '<button type="button" data-less="' + i + '" aria-label="One fewer">&minus;</button>' +
+          '<b>' + b.qty + '</b>' +
+          '<button type="button" data-more="' + i + '" aria-label="One more">+</button>' +
+        '</span>' +
+      '</div>';
+    }).join('');
+
+    root.innerHTML =
+      '<div class="co">' +
+        '<form class="form" id="payForm" novalidate>' +
+          '<div class="pair">' +
+            '<p class="f"><label for="fn">First name</label>' +
+              '<input id="fn" name="fn" autocomplete="given-name" required>' +
+              '<span class="err" id="e-fn"></span></p>' +
+            '<p class="f"><label for="ln">Last name</label>' +
+              '<input id="ln" name="ln" autocomplete="family-name" required>' +
+              '<span class="err" id="e-ln"></span></p>' +
+          '</div>' +
+          '<p class="f"><label for="ph">Mobile</label>' +
+            '<input id="ph" name="ph" type="tel" inputmode="numeric" autocomplete="tel" required>' +
+            '<span class="err" id="e-ph"></span></p>' +
+          '<p class="f"><label for="em">Email</label>' +
+            '<input id="em" name="em" type="email" autocomplete="email" required>' +
+            '<span class="err" id="e-em"></span></p>' +
+          '<p class="f"><label for="ad">Address</label>' +
+            '<textarea id="ad" name="ad" autocomplete="street-address" required></textarea>' +
+            '<span class="err" id="e-ad"></span></p>' +
+          '<div class="pair">' +
+            '<p class="f"><label for="ct">City</label>' +
+              '<input id="ct" name="ct" autocomplete="address-level2" required>' +
+              '<span class="err" id="e-ct"></span></p>' +
+            '<p class="f"><label for="pc">PIN code</label>' +
+              '<input id="pc" name="pc" inputmode="numeric" autocomplete="postal-code" required>' +
+              '<span class="err" id="e-pc"></span></p>' +
+          '</div>' +
+          /* The state is not decoration. GST is CGST+SGST within Telangana and
+             IGST outside it, so the invoice cannot be worked out without this. */
+          '<p class="f"><label for="st">State</label>' +
+            '<select id="st" name="st" autocomplete="address-level1" required>' +
+              '<option value="">Choose</option><option>Andaman & Nicobar</option><option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chandigarh</option><option>Chhattisgarh</option><option>Dadra & Nagar Haveli and Daman & Diu</option><option>Delhi</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jammu & Kashmir</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Ladakh</option><option>Lakshadweep</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Puducherry</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option></select>' +
+            '<span class="err" id="e-st"></span></p>' +
+          '<p class="hp"><label for="company">Company</label>' +
+            '<input id="company" name="company" tabindex="-1" autocomplete="off"></p>' +
+          '<button class="pay" type="submit" id="payBtn">Place the order</button>' +
+          '<p class="trust" id="trust"></p>' +
+        '</form>' +
+
+        '<aside class="sum">' +
+          '<h2>What you are ordering</h2>' +
+          lines +
+          '<div class="tot"><span>Total</span>' +
+            '<b class="fig">' + SHOP.rupees(SHOP.total()) + '</b></div>' +
+          '<p class="inc">Inclusive of all taxes.' +
+            '<span id="ship"></span></p>' +
+        '</aside>' +
+      '</div>';
+
+    var S = window.IARSTORE;
+    if (S) S.ready.then(function (st) {
+      if (!st.live) return;
+      var el = document.getElementById('ship');
+      if (el) el.textContent = ' ' + st.deliveryLine() + '.';
+    });
+
+    /* Until Razorpay is live the order is completed in writing — the same
+       handoff the house already uses. The button says exactly what it does, so
+       nobody taps expecting a card form. When the gateway is wired this
+       function is the only thing that changes. */
+    var trust = document.getElementById('trust');
+    trust.innerHTML = 'The house confirms every order before it is made. ' +
+      'Card and UPI payment is being connected — until then your order reaches ' +
+      'the house directly and payment is arranged with you.';
+  }
+
+  var RULES = [
+    ['fn', function (v) { return v.trim().length >= 2; }, 'Please give your first name.'],
+    ['ln', function (v) { return v.trim().length >= 1; }, 'Please give your last name.'],
+    ['ph', function (v) { return v.replace(/\D/g, '').length >= 10; },
+      'That does not look like a full mobile number — ten digits or more.'],
+    ['em', function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); },
+      'That email address is missing something — check for a typo.'],
+    ['ad', function (v) { return v.trim().length >= 8; }, 'We need somewhere to send it.'],
+    ['ct', function (v) { return v.trim().length >= 2; }, 'Which city?'],
+    ['pc', function (v) { return /^\d{6}$/.test(v.replace(/\s/g, '')); },
+      'An Indian PIN code is six digits.'],
+    ['st', function (v) { return !!v; }, 'Which state?']
+  ];
+
+  document.addEventListener('click', function (e) {
+    var less = e.target.closest('[data-less]'), more = e.target.closest('[data-more]');
+    if (!less && !more) return;
+    var i = +(less || more).getAttribute(less ? 'data-less' : 'data-more');
+    var item = SHOP.bag[i];
+    if (!item) return;
+    /* setQty owns the saving and the redraw; going to zero removes the line */
+    SHOP.setQty(i, item.qty + (more ? 1 : -1));
+  });
+
+  document.addEventListener('submit', function (e) {
+    if (e.target.id !== 'payForm') return;
+    e.preventDefault();
+    if (document.getElementById('company').value) return;   /* a bot filled the trap */
+
+    var ok = true, first = null;
+    RULES.forEach(function (r) {
+      var el = document.getElementById(r[0]), err = document.getElementById('e-' + r[0]);
+      var good = r[1](el.value);
+      err.textContent = good ? '' : r[2];
+      el.setAttribute('aria-invalid', good ? 'false' : 'true');
+      if (!good && !first) first = el;
+      if (!good) ok = false;
+    });
+    if (!ok) { first.focus(); return; }
+
+    var g = function (id) { return document.getElementById(id).value.trim(); };
+    var body =
+      'A new order from the website.\n\n' +
+      SHOP.bag.map(function (b) {
+        var p = SHOP.find(b.slug);
+        return '  ' + (p ? p.name : b.slug) + '  ·  neck ' + b.size +
+               '  ·  x' + b.qty + '  ·  ' + (p ? p.priceText : '');
+      }).join('\n') +
+      '\n\n  Total  ' + SHOP.rupees(SHOP.total()) +
+      '\n\nName   ' + g('fn') + ' ' + g('ln') +
+      '\nMobile ' + g('ph') +
+      '\nEmail  ' + g('em') +
+      '\nAddress\n' + g('ad') + '\n' + g('ct') + ' ' + g('pc') +
+      '\n' + g('st') + '\n';
+
+    if (window.IARTRACK) window.IARTRACK.track('order_placed', {
+      items: SHOP.count(), value: SHOP.total()
+    });
+
+    /* A reference the customer can quote on the phone, and the house can find.
+       Date first so a list of them sorts itself; the tail is random so two
+       orders in the same minute cannot collide. */
+    var d = new Date();
+    var ref = 'IAR-' + d.getFullYear().toString().slice(2) +
+      String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') +
+      '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+
+    var order = {
+      ref: ref,
+      name: g('fn') + ' ' + g('ln'),
+      phone: g('ph'),
+      email: g('em'),
+      address: g('ad'),
+      city: g('ct'),
+      pincode: g('pc'),
+      state: g('st'),
+      total: SHOP.total(),
+      items: SHOP.bag.map(function (b) {
+        var p = SHOP.find(b.slug);
+        return { slug: b.slug, name: p ? p.name : b.slug, size: b.size,
+                 qty: b.qty, price: p ? p.price : 0 };
+      })
+    };
+
+    var msg = body.replace('A new order from the website.',
+                           'A new order from the website.\n\n  Reference  ' + ref);
+    var go = function () {
+      location.href = 'https://wa.me/918282826264?text=' + encodeURIComponent(msg);
+    };
+
+    /* Record it, then hand it to WhatsApp. The order must never be lost because
+       the database was asleep, so a failure here still sends the customer on —
+       the house gets the order either way, and only the tidy copy is missing. */
+    var btn = document.getElementById('payBtn');
+    btn.disabled = true;
+    btn.textContent = 'Placing the order…';
+    fetch('https://hckbqcphijihqbysibos.supabase.co/rest/v1/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhja2JxY3BoaWppaHFieXNpYm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDY1ODQsImV4cCI6MjEwMjI4MjU4NH0.wg5IdL1ArScKk4dWWTtX8xyi8s4Z-1B9gKQQJBvX9V8',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhja2JxY3BoaWppaHFieXNpYm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDY1ODQsImV4cCI6MjEwMjI4MjU4NH0.wg5IdL1ArScKk4dWWTtX8xyi8s4Z-1B9gKQQJBvX9V8',
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify([order])
+    }).then(go, go);
+  });
+
+  SHOP.on(draw);
+  draw();
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+/* the seller details the e-commerce rules require, printed only once the house
+   has actually given them — see Store.sellerHTML */
+(function(){var f=document.querySelector('.colophon');if(!f||!window.IARSTORE)return;
+window.IARSTORE.ready.then(function(S){var h=S.sellerHTML&&S.sellerHTML();if(!h)return;
+var p=document.createElement('p');p.className='label muted';
+p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
+p.innerHTML=h;f.appendChild(p);});})();
+</script>
+</body>
+</html>

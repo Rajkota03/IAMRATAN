@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786616451">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
 <style>
 :root{
   --sans:'Anek Latin',system-ui,sans-serif;
@@ -150,17 +150,17 @@ dialog.bag::backdrop{background:rgba(10,10,12,.55);backdrop-filter:blur(6px)}
     <a href="bespoke.html">Bespoke</a>
     <a href="house.html">About us</a>
   </nav>
-  <button class="bagbtn" id="bagBtn" type="button" aria-label="Open Customize">
-    Customize <span class="fig" data-bag-count>0</span>
+  <button class="bagbtn" id="bagBtn" type="button" aria-label="Open cart">
+    Cart <span class="fig" data-bag-count>0</span>
   </button>
 </header>
 
 <nav class="dots" id="dots" aria-label="The twenty-five"></nav>
 <main id="rooms"></main>
 
-<script src="assets/catalogue.js?v=1786616451"></script>
-<script src="assets/site.js?v=1786616451"></script>
-<script src="assets/shop.js?v=1786616451"></script>
+<script src="assets/catalogue.js?v=1786793410"></script>
+<script src="assets/site.js?v=1786793410"></script>
+<script src="assets/shop.js?v=1786793410"></script>
 <script>
 (function(){
   'use strict';
@@ -186,7 +186,7 @@ dialog.bag::backdrop{background:rgba(10,10,12,.55);backdrop-filter:blur(6px)}
           '<p class="room-price">'+p.priceText+'</p>'+
           '<div class="sizes">'+SHOP.sizes(p)+'</div>'+
           '<div class="room-ctas">'+
-            '<button class="add" type="button" data-add>Add to Customize</button>'+
+            '<button class="add" type="button" data-add>Add to Cart</button>'+
             '<a class="buy" href="product.html?p='+p.slug+'">See the shirt →</a>'+
           '</div>'+
         '</div>'+
@@ -257,6 +257,6 @@ dialog.bag::backdrop{background:rgba(10,10,12,.55);backdrop-filter:blur(6px)}
   }
 })();
 </script>
-<script src="assets/mark.js?v=1786616451"></script>
+<script src="assets/mark.js?v=1786793410"></script>
 </body>
 </html>

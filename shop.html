@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786616451">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
 <style>
 /* THE GRID
    The shoppable one. Nine garments on the first screen, filters that actually
@@ -102,6 +102,17 @@
 .card-cat{display:block;margin-top:var(--s0);font-family:var(--mono);
   font-size:.5625rem;letter-spacing:.16em;text-transform:uppercase;
   color:var(--muted)}
+/* ---------- what the house says about stock ----------
+   Not a sentence written here. The number comes from the database, the words
+   appear only if the house left the switch on, and the threshold is theirs.
+   A cloth with no stock recorded says nothing at all — silence is correct when
+   the house has not told us, and only a real zero draws "sold out". */
+.card-stock{display:block;margin-top:var(--s0);font-family:var(--mono);
+  font-size:.5625rem;letter-spacing:.14em;text-transform:uppercase}
+.card-stock.low{color:var(--claret)}
+.card-stock.gone{color:var(--muted)}
+.card.is-gone .card-shot img{filter:grayscale(1);opacity:.55}
+
 .empty{padding:var(--sy) 0;color:var(--muted)}
 @media(prefers-reduced-motion:reduce){
   .card:hover .card-shot img{transform:none}
@@ -197,11 +208,13 @@
   </div>
 </footer>
 
-<script src="assets/catalogue.js?v=1786616451"></script>
-<script src="assets/shots.js?v=1786616451"></script>
-<script src="assets/site.js?v=1786616451"></script>
-<script src="assets/iar-house.js?v=1786616451"></script>
-<script src="assets/mark.js?v=1786616451"></script>
+<script src="assets/store.js?v=1786793410"></script>
+<script src="assets/catalogue.js?v=1786793410"></script>
+<script src="assets/shots.js?v=1786793410"></script>
+<script src="assets/site.js?v=1786793410"></script>
+<script src="assets/iar-house.js?v=1786793410"></script>
+<script src="assets/mark.js?v=1786793410"></script>
+<script src="assets/track.js?v=1786793410"></script>
 <script>
 (function () {
   'use strict';
@@ -256,7 +269,23 @@
     empty.hidden = list.length > 0;
     grid.innerHTML = list.map(function (p) {
       var alt = cardAlt(p);
-      return '<a class="card" href="product.html?p=' + encodeURIComponent(p.slug) + '" ' +
+      /* the house's stock, if the house is keeping any */
+      var S = window.IARSTORE, gone = S && S.allGone(p.slug), note = '';
+      if (S) {
+        if (gone) note = 'Sold out';
+        else {
+          /* the tightest size is what the card should warn about — a cloth with
+             one left in a 44 is nearly gone even if the 40s are stacked high */
+          var lowest = '';
+          ['39','40','42','44','46'].forEach(function (z) {
+            var n = S.lowNote(p.slug, z);
+            if (n && !lowest) lowest = n + ' in ' + z;
+          });
+          note = lowest;
+        }
+      }
+      return '<a class="card' + (gone ? ' is-gone' : '') +
+        '" href="product.html?p=' + encodeURIComponent(p.slug) + '" ' +
         'style="--g:' + p.hex + '">' +
         '<span class="card-shot">' +
           '<img src="' + card(p) + '" alt="' + p.name +
@@ -271,6 +300,8 @@
         '<span class="card-nm">' + p.name +
           '<span class="card-pr">' + p.priceText + '</span></span>' +
         '<span class="card-cat">' + (p.cat || 'The range') + '</span>' +
+        (note ? '<span class="card-stock ' + (gone ? 'gone' : 'low') + '">' +
+                note + '</span>' : '') +
       '</a>';
     }).join('');
   }
@@ -327,9 +358,39 @@
     if (swiped) { e.preventDefault(); e.stopPropagation(); swiped = false; }
   }, true);
 
+  /* Draw immediately from the catalogue that shipped with the page, then draw
+     again when the house's own data arrives. The grid is never empty waiting
+     for a network call, and if that call never lands the shop is exactly what
+     it was before there was a database. */
   draw();
+  if (window.IARSTORE) {
+    window.IARSTORE.ready.then(function (S) {
+      if (!S.live) return;
+      /* the house may have hidden a cloth, or hidden the sold-out ones */
+      R = R.filter(function (p) { return !S.hidden(p.slug); });
+      /* and their prices are the truth, not the ones bundled here */
+      R.forEach(function (p) {
+        var np = S.priceOf(p.slug);
+        if (np !== null && np !== p.price) {
+          p.price = np;
+          p.priceText = '₹' + np.toLocaleString('en-IN');
+        }
+      });
+      document.getElementById('total').textContent = R.length;
+      draw();
+    });
+  }
 })();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script>
+/* the seller details the e-commerce rules require, printed only once the house
+   has actually given them — see Store.sellerHTML */
+(function(){var f=document.querySelector('.colophon');if(!f||!window.IARSTORE)return;
+window.IARSTORE.ready.then(function(S){var h=S.sellerHTML&&S.sellerHTML();if(!h)return;
+var p=document.createElement('p');p.className='label muted';
+p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
+p.innerHTML=h;f.appendChild(p);});})();
+</script>
 </body>
 </html>

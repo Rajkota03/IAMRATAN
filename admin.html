@@ -1,0 +1,1313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The desk — I Am Ratan</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#EDE9E0">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
+<style>
+/* ---------- THE DESK ----------
+   A control room, not a dashboard. The first question it answers is "what
+   needs me today?" — so Action Required sits ABOVE the numbers, not below a
+   graph. A shirtmaker opening this at ten in the morning wants a list of
+   things to do, and the numbers only to confirm the day is going well.
+
+   SIZES HERE ARE NECK SIZES — 39/40/42/44/46 — and 41/43/45 are the three the
+   house does not cut. Nothing says S, M or L, because this shop does not sell
+   them and the uncut necks are the whole bespoke argument.
+
+   It borrows the site's own type, hairlines and spacing scale on purpose. The
+   house should not feel like it is leaving its own shop to run its own shop. */
+
+body{overflow-x:hidden}
+.shell{display:grid;grid-template-columns:1fr;min-height:100svh}
+@media(min-width:900px){.shell{grid-template-columns:15rem 1fr}}
+
+/* the sidebar */
+.side{border-right:1px solid var(--hair);padding:var(--clear) var(--s4) var(--s5);
+  display:none}
+@media(min-width:900px){.side{display:block;position:sticky;top:0;height:100svh;
+  overflow-y:auto}}
+.side h2{font-family:var(--mono);font-size:.5625rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);font-weight:400;
+  margin:var(--s4) 0 var(--s1)}
+.side h2:first-of-type{margin-top:0}
+.nav-item{display:flex;justify-content:space-between;align-items:center;
+  gap:var(--s2);width:100%;text-align:left;padding:var(--s1) 0;font-size:.9375rem;
+  color:var(--muted);cursor:pointer;background:none;border:0;
+  transition:color .25s var(--settle)}
+.nav-item:hover{color:var(--ink)}
+.nav-item[aria-current="true"]{color:var(--ink)}
+.nav-item .pip{font-family:var(--mono);font-size:.625rem;min-width:1.3rem;
+  height:1.3rem;display:grid;place-items:center;border-radius:1rem;
+  background:var(--claret);color:var(--room)}
+.nav-item .pip:empty{display:none}
+
+/* a phone gets a scrolling rail instead */
+.rail{display:flex;gap:var(--s1);overflow-x:auto;scrollbar-width:none;
+  padding:var(--s2) var(--gut);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:20;background:var(--room)}
+.rail::-webkit-scrollbar{display:none}
+.rail .nav-item{width:auto;flex:0 0 auto;padding:var(--s1) var(--s3);
+  border:1px solid var(--hair);border-radius:2rem;font-family:var(--mono);
+  font-size:.625rem;letter-spacing:.14em;text-transform:uppercase}
+.rail .nav-item[aria-current="true"]{background:var(--ink);color:var(--room);
+  border-color:var(--ink)}
+@media(min-width:900px){.rail{display:none}}
+
+.work{padding:var(--s5) var(--gut) var(--sz);min-width:0}
+@media(min-width:900px){.work{padding-top:var(--clear)}}
+.work h1{font-weight:200;font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:-.03em;
+  margin:0 0 var(--s1)}
+.eyebrow{font-family:var(--mono);font-size:.5625rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);margin:0}
+
+/* the gate */
+.gate{max-width:24rem;margin:var(--sy) auto;display:grid;gap:var(--s3)}
+.gate p{margin:0;color:var(--muted);font-size:.9375rem;line-height:1.6}
+.f{display:grid;gap:var(--s0);margin:0}
+.f label{font-size:.8125rem;color:var(--muted)}
+.f input{width:100%;background:var(--room);border:1px solid var(--hair);
+  padding:0 var(--s2);min-height:2.875rem;font-size:1rem;color:var(--ink)}
+.f input:focus{outline:0;border-color:var(--ink)}
+.btn{border:1px solid currentColor;background:none;padding:var(--s3) var(--s5);
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+  text-transform:uppercase;cursor:pointer;
+  transition:background-color .35s var(--settle),color .35s var(--settle)}
+.btn:hover{background:var(--ink);color:var(--room)}
+.btn.small{padding:var(--s1) var(--s3);font-size:.5625rem;letter-spacing:.14em}
+.note{margin:0;font-size:.8125rem;line-height:1.6}
+.note.bad{color:var(--claret)}
+
+/* what needs doing — deliberately the first thing on the page */
+.todo{border:1px solid var(--ink);padding:var(--s4);margin:0 0 var(--s5);
+  display:grid;gap:var(--s2)}
+.todo h3{margin:0;font-family:var(--mono);font-size:.5625rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);font-weight:400}
+.todo button{display:flex;align-items:center;gap:var(--s2);width:100%;
+  text-align:left;background:none;border:0;cursor:pointer;font-size:1rem;
+  padding:var(--s1) 0}
+.todo button:hover{text-decoration:underline;text-underline-offset:3px}
+.dot{width:.5rem;height:.5rem;border-radius:50%;flex:0 0 auto}
+.dot.red{background:var(--claret)}
+.dot.amber{background:#B8860B}
+.dot.green{background:#4A6741}
+.todo b{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.todo .clear{margin:0;color:var(--muted);font-size:.9375rem}
+
+/* the numbers */
+.figs{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
+@media(min-width:680px){.figs{grid-template-columns:repeat(4,1fr)}}
+.fig-box{border:1px solid var(--hair);padding:var(--s3);display:grid;gap:var(--s0)}
+.fig-box b{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:1.6rem;font-weight:400;line-height:1.1}
+.fig-box span{font-family:var(--mono);font-size:.5625rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted)}
+.fig-box.warn b{color:var(--claret)}
+
+.block{margin:var(--sy) 0 0}
+.block h3{margin:0 0 var(--s3);font-family:var(--mono);font-size:.5625rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:400}
+
+/* the funnel, as bars rather than a chart library */
+.funnel{display:grid;gap:var(--s1)}
+.step{display:grid;grid-template-columns:11rem 1fr auto;gap:var(--s2);
+  align-items:center;font-size:.875rem}
+@media(max-width:600px){.step{grid-template-columns:8rem 1fr auto}}
+.bar{height:1.4rem;background:var(--under);position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--ink);display:block}
+.step .n{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.8125rem}
+.step .pc{color:var(--muted);font-family:var(--mono);font-size:.6875rem}
+
+/* the lists */
+table{width:100%;border-collapse:collapse;font-size:.9375rem}
+.scroll{overflow-x:auto}
+th{text-align:left;font-family:var(--mono);font-size:.5625rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);font-weight:400;white-space:nowrap;
+  padding:0 var(--s2) var(--s2) 0;border-bottom:1px solid var(--hair)}
+td{padding:var(--s2) var(--s2) var(--s2) 0;border-bottom:1px solid var(--hair);
+  vertical-align:middle}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sw{width:1.4rem;height:1.4rem;display:inline-block;vertical-align:middle;
+  background:var(--g,#888)}
+input.cell{width:5.5rem;background:var(--room);border:1px solid var(--hair);
+  padding:var(--s1);font-family:var(--mono);font-size:.8125rem;color:var(--ink)}
+input.cell:focus{outline:0;border-color:var(--ink)}
+input.cell.saved{border-color:var(--ink);background:var(--under)}
+.wide{width:100%;max-width:22rem}
+select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1);
+  font-family:var(--mono);font-size:.75rem;color:var(--ink)}
+.tick{display:inline-flex;align-items:center;gap:var(--s1);cursor:pointer;
+  font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;text-transform:uppercase}
+.tick input{width:1.1rem;height:1.1rem}
+.empty{padding:var(--sy) 0;color:var(--muted);max-width:52ch;line-height:1.6}
+.hint{margin:0 0 var(--s3);color:var(--muted);font-size:.875rem;line-height:1.6;
+  max-width:62ch}
+.stock-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1)}
+.stock-grid label{display:grid;gap:var(--s0);font-family:var(--mono);
+  font-size:.5625rem;letter-spacing:.12em;color:var(--muted)}
+.stock-grid input{width:100%;background:var(--room);border:1px solid var(--hair);
+  padding:var(--s1);font-family:var(--mono);font-size:.8125rem;color:var(--ink);
+  text-align:center}
+.stock-grid input.zero{border-color:var(--claret);color:var(--claret)}
+.stock-grid input.low{border-color:#B8860B}
+.pill{font-family:var(--mono);font-size:.5625rem;letter-spacing:.14em;
+  text-transform:uppercase;border:1px solid var(--hair);padding:2px var(--s1);
+  white-space:nowrap}
+.filters{display:flex;flex-wrap:wrap;gap:var(--s1);margin:0 0 var(--s4);
+  align-items:center}
+
+/* ---------- the measurement sheet ----------
+   Eight numbers in a row a tailor can fill without moving his eyes far. On a
+   phone they fall to four and then two, because a sitting is often typed
+   standing up with the tape still in hand. */
+.sheet{display:grid;gap:var(--s3);max-width:52rem;margin:0 0 var(--s5)}
+.sheet label{display:grid;gap:var(--s0);font-size:.8125rem;color:var(--muted)}
+.sheet input,.sheet select{background:var(--room);border:1px solid var(--hair);
+  padding:var(--s1) var(--s2);min-height:2.5rem;font-size:1rem;color:var(--ink)}
+.sheet input:focus,.sheet select:focus{outline:0;border-color:var(--ink)}
+.f3{display:grid;grid-template-columns:1fr;gap:var(--s2)}
+@media(min-width:640px){.f3{grid-template-columns:repeat(3,1fr)}}
+.f1{display:grid;gap:var(--s0)}
+.meas{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
+@media(min-width:520px){.meas{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:900px){.meas{grid-template-columns:repeat(8,1fr)}}
+.meas input{font-family:var(--mono);text-align:center;
+  font-variant-numeric:tabular-nums}
+
+/* ---------- photographs ----------
+   Big enough to judge, because the whole reason this screen exists is that a
+   thumbnail grid cannot tell you whether the cuff shot is the good one. */
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(9rem,1fr));
+  gap:var(--s2)}
+.shot{margin:0;border:1px solid var(--hair);background:var(--under);
+  cursor:grab;display:grid;gap:var(--s1)}
+.shot:first-child{border-color:var(--ink)}
+.shot img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.shot figcaption{display:flex;gap:var(--s1);align-items:center;
+  justify-content:space-between;padding:0 var(--s1) var(--s1);flex-wrap:wrap}
+.shot.lift{opacity:.4;cursor:grabbing}
+
+/* ---------- paper ----------
+   The invoice and the shipping label are the only things here meant to leave
+   the screen. They are plain black on white with no house colour, because a
+   tax invoice is a legal document and a courier label is read by a scanner —
+   neither is a place for art direction. */
+.paper{background:#fff;color:#111;padding:var(--s5);border:1px solid var(--hair);
+  max-width:46rem;margin:0 0 var(--s4);font-size:.875rem;line-height:1.55}
+.paper h2{margin:0 0 var(--s1);font-size:1.25rem;font-weight:400;letter-spacing:-.01em}
+.paper .row{display:flex;justify-content:space-between;gap:var(--s4);
+  flex-wrap:wrap;margin-bottom:var(--s3)}
+.paper table{font-size:.8125rem}
+.paper th,.paper td{border-bottom:1px solid #ddd;color:#111}
+.paper .tot td{border-bottom:0;padding-top:var(--s2)}
+.paper .grand td{border-top:1px solid #111;font-size:1rem;padding-top:var(--s2)}
+.paper .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.paper .small{font-size:.75rem;color:#555}
+.label-box{background:#fff;color:#111;border:2px solid #111;padding:var(--s4);
+  max-width:26rem;font-size:.9375rem;line-height:1.5}
+.label-box .to{font-size:1.15rem;font-weight:400;margin:var(--s2) 0 0}
+.label-box .ref{font-family:var(--mono);font-size:1.4rem;letter-spacing:.06em;
+  border-top:2px solid #111;margin-top:var(--s3);padding-top:var(--s2)}
+.missing-fact{border:1px solid var(--claret);color:var(--claret);
+  padding:var(--s2) var(--s3);margin:0 0 var(--s3);font-size:.8125rem;
+  line-height:1.5}
+@media print{
+  .side,.rail,.top,.filters,.hint,.btn,.eyebrow,h1{display:none!important}
+  .work{padding:0}
+  .paper,.label-box{border:0;max-width:none;padding:0}
+  body{background:#fff}
+}
+</style>
+</head>
+<body data-no-grounds>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav"><a href="shop.html">The shop</a></nav>
+  <span class="muted" id="who"></span>
+</header>
+
+<main id="main">
+  <div class="shell">
+    <aside class="side" id="side"></aside>
+    <div style="min-width:0">
+      <div class="rail" id="rail"></div>
+      <div class="work" id="work"></div>
+    </div>
+  </div>
+</main>
+
+<script src="assets/admin.js?v=1786793410"></script>
+<script src="assets/iar-house.js?v=1786793410"></script>
+<script src="assets/mark.js?v=1786793410"></script>
+<script>
+(function () {
+  'use strict';
+  var A = window.IARADMIN;
+  var side = document.getElementById('side'),
+      rail = document.getElementById('rail'),
+      work = document.getElementById('work'),
+      who  = document.getElementById('who');
+  var NECKS = ['39','40','42','44','46'];
+  var PRODUCTS = [], STOCK = {}, KPI = {};
+  var here = 'dashboard';
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+  function rupees(n) { return '\u20B9' + Number(n || 0).toLocaleString('en-IN'); }
+  function day(t) { return t ? String(t).slice(0, 10) : '\u2014'; }
+
+  /* ---------- the gate ---------- */
+
+  function gate(msg, bad) {
+    who.textContent = '';
+    side.innerHTML = ''; rail.innerHTML = '';
+    work.innerHTML =
+      '<form class="gate" id="in">' +
+        '<p class="eyebrow">The house</p><h1>The desk.</h1>' +
+        '<p>Sign in to run the shop. Only addresses the house has added can get ' +
+          'past this \u2014 an account on its own opens nothing.</p>' +
+        '<p class="f"><label for="em">Email</label>' +
+          '<input id="em" type="email" autocomplete="email" required></p>' +
+        '<p class="f"><label for="pw">Password</label>' +
+          '<input id="pw" type="password" autocomplete="current-password" required></p>' +
+        '<button class="btn" type="submit">Sign in</button>' +
+        '<button class="btn" type="button" id="first">First time \u2014 create my login</button>' +
+        (msg ? '<p class="note' + (bad ? ' bad' : '') + '">' + esc(msg) + '</p>' : '') +
+      '</form>';
+
+    function go(fn) {
+      var em = document.getElementById('em').value.trim();
+      var pw = document.getElementById('pw').value;
+      if (!em || !pw) return gate('Both fields, please.', true);
+      fn(em, pw).then(function (ok) {
+        if (ok === 'confirm')
+          return gate('Account made. Confirm it from the email Supabase sent, ' +
+                      'then sign in.', false);
+        if (!ok)
+          return gate('That address is not on the house\u2019s list.', true);
+        boot();
+      }).catch(function (e) { gate(e.message, true); });
+    }
+    document.getElementById('in').addEventListener('submit', function (e) {
+      e.preventDefault(); go(A.signIn);
+    });
+    document.getElementById('first').addEventListener('click', function () { go(A.signUp); });
+  }
+
+  /* ---------- navigation ---------- */
+
+  var NAV = [
+    ['', 'Dashboard', [['dashboard','Dashboard']]],
+    ['Commerce', null, [['orders','Orders'],['returns','Returns'],
+                        ['customers','Customers'],['book','Measurement book']]],
+    ['Catalogue', null, [['products','The range'],['inventory','Inventory'],
+                         ['collections','Collections']]],
+    ['Shop front', null, [['website','Website'],['discounts','Offers']]],
+    ['Insights', null, [['analytics','Analytics'],['reports','Reports'],
+                        ['demand','Bespoke demand'],['enquiries','Enquiries']]],
+    ['System', null, [['settings','Settings']]]
+  ];
+
+  function pips() {
+    return {
+      orders: KPI.orders_new || 0,
+      returns: KPI.returns_open || 0,
+      enquiries: KPI.enquiries_open || 0,
+      inventory: KPI.necks_out || 0
+    };
+  }
+
+  function drawNav() {
+    var p = pips();
+    side.innerHTML = NAV.map(function (g) {
+      return (g[0] ? '<h2>' + g[0] + '</h2>' : '') + g[2].map(function (it) {
+        return '<button class="nav-item" data-go="' + it[0] + '"' +
+          (here === it[0] ? ' aria-current="true"' : '') + '>' +
+          '<span>' + it[1] + '</span>' +
+          '<span class="pip">' + (p[it[0]] ? p[it[0]] : '') + '</span></button>';
+      }).join('');
+    }).join('');
+    rail.innerHTML = NAV.reduce(function (a, g) { return a.concat(g[2]); }, [])
+      .map(function (it) {
+        return '<button class="nav-item" data-go="' + it[0] + '"' +
+          (here === it[0] ? ' aria-current="true"' : '') + '>' + it[1] +
+          (p[it[0]] ? ' ' + p[it[0]] : '') + '</button>';
+      }).join('');
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-go]');
+    if (!b) return;
+    here = b.getAttribute('data-go');
+    drawNav(); render();
+  });
+
+  /* ---------- the pages ---------- */
+
+  var TITLES = {
+    dashboard:'Today.', orders:'Orders.', order:'The order.', returns:'Returns & exchanges.',
+    customers:'Customers.', products:'The range.', inventory:'Inventory.',
+    analytics:'Analytics.', demand:'Bespoke demand.', enquiries:'Enquiries.',
+    settings:'Settings.', book:'The measurement book.', sheet:'The sheet.',
+    collections:'Collections.', discounts:'Offers.', website:'The shop windows.',
+    reports:'Reports.', cloth:'The cloth.'
+  };
+
+  function shell(inner) {
+    work.innerHTML = '<p class="eyebrow">The house</p><h1>' +
+      (TITLES[here] || '') + '</h1><div id="body">' + inner + '</div>';
+  }
+  function body(html) { document.getElementById('body').innerHTML = html; }
+  function waiting() { return '<p class="empty">Reading\u2026</p>'; }
+  function needsSQL(e) {
+    return '<p class="empty">This screen needs a table that does not exist yet. ' +
+      'Run the SQL files in <code>iar-lab/</code> in order, then reload.<br><br>' +
+      '<span class="muted">' + esc(e && e.message) + '</span></p>';
+  }
+
+  function render() {
+    shell(waiting());
+    ({ dashboard:dashboard, orders:orders, returns:returns, customers:customers,
+       products:products, inventory:inventory, analytics:analytics,
+       demand:demand, enquiries:enquiries, settings:settings,
+       book:book, collections:collections, discounts:discounts,
+       website:website, reports:reports }[here] || dashboard)();
+  }
+
+  /* ---------- dashboard ---------- */
+
+  function dashboard() {
+    Promise.all([A.kpis(), A.actions(), A.best()]).then(function (r) {
+      KPI = r[0] || {}; drawNav();
+      var acts = r[1] || [], best = r[2] || [];
+
+      var todo = acts.length
+        ? acts.map(function (a) {
+            return '<button data-go="' + a.go + '">' +
+              '<span class="dot ' + a.urgency + '"></span>' +
+              '<b>' + a.n + '</b> ' + esc(a.what) + '</button>';
+          }).join('')
+        : '<p class="clear">Nothing needs you. The shop is in order.</p>';
+
+      var figs = [
+        ['Sales today', rupees(KPI.sales_today), false],
+        ['Orders today', KPI.orders_today || 0, false],
+        ['Average order', rupees(KPI.avg_order), false],
+        ['Shirts today', KPI.units_today || 0, false],
+        ['Awaiting confirmation', KPI.orders_new || 0, KPI.orders_new > 0],
+        ['Necks sold out', KPI.necks_out || 0, KPI.necks_out > 0],
+        ['Returns open', KPI.returns_open || 0, KPI.returns_open > 0],
+        ['Conversion, 7 days', (KPI.conversion_week || 0) + '%', false]
+      ].map(function (f) {
+        return '<div class="fig-box' + (f[2] ? ' warn' : '') + '"><b>' +
+          esc(f[1]) + '</b><span>' + f[0] + '</span></div>';
+      }).join('');
+
+      var sellers = best.length
+        ? '<div class="scroll"><table><thead><tr><th>Cloth</th><th>Sold</th>' +
+          '<th>Left</th><th>Revenue</th></tr></thead><tbody>' +
+          best.slice(0, 8).map(function (b) {
+            return '<tr><td>' + esc(b.name || b.slug) + '</td>' +
+              '<td class="num">' + b.sold + '</td>' +
+              '<td class="num"' + (b.in_stock <= 3 ? ' style="color:var(--claret)"' : '') +
+                '>' + b.in_stock + (b.in_stock <= 3 ? ' \u26A0' : '') + '</td>' +
+              '<td class="num">' + rupees(b.revenue) + '</td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No sales yet. When the first order arrives the ' +
+          'best sellers appear here, with what is left of each.</p>';
+
+      body(
+        '<div class="todo"><h3>Needs you today</h3>' + todo + '</div>' +
+        '<div class="figs">' + figs + '</div>' +
+        '<div class="block"><h3>Best selling</h3>' + sellers + '</div>'
+      );
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- orders ---------- */
+
+  var FLOW = ['new','making','packed','shipped','delivered','cancelled'];
+  var ofilter = 'all';
+
+  function orders() {
+    A.orders().then(function (rows) {
+      var shown = ofilter === 'all' ? rows
+        : rows.filter(function (o) { return o.status === ofilter; });
+      var chips = ['all'].concat(FLOW).map(function (f) {
+        var n = f === 'all' ? rows.length
+          : rows.filter(function (o) { return o.status === f; }).length;
+        return '<button class="btn small" data-of="' + f + '"' +
+          (ofilter === f ? ' style="background:var(--ink);color:var(--room)"' : '') +
+          '>' + f + (n ? ' ' + n : '') + '</button>';
+      }).join('');
+
+      body('<div class="filters">' + chips + '</div>' + (shown.length
+        ? '<div class="scroll"><table><thead><tr><th>Ref</th><th>Who</th>' +
+          '<th>What</th><th>Total</th><th>Placed</th><th>Stage</th>' +
+          '</tr></thead><tbody>' +
+          shown.map(function (o) {
+            var what = (o.items || []).map(function (i) {
+              return esc(i.name || i.slug) + ' \u00B7 neck ' + esc(i.size) +
+                ' \u00D7' + (i.qty || 1);
+            }).join('<br>');
+            return '<tr><td class="num"><button class="btn small" data-open="' +
+                o.id + '">' + esc(o.ref) + '</button></td>' +
+              '<td>' + esc(o.name) + '<br><span class="muted">' + esc(o.phone) +
+                '</span><br><span class="muted">' + esc(o.city || '') + '</span></td>' +
+              '<td>' + what + '</td>' +
+              '<td class="num">' + rupees(o.total) + '</td>' +
+              '<td class="num">' + day(o.placed_at) + '</td>' +
+              '<td><select class="cell" data-order="' + o.id + '">' +
+                FLOW.map(function (st) {
+                  return '<option value="' + st + '"' +
+                    (st === o.status ? ' selected' : '') + '>' + st + '</option>';
+                }).join('') + '</select></td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No orders in that stage.</p>'));
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- one order: invoice and label ----------
+     Both are printed from settings the house fills in once. A fact that has
+     not been given is not invented — the line simply does not appear, and the
+     screen says which one is missing. A tax invoice with a made-up GSTIN is
+     worse than no invoice at all. */
+
+  var SET = {};
+  function loadSettings() {
+    if (SET.__loaded) return Promise.resolve(SET);
+    return A.settings().then(function (rows) {
+      (rows || []).forEach(function (r) { SET[r.key] = r.value; });
+      SET.__loaded = true; return SET;
+    });
+  }
+
+  function openOrder(id) {
+    here = 'order'; drawNav();
+    shell(waiting());
+    Promise.all([A.order(id), A.tax(id), loadSettings()]).then(function (r) {
+      var o = r[0], t = r[1] || {};
+      var missing = [];
+      if (!SET.gstin) missing.push('GSTIN');
+      if (!SET.registered_address) missing.push('registered address');
+
+      var items = (o.items || []).map(function (i) {
+        return '<tr><td>' + esc(i.name || i.slug) + '<br><span class="small">HSN ' +
+          esc(SET.hsn_code || '6205') + ' &middot; neck ' + esc(i.size) + '</span></td>' +
+          '<td class="mono">' + (i.qty || 1) + '</td>' +
+          '<td class="mono">' + rupees(i.price) + '</td>' +
+          '<td class="mono">' + rupees((i.price || 0) * (i.qty || 1)) + '</td></tr>';
+      }).join('');
+
+      var taxRows = t.same_state
+        ? '<tr class="tot"><td colspan="3">CGST @ ' + (Number(SET.gst_rate || 12) / 2) +
+            '%</td><td class="mono">' + rupees(t.cgst) + '</td></tr>' +
+          '<tr class="tot"><td colspan="3">SGST @ ' + (Number(SET.gst_rate || 12) / 2) +
+            '%</td><td class="mono">' + rupees(t.sgst) + '</td></tr>'
+        : '<tr class="tot"><td colspan="3">IGST @ ' + (SET.gst_rate || 12) +
+            '%</td><td class="mono">' + rupees(t.igst) + '</td></tr>';
+
+      body(
+        '<div class="filters">' +
+          '<button class="btn small" data-go="orders">&larr; All orders</button>' +
+          '<button class="btn small" id="stamp">Number this invoice</button>' +
+          '<button class="btn small" onclick="window.print()">Print</button>' +
+        '</div>' +
+        (missing.length
+          ? '<p class="missing-fact">This invoice is not yet legal: no ' +
+            esc(missing.join(' and ')) + '. Fill it in under Settings and it ' +
+            'appears here and on the site. Nothing is invented in the meantime.</p>'
+          : '') +
+
+        '<div class="paper">' +
+          '<div class="row"><div>' +
+            '<h2>' + esc(SET.legal_name || 'Artisan Apparels') + '</h2>' +
+            (SET.registered_address
+              ? '<div class="small">' + esc(SET.registered_address) + '</div>' : '') +
+            (SET.gstin ? '<div class="small">GSTIN ' + esc(SET.gstin) + '</div>' : '') +
+          '</div><div style="text-align:right">' +
+            '<div><b>Tax invoice</b></div>' +
+            '<div class="mono">' + esc(o.invoice_no || 'not numbered yet') + '</div>' +
+            '<div class="small mono">Order ' + esc(o.ref) + '</div>' +
+            '<div class="small mono">' + day(o.placed_at) + '</div>' +
+          '</div></div>' +
+
+          '<div class="row"><div><b>Billed to</b><br>' + esc(o.name) + '<br>' +
+            esc(o.address || '') + '<br>' + esc(o.city || '') + ' ' +
+            esc(o.pincode || '') + '<br>' + esc(o.state || '') + '<br>' +
+            esc(o.phone) + '</div></div>' +
+
+          '<table><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amount</th>' +
+          '</tr></thead><tbody>' + items +
+            '<tr class="tot"><td colspan="3">Taxable value</td>' +
+              '<td class="mono">' + rupees(t.taxable) + '</td></tr>' +
+            taxRows +
+            '<tr class="grand"><td colspan="3">Total</td>' +
+              '<td class="mono">' + rupees(t.total) + '</td></tr>' +
+          '</tbody></table>' +
+          '<p class="small">Prices include GST. ' +
+            (t.same_state ? 'Supply within ' + esc(SET.state_name || 'Telangana') + '.'
+                          : 'Inter-state supply.') + '</p>' +
+        '</div>' +
+
+        '<div class="label-box">' +
+          '<div class="small">' + esc(SET.legal_name || 'Artisan Apparels') +
+            (SET.courier_name ? ' &middot; via ' + esc(SET.courier_name) : '') + '</div>' +
+          '<div class="to">' + esc(o.name) + '</div>' +
+          '<div>' + esc(o.address || '') + '</div>' +
+          '<div>' + esc(o.city || '') + ' ' + esc(o.pincode || '') + '</div>' +
+          '<div>' + esc(o.state || '') + '</div>' +
+          '<div class="mono">' + esc(o.phone) + '</div>' +
+          '<div class="ref">' + esc(o.ref) + '</div>' +
+        '</div>'
+      );
+
+      var st = document.getElementById('stamp');
+      if (st) st.addEventListener('click', function () {
+        A.invoiceNo(o.id).then(function () { openOrder(o.id); });
+      });
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- returns ---------- */
+
+  var STAGES = ['requested','approved','pickup','received','inspected','done'];
+  var WHY = { too_small:'Too small', too_large:'Too large', fabric:'Fabric',
+    colour:'Colour', defect:'Defect', wrong:'Wrong product', other:'Other' };
+
+  function returns() {
+    A.returns().then(function (rows) {
+      body(rows.length
+        ? '<p class="hint">Move each one along as it comes back. The reason is ' +
+          'worth more than the refund \u2014 a cloth that keeps coming back in ' +
+          'one neck means the block is wrong on that cut, not that the customer ' +
+          'was.</p><div class="scroll"><table><thead><tr><th>Order</th>' +
+          '<th>Cloth</th><th>Neck</th><th>Why</th><th>Wants</th><th>Stage</th>' +
+          '</tr></thead><tbody>' +
+          rows.map(function (r) {
+            return '<tr><td class="num">' + esc(r.order_ref) + '</td>' +
+              '<td>' + esc(r.slug) + '</td>' +
+              '<td class="num">' + esc(r.size) + '</td>' +
+              '<td>' + esc(WHY[r.reason] || r.reason || '\u2014') + '</td>' +
+              '<td class="num">' + esc(r.want_size || (r.kind === 'refund' ? 'refund' : '\u2014')) + '</td>' +
+              '<td><select class="cell" data-return="' + r.id + '">' +
+                STAGES.map(function (st) {
+                  return '<option value="' + st + '"' +
+                    (st === r.stage ? ' selected' : '') + '>' + st + '</option>';
+                }).join('') + '</select></td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No returns. For a shirt shop most of these will be ' +
+          'neck exchanges rather than refunds \u2014 when they start arriving, ' +
+          'the reason column is the one to read.</p>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- customers ---------- */
+
+  function customers() {
+    A.people().then(function (rows) {
+      body(rows.length
+        ? '<p class="hint">Built from the orders themselves, grouped by mobile ' +
+          '\u2014 nobody has to key a customer in. The usual neck is what makes ' +
+          'the next sale a conversation instead of a form.</p>' +
+          '<div class="scroll"><table><thead><tr><th>Who</th><th>Orders</th>' +
+          '<th>Lifetime</th><th>Average</th><th>Usual neck</th><th>Last</th>' +
+          '</tr></thead><tbody>' +
+          rows.map(function (c) {
+            return '<tr><td>' + esc(c.name) + '<br><span class="muted">' +
+                esc(c.phone) + '</span></td>' +
+              '<td class="num">' + c.orders + '</td>' +
+              '<td class="num">' + rupees(c.lifetime) + '</td>' +
+              '<td class="num">' + rupees(c.avg_order) + '</td>' +
+              '<td class="num">' + esc(c.usual_neck || '\u2014') + '</td>' +
+              '<td class="num">' + day(c.last_order) + '</td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No customers yet. This fills itself from orders \u2014 ' +
+          'lifetime spend, average order and the neck they always take.</p>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- the range and inventory ---------- */
+
+  function loadRange() {
+    return Promise.all([A.products(), A.stock()]).then(function (r) {
+      PRODUCTS = r[0]; STOCK = {};
+      r[1].forEach(function (i) {
+        (STOCK[i.product_id] = STOCK[i.product_id] || {})[i.size] = i.qty;
+      });
+    });
+  }
+
+  function products() {
+    loadRange().then(function () {
+      body('<p class="hint">Price is in whole rupees, inclusive of tax. Untick ' +
+        'a cloth to take it off the shop without deleting anything. Open one to ' +
+        'set its garment details and order its photographs.</p>' +
+        '<div class="scroll"><table><thead><tr><th></th><th>Cloth</th>' +
+        '<th>Price</th><th>Collection</th><th>In stock</th><th>On the shop</th>' +
+        '</tr></thead><tbody>' +
+        PRODUCTS.map(function (p) {
+          var s = STOCK[p.id] || {};
+          var tot = NECKS.reduce(function (a, z) { return a + (+s[z] || 0); }, 0);
+          return '<tr>' +
+            '<td><span class="sw" style="--g:' + esc(p.hex || '#888') + '"></span></td>' +
+            '<td><button class="btn small" data-cloth-open="' + p.id + '">' +
+              esc(p.name) + '</button></td>' +
+            '<td><input class="cell" inputmode="numeric" value="' + p.price +
+              '" data-price="' + p.id + '"></td>' +
+            '<td>' + esc(p.collection || '\u2014') + '</td>' +
+            '<td class="num"' + (tot === 0 ? ' style="color:var(--claret)"' : '') +
+              '>' + tot + '</td>' +
+            '<td><label class="tick"><input type="checkbox" data-visible="' + p.id +
+              '"' + (p.visible ? ' checked' : '') + '> shown</label></td></tr>';
+        }).join('') + '</tbody></table></div>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function inventory() {
+    Promise.all([loadRange(), A.moves().catch(function () { return []; })])
+      .then(function (r) {
+        var moves = r[1] || [];
+        body('<p class="hint">Type a number and it saves itself, with a reason ' +
+          'recorded beside it. Zero marks that neck sold out on the shop \u2014 ' +
+          'the size is struck through and cannot be ordered. Whether shoppers ' +
+          'see counts at all is under Settings.</p>' +
+          '<p class="f" style="max-width:16rem;margin-bottom:var(--s4)">' +
+            '<label for="why">Reason for changes</label>' +
+            '<select class="cell wide" id="why">' +
+              '<option value="new_stock">New stock arrived</option>' +
+              '<option value="correction" selected>Correction</option>' +
+              '<option value="return">Came back</option>' +
+              '<option value="damaged">Damaged</option>' +
+              '<option value="sample">Sample</option>' +
+            '</select></p>' +
+          '<div class="scroll"><table><thead><tr><th>Cloth</th>' +
+          '<th>Neck sizes the house cuts</th><th>Total</th></tr></thead><tbody>' +
+          PRODUCTS.map(function (p) {
+            var s = STOCK[p.id] || {};
+            var tot = NECKS.reduce(function (a, z) { return a + (+s[z] || 0); }, 0);
+            return '<tr><td>' + esc(p.name) + '</td><td><div class="stock-grid">' +
+              NECKS.map(function (z) {
+                var q = s[z] == null ? '' : s[z];
+                var cls = Number(q) === 0 ? ' zero' : (Number(q) <= 3 ? ' low' : '');
+                return '<label>' + z + '<input class="cell' + cls +
+                  '" inputmode="numeric" value="' + q + '" data-stock="' + p.id +
+                  '" data-size="' + z + '" data-was="' + (q === '' ? 0 : q) +
+                  '"></label>';
+              }).join('') + '</div></td><td class="num">' + tot + '</td></tr>';
+          }).join('') + '</tbody></table></div>' +
+          '<div class="block"><h3>Recent movements</h3>' + (moves.length
+            ? '<div class="scroll"><table><thead><tr><th>When</th><th>Cloth</th>' +
+              '<th>Neck</th><th>Change</th><th>Why</th><th>By</th></tr></thead><tbody>' +
+              moves.map(function (m) {
+                var p = PRODUCTS.filter(function (x) { return x.id === m.product_id; })[0];
+                return '<tr><td class="num">' + day(m.at) + '</td>' +
+                  '<td>' + esc(p ? p.name : m.product_id) + '</td>' +
+                  '<td class="num">' + esc(m.size) + '</td>' +
+                  '<td class="num">' + (m.delta > 0 ? '+' : '') + m.delta + '</td>' +
+                  '<td>' + esc(m.reason) + '</td>' +
+                  '<td class="muted">' + esc(m.by_email || '') + '</td></tr>';
+              }).join('') + '</tbody></table></div>'
+            : '<p class="empty">No changes recorded yet. Every edit above is ' +
+              'logged here with its reason \u2014 which is how anyone answers ' +
+              '\u201Cwhere did twelve shirts go?\u201D six months from now.</p>') +
+          '</div>');
+      }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- analytics ---------- */
+
+  function analytics() {
+    Promise.all([A.funnel(), A.necks().catch(function () { return []; }),
+                 A.best().catch(function () { return []; })])
+      .then(function (r) {
+        var f = r[0] || {}, necks = r[1] || [];
+        var steps = [
+          ['Visited the site', f.visitors],
+          ['Opened a cloth', f.viewed_a_cloth],
+          ['Chose a neck', f.chose_a_size],
+          ['Added to cart', f.added_to_cart],
+          ['Ordered', f.ordered]
+        ];
+        var top = Math.max(1, f.visitors || 1);
+        body('<p class="hint">Thirty days. Every step is counted from what the ' +
+          'site already records \u2014 no cookies, nobody identified. The gap ' +
+          'between two rows is where the shop is losing people.</p>' +
+          '<div class="funnel">' + steps.map(function (s) {
+            var n = s[1] || 0, pc = Math.round(n / top * 100);
+            return '<div class="step"><span>' + s[0] + '</span>' +
+              '<span class="bar"><i style="width:' + pc + '%"></i></span>' +
+              '<span class="n">' + n + ' <span class="pc">' + pc + '%</span></span></div>';
+          }).join('') + '</div>' +
+          '<div class="block"><h3>Asked for a neck the house does not cut</h3>' +
+            '<p class="empty" style="padding-top:0">' + (f.asked_uncut || 0) +
+            ' times in thirty days. Each one is a bespoke lead \u2014 see ' +
+            '<button class="btn small" data-go="demand">Bespoke demand</button></p></div>' +
+          '<div class="block"><h3>Which necks sell</h3>' + (necks.length
+            ? '<div class="funnel">' + necks.map(function (n) {
+                var mx = Math.max.apply(null, necks.map(function (x) { return x.sold; }));
+                return '<div class="step"><span>Neck ' + esc(n.neck) + '</span>' +
+                  '<span class="bar"><i style="width:' +
+                    Math.round(n.sold / mx * 100) + '%"></i></span>' +
+                  '<span class="n">' + n.sold + '</span></div>';
+              }).join('') + '</div>'
+            : '<p class="empty">Nothing sold yet. This becomes the most useful ' +
+              'chart on the page \u2014 it says which necks to cut more of.</p>') +
+          '</div>');
+      }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function demand() {
+    A.demand().then(function (rows) {
+      body(rows && rows.length
+        ? '<p class="hint">Every line is somebody who wanted that exact cloth in ' +
+          'a neck the house does not cut. Without this they left without a ' +
+          'trace. The most asked-for is the strongest case for cutting a new ' +
+          'size \u2014 or for a call offering bespoke.</p>' +
+          '<div class="scroll"><table><thead><tr><th>Cloth</th><th>Neck</th>' +
+          '<th>Asked</th><th>Last</th></tr></thead><tbody>' +
+          rows.map(function (d) {
+            return '<tr><td>' + esc(d.cloth) + '</td>' +
+              '<td class="num">' + esc(d.neck) + '</td>' +
+              '<td class="num">' + d.asked + '</td>' +
+              '<td class="num">' + day(d.last_asked) + '</td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">Nobody has tapped an uncut neck yet. When they do, ' +
+          'every one appears here \u2014 cloth, neck, and how many asked.</p>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function enquiries() {
+    A.enquiries().then(function (rows) {
+      body(rows.length
+        ? '<p class="hint">Tick one once it has been answered.</p>' +
+          '<div class="scroll"><table><thead><tr><th>Who</th><th>Wants</th>' +
+          '<th>Said</th><th>Done</th></tr></thead><tbody>' +
+          rows.map(function (q) {
+            return '<tr><td>' + esc(q.name) + '<br><span class="muted">' +
+                esc(q.phone || q.email) + '</span></td>' +
+              '<td>' + esc(q.service || '\u2014') + '</td>' +
+              '<td>' + esc(q.message || '') + '</td>' +
+              '<td><label class="tick"><input type="checkbox" data-handled="' +
+                q.id + '"' + (q.handled ? ' checked' : '') + '></label></td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No enquiries yet.</p>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function settings() {
+    A.settings().then(function (rows) {
+      body('<p class="hint">These change the shop the moment they are saved. ' +
+        'No deploy, nobody to ask.</p>' +
+        '<div class="scroll"><table><thead><tr><th>Setting</th><th>Value</th>' +
+        '</tr></thead><tbody>' +
+        rows.map(function (s) {
+          var isBool = s.value === 'true' || s.value === 'false';
+          var field = isBool
+            ? '<label class="tick"><input type="checkbox" data-set="' + esc(s.key) +
+              '"' + (s.value === 'true' ? ' checked' : '') + '> on</label>'
+            : '<input class="cell wide" value="' + esc(s.value) +
+              '" data-set="' + esc(s.key) + '">';
+          return '<tr><td>' + esc(s.note || s.key) + '</td><td>' + field +
+            '</td></tr>';
+        }).join('') + '</tbody></table></div>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- the measurement book ----------
+     The most valuable screen here. A returning customer should never be asked
+     his neck twice, and a shirt cut from a sheet on file is the whole argument
+     for buying the second one from the same house.
+
+     Sittings are kept rather than overwritten: a collar changes, and the old
+     numbers are the only explanation for a shirt that fitted in March. */
+
+  var MEAS = [['neck','Neck'],['chest','Chest'],['waist','Waist'],['seat','Seat'],
+              ['shoulder','Shoulder'],['sleeve','Sleeve'],['wrist','Wrist'],
+              ['shirt_length','Length']];
+
+  function book() {
+    A.book().then(function (rows) {
+      body('<p class="hint">Every customer the house has measured, most recent ' +
+        'sitting first. Open a sheet to see the history or take fresh numbers. ' +
+        'Inches throughout.</p>' +
+        '<div class="filters"><button class="btn small" data-sheet="new">' +
+        'Take a new sitting</button></div>' + (rows.length
+        ? '<div class="scroll"><table><thead><tr><th>Who</th><th>Neck</th>' +
+          '<th>Chest</th><th>Sleeve</th><th>Fit</th><th>Taken</th>' +
+          '</tr></thead><tbody>' +
+          rows.map(function (m) {
+            return '<tr><td><button class="btn small" data-sheet="' +
+                esc(m.phone) + '">' + esc(m.name || m.phone) + '</button>' +
+              '<br><span class="muted">' + esc(m.phone) + '</span></td>' +
+              '<td class="num">' + esc(m.neck || '—') + '</td>' +
+              '<td class="num">' + esc(m.chest || '—') + '</td>' +
+              '<td class="num">' + esc(m.sleeve || '—') + '</td>' +
+              '<td>' + esc(m.fit || '—') + '</td>' +
+              '<td class="num">' + day(m.taken_at) + '</td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">Nobody measured yet. The first sitting you record ' +
+          'here is the first thing that brings a customer back.</p>'));
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function sheetForm(m) {
+    m = m || {};
+    return '<form id="sitting" class="sheet">' +
+      '<div class="f3">' +
+        fldp('name', 'Name', m.name) +
+        fldp('phone', 'Phone', m.phone, m.phone ? 'readonly' : 'required') +
+        fldp('email', 'Email', m.email) +
+      '</div>' +
+      '<div class="meas">' + MEAS.map(function (k) {
+        return '<label>' + k[1] + '<input name="' + k[0] + '" type="number" ' +
+          'step="0.5" min="0" max="99" value="' + esc(m[k[0]] || '') + '"></label>';
+      }).join('') + '</div>' +
+      '<div class="f3">' +
+        selp('fit', 'Fit', m.fit, ['close','regular','easy']) +
+        selp('cuff', 'Cuff', m.cuff, ['single','double']) +
+        fldp('collar', 'Collar', m.collar) +
+      '</div>' +
+      '<label class="f1">Posture and anything else the cutter needs' +
+        '<input name="posture" value="' + esc(m.posture || '') + '"></label>' +
+      '<label class="f1">Note<input name="note" value=""></label>' +
+      '<button class="btn" type="submit">Record this sitting</button>' +
+      '<p class="note" id="sitmsg"></p></form>';
+  }
+  function fldp(n, label, v, extra) {
+    return '<label>' + label + '<input name="' + n + '" value="' + esc(v || '') +
+      '" ' + (extra || '') + '></label>';
+  }
+  function selp(n, label, v, opts) {
+    return '<label>' + label + '<select name="' + n + '">' +
+      ['—'].concat(opts).map(function (o) {
+        var val = o === '—' ? '' : o;
+        return '<option value="' + val + '"' + (val === (v || '') ? ' selected' : '') +
+          '>' + o + '</option>';
+      }).join('') + '</select></label>';
+  }
+
+  function openSheet(phone) {
+    here = 'sheet'; drawNav(); shell(waiting());
+    var isNew = phone === 'new';
+    (isNew ? Promise.resolve([]) : A.sittings(phone)).then(function (hist) {
+      var latest = hist[0] || {};
+      body('<div class="filters"><button class="btn small" data-go="book">' +
+        '&larr; The book</button></div>' +
+        (isNew ? '' : '<p class="hint">' + esc(latest.name || phone) + ' · ' +
+          hist.length + ' sitting' + (hist.length === 1 ? '' : 's') +
+          '. The numbers below are the latest; recording a new sitting keeps ' +
+          'the old one.</p>') +
+        sheetForm(isNew ? {} : latest) +
+        (hist.length > 1
+          ? '<div class="block"><h3>Earlier sittings</h3><div class="scroll">' +
+            '<table><thead><tr><th>Taken</th>' +
+            MEAS.map(function (k) { return '<th>' + k[1] + '</th>'; }).join('') +
+            '<th>By</th></tr></thead><tbody>' +
+            hist.slice(1).map(function (s) {
+              return '<tr><td class="num">' + day(s.taken_at) + '</td>' +
+                MEAS.map(function (k) {
+                  return '<td class="num">' + esc(s[k[0]] || '—') + '</td>';
+                }).join('') +
+                '<td class="muted">' + esc(s.taken_by || '') + '</td></tr>';
+            }).join('') + '</tbody></table></div></div>'
+          : ''));
+
+      document.getElementById('sitting').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var f = e.target, row = {}, msg = document.getElementById('sitmsg');
+        ['name','phone','email','fit','cuff','collar','posture','note']
+          .forEach(function (k) { row[k] = f.elements[k].value.trim() || null; });
+        MEAS.forEach(function (k) {
+          var v = f.elements[k[0]].value;
+          row[k[0]] = v === '' ? null : Number(v);
+        });
+        if (!row.phone) { msg.textContent = 'A phone number, please — it is how the book finds him.'; msg.className = 'note bad'; return; }
+        A.addSitting(row).then(function () { openSheet(row.phone); })
+          .catch(function (err) { msg.textContent = err.message; msg.className = 'note bad'; });
+      });
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- collections ---------- */
+
+  function collections() {
+    A.collections().then(function (rows) {
+      body('<p class="hint">The groupings the shop sorts cloth into. The order ' +
+        'here is the order they appear.</p>' +
+        '<form class="filters" id="newcol">' +
+          '<input class="cell wide" name="name" placeholder="A new collection" required>' +
+          '<button class="btn small" type="submit">Add</button></form>' +
+        (rows.length
+        ? '<div class="scroll"><table><thead><tr><th>Name</th><th>Blurb</th>' +
+          '<th>Order</th><th>Shown</th></tr></thead><tbody>' +
+          rows.map(function (c) {
+            return '<tr><td>' + esc(c.name) + '<br><span class="muted">' +
+                esc(c.slug) + '</span></td>' +
+              '<td><input class="cell wide" value="' + esc(c.blurb || '') +
+                '" data-col="' + c.id + '" data-field="blurb"></td>' +
+              '<td><input class="cell" type="number" style="width:4rem" value="' +
+                (c.sort_order || 0) + '" data-col="' + c.id + '" data-field="sort_order"></td>' +
+              '<td><label class="tick"><input type="checkbox" data-colvis="' + c.id +
+                '"' + (c.visible ? ' checked' : '') + '></label></td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No collections yet.</p>'));
+
+      document.getElementById('newcol').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var name = e.target.elements.name.value.trim();
+        if (!name) return;
+        A.addCollection({
+          name: name,
+          slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+          sort_order: rows.length + 1
+        }).then(collections);
+      });
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- offers ----------
+     A code is never shown without what it cost. A coupon that brought three
+     lakhs and gave away thirty thousand is a different decision from one that
+     brought thirty thousand and gave away three. */
+
+  function discounts() {
+    A.discounts().then(function (rows) {
+      body('<p class="hint">Every code, with what it earned and what it gave ' +
+        'away. Turning one off stops it at the next checkout.</p>' +
+        '<form class="filters" id="newcode">' +
+          '<input class="cell" name="code" placeholder="CODE" required style="width:8rem">' +
+          '<select class="cell" name="kind">' +
+            '<option value="percent">% off</option>' +
+            '<option value="flat">₹ off</option>' +
+            '<option value="free_shipping">free shipping</option></select>' +
+          '<input class="cell" name="value" type="number" min="0" value="10" style="width:5rem">' +
+          '<input class="cell" name="min_spend" type="number" min="0" ' +
+            'placeholder="min spend" style="width:7rem">' +
+          '<button class="btn small" type="submit">Make it</button></form>' +
+        (rows.length
+        ? '<div class="scroll"><table><thead><tr><th>Code</th><th>Worth</th>' +
+          '<th>Used</th><th>Revenue</th><th>Given away</th><th>Ends</th><th>Live</th>' +
+          '</tr></thead><tbody>' +
+          rows.map(function (d) {
+            var worth = d.kind === 'percent' ? d.value + '%'
+              : d.kind === 'flat' ? rupees(d.value) : 'free shipping';
+            return '<tr><td class="num">' + esc(d.code) + '</td>' +
+              '<td>' + worth + '</td>' +
+              '<td class="num">' + (d.uses || 0) +
+                (d.usage_limit ? ' / ' + d.usage_limit : '') + '</td>' +
+              '<td class="num">' + rupees(d.revenue) + '</td>' +
+              '<td class="num">' + rupees(d.given) + '</td>' +
+              '<td class="num">' + (d.ends_at ? day(d.ends_at) : '—') + '</td>' +
+              '<td><label class="tick"><input type="checkbox" data-code="' +
+                esc(d.code) + '"' + (d.live ? ' checked' : '') + '></label></td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No codes yet.</p>'));
+
+      document.getElementById('newcode').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var f = e.target;
+        A.addDiscount({
+          code: f.elements.code.value.trim().toUpperCase(),
+          kind: f.elements.kind.value,
+          value: Number(f.elements.value.value) || 0,
+          min_spend: Number(f.elements.min_spend.value) || 0
+        }).then(discounts).catch(function (err) { alert(err.message); });
+      });
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- the shop windows ---------- */
+
+  function website() {
+    Promise.all([A.content(), A.settings()]).then(function (r) {
+      var slots = r[0] || [];
+      var ann = (r[1] || []).filter(function (s) { return s.key === 'announcement'; })[0];
+      body('<p class="hint">The parts of the shop the house can change without ' +
+        'me. Saved the moment you leave the field.</p>' +
+        (ann ? '<div class="block"><h3>The announcement bar</h3>' +
+          '<input class="cell wide" value="' + esc(ann.value || '') +
+          '" data-set="announcement" placeholder="Free shipping over ₹2,999">' +
+          '<p class="hint" style="margin-top:var(--s1)">Empty hides the bar ' +
+          'altogether.</p></div>' : '') +
+        '<div class="block"><h3>The home page</h3><div class="scroll">' +
+        '<table><thead><tr><th>Slot</th><th>Value</th></tr></thead><tbody>' +
+        slots.map(function (s) {
+          return '<tr><td>' + esc(s.note || s.slot) + '<br><span class="muted">' +
+            esc(s.slot) + '</span></td>' +
+            '<td><input class="cell wide" value="' + esc(s.value || '') +
+            '" data-slot="' + esc(s.slot) + '"></td></tr>';
+        }).join('') + '</tbody></table></div></div>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- reports ----------
+     Separate from the dashboard on purpose. The dashboard is for the morning;
+     this is for the end of the month. */
+
+  function reports() {
+    Promise.all([A.reportSales(), A.reportProducts(), A.exchangeRate()])
+      .then(function (r) {
+        var months = r[0] || [], prods = r[1] || [], exch = r[2] || [];
+        var peak = Math.max.apply(null, months.map(function (m) { return m.revenue; }).concat([1]));
+
+        body(
+          '<div class="block"><h3>Revenue, twelve months</h3>' + (months.length
+            ? '<div class="funnel">' + months.map(function (m) {
+                return '<div class="step"><span>' + esc(m.month) + '</span>' +
+                  '<span class="bar"><i style="width:' +
+                    Math.round(100 * m.revenue / peak) + '%"></i></span>' +
+                  '<span class="n">' + rupees(m.revenue) + '</span></div>';
+              }).join('') + '</div>'
+            : '<p class="empty">No orders yet.</p>') + '</div>' +
+
+          '<div class="block"><h3>Sell-through by cloth</h3>' + (prods.length
+            ? '<div class="scroll"><table><thead><tr><th>Cloth</th><th>Sold</th>' +
+              '<th>In stock</th><th>Sell-through</th><th>Revenue</th></tr></thead><tbody>' +
+              prods.map(function (p) {
+                return '<tr><td>' + esc(p.name) + '<br><span class="muted">' +
+                    esc(p.collection || '') + '</span></td>' +
+                  '<td class="num">' + p.sold + '</td>' +
+                  '<td class="num">' + p.in_stock + '</td>' +
+                  '<td class="num">' + p.sell_through + '%</td>' +
+                  '<td class="num">' + rupees(p.revenue) + '</td></tr>';
+              }).join('') + '</tbody></table></div>'
+            : '<p class="empty">Nothing sold yet.</p>') + '</div>' +
+
+          '<div class="block"><h3>Which neck comes back</h3>' +
+          '<p class="hint">A cloth and a neck that returns often is a cutting ' +
+          'problem, not a customer problem. Only size exchanges are counted.</p>' +
+          (exch.filter(function (x) { return x.came_back > 0; }).length
+            ? '<div class="scroll"><table><thead><tr><th>Cloth</th><th>Neck</th>' +
+              '<th>Sold</th><th>Came back</th><th>Rate</th></tr></thead><tbody>' +
+              exch.filter(function (x) { return x.came_back > 0; }).map(function (x) {
+                return '<tr><td>' + esc(x.slug) + '</td>' +
+                  '<td class="num">' + esc(x.size) + '</td>' +
+                  '<td class="num">' + x.sold + '</td>' +
+                  '<td class="num">' + x.came_back + '</td>' +
+                  '<td class="num">' + x.pct + '%</td></tr>';
+              }).join('') + '</tbody></table></div>'
+            : '<p class="empty">Nothing has come back for size. Good.</p>') +
+          '</div>'
+        );
+      }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- one cloth: its details and its photographs ---------- */
+
+  var GARMENT = [['sku','SKU'],['fabric','Fabric'],['fit','Fit'],['weave','Weave'],
+                 ['collar','Collar'],['sleeve','Sleeve'],['pattern','Pattern'],
+                 ['origin','Country of origin']];
+  var SHOTS = ['thumbnail','front','back','collar','buttons','cuff','fabric','lifestyle'];
+
+  function openCloth(id) {
+    here = 'cloth'; drawNav(); shell(waiting());
+    Promise.all([A.product(id), A.images(id)]).then(function (r) {
+      var p = r[0], imgs = r[1] || [];
+      body('<div class="filters"><button class="btn small" data-go="products">' +
+          '&larr; The range</button></div>' +
+        '<p class="hint">' + esc(p.name) + ' · ' + rupees(p.price) +
+          '. Every field saves as you leave it.</p>' +
+
+        '<div class="block"><h3>The garment</h3><div class="scroll">' +
+        '<table><tbody>' + GARMENT.map(function (g) {
+          return '<tr><td style="width:12rem">' + g[1] + '</td><td>' +
+            '<input class="cell wide" value="' + esc(p[g[0]] || '') +
+            '" data-cloth="' + p.id + '" data-field="' + g[0] + '"></td></tr>';
+        }).join('') +
+        '<tr><td>MRP, if it differs</td><td><input class="cell" type="number" value="' +
+          esc(p.mrp || '') + '" data-cloth="' + p.id + '" data-field="mrp"></td></tr>' +
+        '<tr><td>Care</td><td><input class="cell wide" value="' + esc(p.care || '') +
+          '" data-cloth="' + p.id + '" data-field="care"></td></tr>' +
+        '</tbody></table></div></div>' +
+
+        '<div class="block"><h3>Photographs</h3>' +
+        '<p class="hint">Drag to reorder — the first is the one the shop ' +
+        'leads with. Name each by what it shows so the product page can ask for ' +
+        'the cuff shot by name.</p>' +
+        '<form class="filters" id="newimg">' +
+          '<input class="cell wide" name="url" placeholder="images/cocoa-drift-cuff.jpg" required>' +
+          '<select class="cell" name="kind">' + SHOTS.map(function (s) {
+            return '<option value="' + s + '">' + s + '</option>';
+          }).join('') + '</select>' +
+          '<button class="btn small" type="submit">Add</button></form>' +
+        (imgs.length
+          ? '<div class="shots" id="shots">' + imgs.map(function (im, i) {
+              return '<figure class="shot" draggable="true" data-img="' + im.id +
+                '" data-i="' + i + '">' +
+                '<img src="' + esc(im.url) + '" alt="" loading="lazy">' +
+                '<figcaption><select class="cell" data-imgkind="' + im.id + '">' +
+                  SHOTS.map(function (s) {
+                    return '<option value="' + s + '"' +
+                      (s === im.kind ? ' selected' : '') + '>' + s + '</option>';
+                  }).join('') + '</select>' +
+                '<button class="btn small" data-delimg="' + im.id + '">Remove</button>' +
+                '</figcaption></figure>';
+            }).join('') + '</div>'
+          : '<p class="empty">No photographs on this cloth yet.</p>') +
+        '</div>');
+
+      document.getElementById('newimg').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var f = e.target;
+        A.addImage({
+          product_id: Number(id), url: f.elements.url.value.trim(),
+          kind: f.elements.kind.value, sort_order: imgs.length
+        }).then(function () { openCloth(id); });
+      });
+
+      dragShots(id);
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* Reordering writes every card's new position, because a single swap leaves
+     the rest of the row wrong the moment two are moved. */
+  function dragShots(productId) {
+    var box = document.getElementById('shots');
+    if (!box) return;
+    var from = null;
+    box.addEventListener('dragstart', function (e) {
+      var s = e.target.closest('.shot'); if (!s) return;
+      from = s; s.classList.add('lift');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    box.addEventListener('dragend', function () {
+      if (from) from.classList.remove('lift');
+      from = null;
+    });
+    box.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      var over = e.target.closest('.shot');
+      if (!over || !from || over === from) return;
+      var after = over.compareDocumentPosition(from) & Node.DOCUMENT_POSITION_PRECEDING;
+      box.insertBefore(from, after ? over.nextSibling : over);
+    });
+    box.addEventListener('drop', function (e) {
+      e.preventDefault();
+      var order = [].slice.call(box.querySelectorAll('.shot'));
+      Promise.all(order.map(function (s, i) {
+        return A.setImage(s.getAttribute('data-img'), { sort_order: i });
+      })).then(function () { openCloth(productId); });
+    });
+  }
+
+  /* ---------- saving ----------
+     Every edit saves on change and the field flashes. No Save button anywhere:
+     a Save button is a thing to forget, and the failure it causes is silent. */
+
+  function flash(el) {
+    el.classList.add('saved');
+    setTimeout(function () { el.classList.remove('saved'); }, 900);
+  }
+
+  document.addEventListener('click', function (e) {
+    var f = e.target.closest('[data-of]');
+    if (f) { ofilter = f.getAttribute('data-of'); orders(); }
+    var op = e.target.closest('[data-open]');
+    if (op) openOrder(op.getAttribute('data-open'));
+    var sh = e.target.closest('[data-sheet]');
+    if (sh) openSheet(sh.getAttribute('data-sheet'));
+    var cl = e.target.closest('[data-cloth-open]');
+    if (cl) openCloth(cl.getAttribute('data-cloth-open'));
+    var di = e.target.closest('[data-delimg]');
+    if (di) {
+      e.preventDefault();
+      var fig = di.closest('.shot');
+      A.delImage(di.getAttribute('data-delimg')).then(function () {
+        if (fig) fig.remove();
+      });
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    var t = e.target, has = function (a) { return t.hasAttribute && t.hasAttribute(a); };
+
+    if (has('data-stock')) {
+      var q = parseInt(t.value, 10);
+      if (isNaN(q) || q < 0) { q = 0; t.value = 0; }
+      var was = parseInt(t.getAttribute('data-was'), 10) || 0;
+      var why = (document.getElementById('why') || {}).value || 'correction';
+      t.classList.toggle('zero', q === 0);
+      t.classList.toggle('low', q > 0 && q <= 3);
+      A.moveStock(t.getAttribute('data-stock'), t.getAttribute('data-size'),
+                  was, q, why)
+        .then(function () { t.setAttribute('data-was', q); flash(t); refreshKpis(); });
+    }
+    if (has('data-price')) {
+      var p = parseInt(t.value, 10);
+      if (!isNaN(p) && p >= 0) A.setProduct(t.getAttribute('data-price'), { price: p })
+        .then(function () { flash(t); });
+    }
+    if (has('data-visible'))
+      A.setProduct(t.getAttribute('data-visible'), { visible: t.checked });
+    if (has('data-order'))
+      A.setOrder(t.getAttribute('data-order'), { status: t.value }).then(refreshKpis);
+    if (has('data-return'))
+      A.setReturn(t.getAttribute('data-return'), { stage: t.value }).then(refreshKpis);
+    if (has('data-handled'))
+      A.setEnquiry(t.getAttribute('data-handled'), { handled: t.checked }).then(refreshKpis);
+    if (has('data-set')) {
+      var v = t.type === 'checkbox' ? String(t.checked) : t.value;
+      A.setSetting(t.getAttribute('data-set'), v)
+        .then(function () { if (t.classList.contains('cell')) flash(t); });
+    }
+    if (has('data-slot'))
+      A.setContent(t.getAttribute('data-slot'), t.value)
+        .then(function () { flash(t); });
+    if (has('data-col')) {
+      var fld = t.getAttribute('data-field');
+      var val = fld === 'sort_order' ? (parseInt(t.value, 10) || 0) : t.value;
+      var patch = {}; patch[fld] = val;
+      A.setCollection(t.getAttribute('data-col'), patch)
+        .then(function () { flash(t); });
+    }
+    if (has('data-colvis'))
+      A.setCollection(t.getAttribute('data-colvis'), { visible: t.checked });
+    if (has('data-code'))
+      A.setDiscount(t.getAttribute('data-code'), { live: t.checked });
+    if (has('data-imgkind'))
+      A.setImage(t.getAttribute('data-imgkind'), { kind: t.value });
+    if (has('data-cloth')) {
+      var cf = t.getAttribute('data-field');
+      var cv = cf === 'mrp' ? (parseInt(t.value, 10) || null) : t.value;
+      var cp = {}; cp[cf] = cv;
+      A.setProduct(t.getAttribute('data-cloth'), cp)
+        .then(function () { flash(t); });
+    }
+  });
+
+  function refreshKpis() {
+    A.kpis().then(function (k) { KPI = k || {}; drawNav(); }).catch(function () {});
+  }
+
+  /* ---------- start ---------- */
+
+  function boot() {
+    who.innerHTML = esc(A.email) + ' &middot; <a href="#" id="out">sign out</a>';
+    document.getElementById('out').addEventListener('click', function (e) {
+      e.preventDefault(); A.signOut(); gate('Signed out.');
+    });
+    refreshKpis(); drawNav(); render();
+  }
+
+  if (A.session()) {
+    A.check().then(function (ok) { ok ? boot() : gate('Please sign in again.'); });
+  } else gate('');
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

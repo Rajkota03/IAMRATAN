@@ -38,6 +38,19 @@
     return p;
   };
   Shop.remove = function (i) { Shop.bag.splice(i, 1); save(); Shop.emit(); };
+
+  /* Quantity belongs here rather than in the checkout page, because saving is
+     private to this file — a page nudging bag[i].qty directly would change the
+     number on screen and lose it on the next reload. Going to zero removes the
+     line, which is what a customer means by pressing minus once more. */
+  Shop.setQty = function (i, n) {
+    var item = Shop.bag[i];
+    if (!item) return;
+    if (n <= 0) return Shop.remove(i);
+    item.qty = n;
+    save();
+    Shop.emit();
+  };
   Shop.count = function () {
     return Shop.bag.reduce(function (n, b) { return n + b.qty; }, 0);
   };
@@ -64,7 +77,7 @@
       '\n\n  Total  ' + Shop.rupees(Shop.total()) +
       '\n\nName:\nPhone:\nCity:\n\nAnything else you should know:\n';
     return 'mailto:prashanth@iamratan.co.in' +
-      '?subject=' + encodeURIComponent('Customized order — ' + Shop.count() + ' shirt' +
+      '?subject=' + encodeURIComponent('Order — ' + Shop.count() + ' shirt' +
         (Shop.count() === 1 ? '' : 's')) +
       '&body=' + encodeURIComponent(body);
   };
@@ -88,17 +101,20 @@
   Shop.mountBag = function () {
     var d = doc.createElement('dialog');
     d.className = 'bag';
-    d.setAttribute('aria-label', 'Customize your order');
+    d.setAttribute('aria-label', 'Your cart');
     d.innerHTML =
       '<div class="bag-in">' +
-        '<div class="bag-top"><h2 class="bag-title">Customize</h2>' +
+        '<div class="bag-top"><h2 class="bag-title">Your cart</h2>' +
         '<button class="bag-x" type="button" aria-label="Close">✕</button></div>' +
         '<div class="bag-body" id="bagBody"></div>' +
         '<div class="bag-foot">' +
-          '<p class="bag-note">One payment, nothing recurring, nothing expiring. ' +
-          'Your order reaches the house in writing; we reply the same day.</p>' +
           '<div class="bag-row"><span>Total</span><b class="fig" id="bagTotal"></b></div>' +
-          '<a class="bag-send" id="bagSend" href="#">Send to the house</a>' +
+          '<a class="bag-send" href="checkout.html">Checkout</a>' +
+          /* The written order stays, one step quieter. Some customers would
+             rather talk to the house than type a card number into a shirt shop
+             they met yesterday, and losing that sale to tidiness would be
+             expensive. */
+          '<a class="bag-alt" id="bagSend" href="#">Or send the order in writing</a>' +
         '</div>' +
       '</div>';
     doc.body.appendChild(d);
@@ -170,13 +186,21 @@
         box.setAttribute('data-size', sz.dataset.size);
         return;
       }
-      var add = e.target.closest('[data-add]');
-      if (add) {
-        var host = add.closest('[data-sizes]') || scope;
+      /* Add to Cart and Buy now put the same shirt in the same cart. The only
+         difference is where you land: Add stays on the page so the range can
+         keep being browsed, Buy goes straight to checkout. Adding never opens
+         the drawer — the count changes and that is all, because a cart that
+         throws itself open interrupts the browse it was meant to serve. */
+      var act = e.target.closest('[data-add],[data-buy]');
+      if (act) {
+        var buying = act.hasAttribute('data-buy');
+        var host = act.closest('[data-sizes]') || scope;
         var size = host.getAttribute('data-size');
         if (!size) { Shop.toast('Choose a size first.'); return; }
-        var p = Shop.add(getSlug(add), size);
-        if (p) Shop.toast(p.name + ' · size ' + size + ' — added to Customize.');
+        var p = Shop.add(getSlug(act), size);
+        if (!p) return;
+        if (buying) { location.href = 'checkout.html'; return; }
+        Shop.toast(p.name + ' · size ' + size + ' — added to your cart.');
       }
     });
   };

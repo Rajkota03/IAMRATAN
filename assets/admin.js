@@ -130,6 +130,44 @@
   A.necks      = function () { return api('neck_demand?select=*'); };
   A.people     = function () { return api('customers?select=*&limit=200'); };
   A.funnel     = function () { return api('funnel?select=*').then(one); };
+  A.deltas     = function () { return api('kpi_deltas?select=*').then(one); };
+  A.pipeline   = function () { return api('order_pipeline?select=*'); };
+  A.neckStock  = function () { return api('neck_stock?select=*&limit=40'); };
+  A.recent     = function () {
+    return api('orders?select=ref,name,total,status,placed_at&order=placed_at.desc&limit=6');
+  };
+  A.productStats = function () { return api('product_stats?select=*').then(one); };
+  A.invStats     = function () { return api('inventory_stats?select=*').then(one); };
+  A.people2      = function () { return api('customer_list?select=*&limit=300'); };
+  A.timeline     = function (id) {
+    return api('order_events?order_id=eq.' + id + '&select=*&order=at.asc');
+  };
+  /* Orders come back a page at a time with the total in a header, so a shop
+     with four thousand orders does not send them all to a browser. */
+  A.ordersPage = function (opts) {
+    opts = opts || {};
+    var q = 'orders?select=*&order=placed_at.desc';
+    if (opts.status && opts.status !== 'all') q += '&status=eq.' + opts.status;
+    if (opts.find) {
+      var f = encodeURIComponent('%' + opts.find + '%');
+      q += '&or=(ref.ilike.' + f + ',name.ilike.' + f + ',phone.ilike.' + f + ')';
+    }
+    var from = (opts.page || 0) * (opts.size || 10);
+    return fetch(URL_BASE + '/rest/v1/' + q, {
+      headers: {
+        apikey: ANON_KEY, Authorization: 'Bearer ' + (A.token || ANON_KEY),
+        Range: from + '-' + (from + (opts.size || 10) - 1),
+        Prefer: 'count=exact'
+      }
+    }).then(function (r) {
+      var cr = r.headers.get('content-range') || '';
+      var total = Number(String(cr).split('/')[1]) || 0;
+      return r.json().then(function (rows) { return { rows: rows, total: total }; });
+    });
+  };
+  A.series     = function (period) {
+    return api('rpc/revenue_series', { method: 'POST', body: { period: period } });
+  };
   A.returns    = function () { return api('returns?select=*&order=opened_at.desc&limit=200'); };
   A.moves      = function () {
     return api('stock_moves?select=*&order=at.desc&limit=60');
@@ -237,6 +275,157 @@
     return api('content?slot=eq.' + encodeURIComponent(slot),
       { method: 'PATCH', body: { value: String(value) }, prefer: 'return=minimal' });
   };
+
+  A.delDiscount = function (code) {
+    return api('discounts?code=eq.' + encodeURIComponent(code),
+      { method: 'DELETE', prefer: 'return=minimal' });
+  };
+
+  /* ---------- marketing ----------
+     Attribution, carts and audiences are read straight from what happened.
+     Nothing in here estimates, models or projects anything. */
+
+  A.marketing   = function () { return api('marketing_overview?select=*').then(one); };
+  A.channels    = function () { return api('marketing_channels?select=*'); };
+  A.activity    = function () { return api('marketing_activity?select=*'); };
+  A.cartStats   = function () { return api('cart_stats?select=*').then(one); };
+  A.carts       = function () { return api('abandoned_carts?select=*&limit=200'); };
+  A.spend       = function () { return api('ad_spend?select=*&order=month.desc'); };
+  A.setSpend    = function (row) {
+    /* one figure per channel per month — typing it twice corrects it */
+    return api('ad_spend?on_conflict=month,channel', {
+      method: 'POST', prefer: 'return=minimal,resolution=merge-duplicates', body: [row]
+    });
+  };
+
+  A.audiences   = function () { return api('audience_sizes?select=*'); };
+  A.campaigns   = function () { return api('campaign_list?select=*'); };
+  A.campaign    = function (id) { return api('campaign_list?id=eq.' + id + '&select=*').then(one); };
+  A.addCampaign = function (row) {
+    return api('campaigns', { method: 'POST', prefer: 'return=representation', body: [row] })
+      .then(one);
+  };
+  A.setCampaign = function (id, patch) {
+    return api('campaigns?id=eq.' + id,
+      { method: 'PATCH', body: patch, prefer: 'return=minimal' });
+  };
+  A.delCampaign = function (id) {
+    return api('campaigns?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+  };
+  A.buildAudience = function (id) {
+    return api('rpc/build_audience', { method: 'POST', body: { camp_id: id } });
+  };
+  A.recipients  = function (id) {
+    return api('campaign_recipients?campaign_id=eq.' + id +
+               '&select=*&order=sent_at.nullsfirst,id.asc');
+  };
+  A.markSent    = function (rowId) {
+    return api('campaign_recipients?id=eq.' + rowId,
+      { method: 'PATCH', body: { sent_at: new Date().toISOString() },
+        prefer: 'return=minimal' });
+  };
+
+  /* ---------- the shop windows ----------
+     Media, the home page bands, the menu and the pages. Everything here
+     OVERRIDES hand-built HTML that is already correct; none of it builds a
+     page from nothing. See assets/house.js for the other half. */
+
+  A.siteStats = function () { return api('site_stats?select=*').then(one); };
+
+  A.media     = function () { return api('media?select=*&order=added_at.desc'); };
+  A.setMedia  = function (id, patch) {
+    return api('media?id=eq.' + id, { method: 'PATCH', body: patch, prefer: 'return=minimal' });
+  };
+
+  /* The file goes to Storage; the row that says what the picture is OF goes to
+     the table. Storage first — a catalogue entry pointing at a file that failed
+     to upload is worse than a file nobody has catalogued. */
+  A.upload = function (file, folder) {
+    var clean = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-|-$/g, '');
+    /* the name is kept, because "cocoa-drift-cuff.jpg" is findable and a uuid is
+       not, and a short stamp is enough to stop two uploads colliding */
+    var path = (folder || 'uncategorised').toLowerCase().replace(/[^a-z0-9]+/g, '-') +
+               '/' + Date.now().toString(36) + '-' + clean;
+
+    return fetch(URL_BASE + '/storage/v1/object/house/' + encodeURI(path), {
+      method: 'POST',
+      headers: {
+        apikey: ANON_KEY,
+        Authorization: 'Bearer ' + (A.token || ANON_KEY),
+        'Content-Type': file.type || 'application/octet-stream',
+        'x-upsert': 'false'
+      },
+      body: file
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          throw new Error('Upload failed (' + r.status + '). ' + t.slice(0, 160));
+        });
+      }
+      return api('media', {
+        method: 'POST', prefer: 'return=representation',
+        body: [{
+          path: path,
+          url: URL_BASE + '/storage/v1/object/public/house/' + encodeURI(path),
+          name: file.name,
+          folder: folder || 'Uncategorised',
+          kind: file.type,
+          bytes: file.size
+        }]
+      }).then(one);
+    });
+  };
+
+  A.delMedia = function (row) {
+    /* the file goes first: a catalogue row pointing at nothing is recoverable,
+       an orphaned file nobody can see or delete is not */
+    return fetch(URL_BASE + '/storage/v1/object/house/' + encodeURI(row.path), {
+      method: 'DELETE',
+      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + (A.token || ANON_KEY) }
+    }).then(function () {
+      return api('media?id=eq.' + row.id, { method: 'DELETE', prefer: 'return=minimal' });
+    });
+  };
+
+  A.bands    = function () { return api('home_sections?select=*&order=sort_order.asc'); };
+  A.setBand  = function (key, patch) {
+    return api('home_sections?key=eq.' + encodeURIComponent(key),
+      { method: 'PATCH', body: patch, prefer: 'return=minimal' });
+  };
+
+  A.navItems = function () { return api('nav_items?select=*&order=sort_order.asc'); };
+  A.addNav   = function (row) {
+    return api('nav_items', { method: 'POST', prefer: 'return=minimal', body: [row] });
+  };
+  A.setNav   = function (id, patch) {
+    return api('nav_items?id=eq.' + id, { method: 'PATCH', body: patch, prefer: 'return=minimal' });
+  };
+  A.delNav   = function (id) {
+    return api('nav_items?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+  };
+
+  A.pages    = function () { return api('pages?select=*&order=title.asc'); };
+  A.setPage  = function (slug, patch) {
+    return api('pages?slug=eq.' + encodeURIComponent(slug),
+      { method: 'PATCH', body: patch, prefer: 'return=minimal' });
+  };
+
+  /* Which of the statutory facts are still stand-ins. The desk refuses to be
+     quiet about this: a shop that goes live with an invented GSTIN and a
+     complaints line nobody answers is the most expensive mistake on the list. */
+  A.facts = function () { return api('facts_status?select=*'); };
+
+  /* ---------- analytics ---------- */
+
+  A.aKpis     = function () { return api('analytics_kpis?select=*').then(one); };
+  A.aSeries   = function (period) {
+    return api('rpc/analytics_series', { method: 'POST', body: { period: period } });
+  };
+  A.insights  = function () { return api('customer_insights?select=*').then(one); };
+  A.locations = function () { return api('top_locations?select=*&limit=8'); };
+  A.traffic   = function () { return api('traffic_sources?select=*&limit=8'); };
+  A.devices   = function () { return api('device_split?select=*'); };
+  A.campaignResults = function () { return api('campaign_results?select=*&limit=8'); };
 
   /* ---------- reports ---------- */
 

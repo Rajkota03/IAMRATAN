@@ -14,3 +14,12 @@ iar-lab/__pycache__/
 .DS_Store
 .staging-url
 .rollback-client
+
+# placket correction working set (2k PNG masters, originals backup)
+placket-fixed/
+tmp-src/
+
+# Image export deliverables — 39 MB of duplicates of images already tracked
+# under images/. Handed to the client as a download, not part of the site.
+website-images/
+website-images.zip

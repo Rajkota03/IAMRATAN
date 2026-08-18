@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Shop — I Am Ratan</title>
-<meta name="description" content="Twenty-five cloths, cut in five sizes. Filter by collection, sort by tone.">
+<meta name="description" content="Twenty-seven cloths, cut in five sizes. Filter by collection, sort by tone.">
 <meta name="theme-color" content="#EDE9E0">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="I Am Ratan">
 <meta property="og:title" content="Shop — I Am Ratan">
-<meta property="og:description" content="Twenty-five cloths, cut in five sizes.">
+<meta property="og:description" content="Twenty-seven cloths, cut in five sizes.">
 <meta property="og:image" content="https://im-ratan.vercel.app/images/cloth-stack.jpg">
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
 <link rel="icon" href="assets/favicon-16.png" sizes="16x16">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786795456">
 <style>
 /* THE GRID
    The shoppable one. Nine garments on the first screen, filters that actually
@@ -138,7 +138,7 @@
   <section class="head">
     <div class="wrap">
       <p class="label muted">The range</p>
-      <h1 class="display" style="max-width:16ch;margin-top:var(--s1)">Twenty-five
+      <h1 class="display" style="max-width:16ch;margin-top:var(--s1)"><span data-cloths>Twenty-seven</span>
       cloths.</h1>
 
       <div class="tools">
@@ -208,13 +208,14 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786793410"></script>
-<script src="assets/catalogue.js?v=1786793410"></script>
-<script src="assets/shots.js?v=1786793410"></script>
-<script src="assets/site.js?v=1786793410"></script>
-<script src="assets/iar-house.js?v=1786793410"></script>
-<script src="assets/mark.js?v=1786793410"></script>
-<script src="assets/track.js?v=1786793410"></script>
+<script src="assets/store.js?v=1786795456"></script>
+<script src="assets/house.js?v=1786795456"></script>
+<script src="assets/catalogue.js?v=1786795456"></script>
+<script src="assets/shots.js?v=1786795456"></script>
+<script src="assets/site.js?v=1786795456"></script>
+<script src="assets/iar-house.js?v=1786795456"></script>
+<script src="assets/mark.js?v=1786795456"></script>
+<script src="assets/track.js?v=1786795456"></script>
 <script>
 (function () {
   'use strict';
@@ -240,17 +241,17 @@
 
   /* A cloth that has been shot on the model leads with that frame; the rest
      keep their catalogue photograph, so the grid fills in one cloth at a time
-     rather than waiting for all twenty-five. */
+     rather than waiting for the whole range. */
   /* the frame the card leads with, and the one it turns to on hover. A cloth
      without a shot set has neither, and falls back to its catalogue photograph. */
   function card(p) {
     var s = (window.IAR_SHOTS || {})[p.slug];
-    return s ? 'images/set/' + p.slug + '/1-hero.jpg'
+    return s ? 'images/set/' + p.slug + '/1-hero.webp'
              : 'images/shirts/' + p.img;
   }
   function cardAlt(p) {
     var s = (window.IAR_SHOTS || {})[p.slug];
-    return s && s.shots[1] ? 'images/set/' + p.slug + '/' + s.shots[1].src + '.jpg' : '';
+    return s && s.shots[1] ? 'images/set/' + p.slug + '/' + s.shots[1].src + '.webp' : '';
   }
 
   function sorted(list) {

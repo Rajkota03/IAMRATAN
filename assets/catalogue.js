@@ -19,7 +19,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#492F24",
   "body": "A deep cocoa, woven close and finished soft. The colour reads almost black in a low room and opens to warm brown in daylight — the reason it sits as easily under a jacket at six as it does across a table at nine. Engraved buttons, and the house signature embroidered tone on tone at the cuff.",
-  "img": "cocoa-drift.jpg",
+  "img": "cocoa-drift.webp",
   "url": "https://iamratan.co.in/shop/"
  },
  {
@@ -36,7 +36,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#4D5B6F",
   "body": "A grey-blue with weather in it. Quieter than a navy and warmer than a steel, it is the shirt for the days that go long — cut in the same five sizes, finished by the same hands, with the signature embroidered at the cuff in its own colour.",
-  "img": "slate-harbour.jpg",
+  "img": "slate-harbour.webp",
   "url": "https://iamratan.co.in/shop/"
  },
  {
@@ -53,7 +53,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#4A5570",
   "body": "The Indigo Oak is a testament to exquisite craftsmanship, made from supersoft, premium cotton for ultimate comfort. The intricate herringbone weave showcases attention to detail, while the rich, refined brown and blues adds a touch of timeless sophistication.",
-  "img": "indigo-oak.jpg",
+  "img": "indigo-oak.webp",
   "url": "https://iamratan.co.in/product/indigo-oak/"
  },
  {
@@ -70,7 +70,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#3E5A8C",
   "body": "Discover impeccable craftsmanship with Cobalt Charm, crafted from premium cotton for exceptional comfort and durability. The intricate stitching and refined details reflect true artisanal mastery and exudes timeless elegance. Perfect for making a sophisticated statement in any",
-  "img": "cobalt-charm.jpg",
+  "img": "cobalt-charm.webp",
   "url": "https://iamratan.co.in/product/cobalt-charm/"
  },
  {
@@ -87,7 +87,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#B7CAEE",
   "body": "Discover impeccable craftsmanship with Ratan’s Blue, crafted from premium cotton for exceptional comfort and durability. The intricate stitching and refined details reflect true artisanal mastery and exudes timeless elegance. Perfect for making a sophisticated statement in any setting.",
-  "img": "ratans-blue.jpg",
+  "img": "ratans-blue.webp",
   "url": "https://iamratan.co.in/product/ratans-blue/"
  },
  {
@@ -104,7 +104,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#F2F2F0",
   "body": "Discover impeccable craftsmanship with Blanc Celestia, crafted from premium cotton for exceptional comfort and durability. The intricate stitching and refined details reflect true artisanal mastery and exudes timeless elegance. Perfect for making a sophisticated statement in any setting",
-  "img": "blanc-celestia-2.jpg",
+  "img": "blanc-celestia-2.webp",
   "url": "https://iamratan.co.in/product/blanc-celestia-2/"
  },
  {
@@ -121,7 +121,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#16171A",
   "body": "Discover impeccable craftsmanship with Obsidian, crafted from premium cotton for exceptional comfort and durability. The intricate stitching and refined details reflect true artisanal mastery and exudes timeless elegance. Perfect for making a sophisticated statement in any setting.",
-  "img": "obsidian.jpg",
+  "img": "obsidian.webp",
   "url": "https://iamratan.co.in/product/obsidian/"
  },
  {
@@ -138,7 +138,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#22252D",
   "body": "Crafted from premium cotton, Midnight speckle features an intricate jacquard weave that adds subtle texture and depth. The tailored fit ensures a sharp, modern silhouette, while the breathable fabric offers all-day comfort.",
-  "img": "midnight-speckle.jpg",
+  "img": "midnight-speckle.webp",
   "url": "https://iamratan.co.in/product/midnight-speckle/"
  },
  {
@@ -155,7 +155,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#E6E4DE",
   "body": "Crafted from premium cotton, Moonlight speckle features an intricate jacquard weave that adds subtle texture and depth. The tailored fit ensures a sharp, modern silhouette, while the breathable fabric offers all-day comfort.",
-  "img": "moonlight-speckle.jpg",
+  "img": "moonlight-speckle.webp",
   "url": "https://iamratan.co.in/product/moonlight-speckle/"
  },
  {
@@ -172,7 +172,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#8FA0AD",
   "body": "",
-  "img": "aegean-haze.jpg",
+  "img": "aegean-haze.webp",
   "url": "https://iamratan.co.in/product/aegean-haze/"
  },
  {
@@ -189,7 +189,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#F4F4F2",
   "body": "",
-  "img": "blanc-canvas.jpg",
+  "img": "blanc-canvas.webp",
   "url": "https://iamratan.co.in/product/blanc-canvas/"
  },
  {
@@ -206,7 +206,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#8A6244",
   "body": "",
-  "img": "cognac-drift.jpg",
+  "img": "cognac-drift.webp",
   "url": "https://iamratan.co.in/product/cognac-drift/"
  },
  {
@@ -223,7 +223,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#BFAE96",
   "body": "",
-  "img": "dune-sand.jpg",
+  "img": "dune-sand.webp",
   "url": "https://iamratan.co.in/product/dune-sand/"
  },
  {
@@ -240,7 +240,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#7FA3CC",
   "body": "",
-  "img": "marina-stripe-3.jpg",
+  "img": "marina-stripe-3.webp",
   "url": "https://iamratan.co.in/product/marina-stripe-3/"
  },
  {
@@ -257,7 +257,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#232C4A",
   "body": "",
-  "img": "midnight-navy.jpg",
+  "img": "midnight-navy.webp",
   "url": "https://iamratan.co.in/product/midnight-navy/"
  },
  {
@@ -274,7 +274,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#C4C6C6",
   "body": "",
-  "img": "pebble-mist.jpg",
+  "img": "pebble-mist.webp",
   "url": "https://iamratan.co.in/product/pebble-mist/"
  },
  {
@@ -291,7 +291,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#5C6066",
   "body": "",
-  "img": "storm-grey.jpg",
+  "img": "storm-grey.webp",
   "url": "https://iamratan.co.in/product/storm-grey/"
  },
  {
@@ -308,7 +308,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#9FB6D9",
   "body": "pattern for a touch of texture. The tailored fit offers a sleek, flattering shape, while the premium fabric ensures comfort. Completed with mother-of-pearl buttons and expert craftsmanship, this shirt is both versatile and elegant",
-  "img": "azure-pearls.jpg",
+  "img": "azure-pearls.webp",
   "url": "https://iamratan.co.in/product/azure-pearls/"
  },
  {
@@ -325,7 +325,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#F0F0EC",
   "body": "dotted pattern for a touch of texture. The tailored fit offers a sleek, flattering shape, while the premium fabric ensures comfort. Completed with mother-of-pearl buttons and expert craftsmanship, this shirt is both versatile and elegant.",
-  "img": "blanc-dewdrop.jpg",
+  "img": "blanc-dewdrop.webp",
   "url": "https://iamratan.co.in/product/blanc-dewdrop/"
  },
  {
@@ -342,7 +342,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#6E93C4",
   "body": "Refinement at its most effortless. The Azure Thread is built on a clear, mid-blue base with fine white pinstripes drawn at just enough of a distance to breathe. Smooth to the touch and clean in form, this shirt pairs with everything from charcoal suits to white chinos. A Legacy essential that lives in the space between formal and free.",
-  "img": "azure-thread.jpg",
+  "img": "azure-thread.webp",
   "url": "https://iamratan.co.in/product/azure-thread/"
  },
  {
@@ -359,7 +359,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#6B2F3A",
   "body": "",
-  "img": "claret-hound.jpg",
+  "img": "claret-hound.webp",
   "url": "https://iamratan.co.in/product/claret-hound/"
  },
  {
@@ -376,7 +376,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#5E6449",
   "body": "",
-  "img": "forest-weave.jpg",
+  "img": "forest-weave.webp",
   "url": "https://iamratan.co.in/product/forest-weave/"
  },
  {
@@ -393,7 +393,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#2F3E5C",
   "body": "There’s depth in the detail. A rich navy ground is interrupted by a layered stripe — fine beige and white lines running in quiet rhythm — giving this shirt a complexity that rewards a second look. Tonal buttons and a structured spread collar lend it a formal edge without sacrificing ease. The kind of shirt that anchors a wardrobe and never overstays its welcome.",
-  "img": "harbour-blue.jpg",
+  "img": "harbour-blue.webp",
   "url": "https://iamratan.co.in/product/harbour-blue/"
  },
  {
@@ -410,7 +410,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#E8E3D6",
   "body": "",
-  "img": "ivory-grid.jpg",
+  "img": "ivory-grid.webp",
   "url": "https://iamratan.co.in/product/ivory-grid/"
  },
  {
@@ -427,7 +427,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#2E3033",
   "body": "",
-  "img": "onyx-hound.jpg",
+  "img": "onyx-hound.webp",
   "url": "https://iamratan.co.in/product/onyx-hound/"
  },
  {
@@ -444,7 +444,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#2B2A2E",
   "body": "",
-  "img": "marina-stripe.jpg",
+  "img": "marina-stripe.webp",
   "url": "https://iamratan.co.in/product/marina-stripe/"
  },
  {
@@ -461,7 +461,7 @@ window.IAR_CATALOGUE = [
   ],
   "hex": "#C2A882",
   "body": "",
-  "img": "warm-dune.jpg",
+  "img": "warm-dune.webp",
   "url": "https://iamratan.co.in/product/warm-dune/"
  }
 ];

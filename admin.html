@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786795456">
 <style>
 /* ---------- THE DESK ----------
    A control room, not a dashboard. The first question it answers is "what
@@ -26,97 +26,401 @@
    It borrows the site's own type, hairlines and spacing scale on purpose. The
    house should not feel like it is leaving its own shop to run its own shop. */
 
-body{overflow-x:hidden}
+body{overflow-x:hidden;background:var(--under)}
 .shell{display:grid;grid-template-columns:1fr;min-height:100svh}
-@media(min-width:900px){.shell{grid-template-columns:15rem 1fr}}
+@media(min-width:1000px){.shell{grid-template-columns:15.5rem 1fr}}
 
-/* the sidebar */
-.side{border-right:1px solid var(--hair);padding:var(--clear) var(--s4) var(--s5);
-  display:none}
-@media(min-width:900px){.side{display:block;position:sticky;top:0;height:100svh;
-  overflow-y:auto}}
-.side h2{font-family:var(--mono);font-size:.5625rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--muted);font-weight:400;
-  margin:var(--s4) 0 var(--s1)}
-.side h2:first-of-type{margin-top:0}
-.nav-item{display:flex;justify-content:space-between;align-items:center;
-  gap:var(--s2);width:100%;text-align:left;padding:var(--s1) 0;font-size:.9375rem;
-  color:var(--muted);cursor:pointer;background:none;border:0;
-  transition:color .25s var(--settle)}
-.nav-item:hover{color:var(--ink)}
-.nav-item[aria-current="true"]{color:var(--ink)}
-.nav-item .pip{font-family:var(--mono);font-size:.625rem;min-width:1.3rem;
-  height:1.3rem;display:grid;place-items:center;border-radius:1rem;
-  background:var(--claret);color:var(--room)}
+/* ---------- the sidebar ----------
+   Dark, against a light workspace. It is the one place in this project that
+   does not borrow the shop's cream, and deliberately: the desk is behind the
+   shop, not part of it, and a dark rail makes that obvious the moment it opens.
+   The wordmark sits at the top so the house knows whose books these are. */
+.side{background:#141210;color:#E8E4DC;padding:var(--s4) var(--s3);display:none}
+@media(min-width:1000px){.side{display:flex;flex-direction:column;
+  position:sticky;top:0;height:100svh;overflow-y:auto}}
+.brand{padding:var(--s2) var(--s2) var(--s5)}
+.brand b{display:block;font-weight:300;font-size:1.05rem;letter-spacing:.16em}
+.brand span{font-family:var(--mono);font-size:.5rem;letter-spacing:.34em;
+  color:rgba(232,228,220,.5)}
+.side h2{font-family:var(--mono);font-size:.5rem;letter-spacing:.24em;
+  text-transform:uppercase;color:rgba(232,228,220,.38);font-weight:400;
+  margin:var(--s4) var(--s2) var(--s1)}
+.nav-item{display:flex;align-items:center;gap:var(--s2);width:100%;
+  text-align:left;padding:var(--s2);font-size:.9375rem;
+  color:rgba(232,228,220,.72);cursor:pointer;background:none;border:0;
+  border-radius:.4rem;transition:background-color .2s,color .2s}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav-item[aria-current="true"]{background:rgba(255,255,255,.09);color:#fff}
+.nav-item svg{width:1.05rem;height:1.05rem;flex:0 0 auto;stroke:currentColor;
+  fill:none;stroke-width:1.4}
+.nav-item .pip{margin-left:auto;font-family:var(--mono);font-size:.625rem;
+  min-width:1.35rem;height:1.35rem;display:grid;place-items:center;
+  border-radius:1rem;background:var(--claret);color:#fff}
 .nav-item .pip:empty{display:none}
+.whoami{margin-top:auto;padding:var(--s3) var(--s2) 0;
+  border-top:1px solid rgba(255,255,255,.1);display:grid;gap:var(--s0)}
+.whoami b{font-weight:400;font-size:.875rem}
+.whoami a{font-family:var(--mono);font-size:.5625rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(232,228,220,.5)}
 
-/* a phone gets a scrolling rail instead */
+/* a phone gets a scrolling rail */
 .rail{display:flex;gap:var(--s1);overflow-x:auto;scrollbar-width:none;
   padding:var(--s2) var(--gut);border-bottom:1px solid var(--hair);
-  position:sticky;top:0;z-index:20;background:var(--room)}
+  position:sticky;top:0;z-index:20;background:#141210}
 .rail::-webkit-scrollbar{display:none}
 .rail .nav-item{width:auto;flex:0 0 auto;padding:var(--s1) var(--s3);
-  border:1px solid var(--hair);border-radius:2rem;font-family:var(--mono);
-  font-size:.625rem;letter-spacing:.14em;text-transform:uppercase}
-.rail .nav-item[aria-current="true"]{background:var(--ink);color:var(--room);
-  border-color:var(--ink)}
-@media(min-width:900px){.rail{display:none}}
+  font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+  text-transform:uppercase;border-radius:2rem}
+.rail .nav-item svg{display:none}
+@media(min-width:1000px){.rail{display:none}}
 
-.work{padding:var(--s5) var(--gut) var(--sz);min-width:0}
-@media(min-width:900px){.work{padding-top:var(--clear)}}
-.work h1{font-weight:200;font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:-.03em;
-  margin:0 0 var(--s1)}
+.work{padding:var(--s5) var(--gut) var(--sz);min-width:0;background:var(--under)}
+.work h1{font-weight:300;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.02em;
+  margin:0}
+.sub{margin:var(--s0) 0 0;color:var(--muted);font-size:.9375rem}
 .eyebrow{font-family:var(--mono);font-size:.5625rem;letter-spacing:.2em;
   text-transform:uppercase;color:var(--muted);margin:0}
+.topbar{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:flex-start;
+  justify-content:space-between;margin:0 0 var(--s4)}
 
-/* the gate */
+/* ---------- cards ---------- */
+.card{background:var(--room);border:1px solid var(--hair);border-radius:.5rem;
+  padding:var(--s3)}
+.grid-3{display:grid;gap:var(--s2);grid-template-columns:1fr}
+@media(min-width:1100px){.grid-3{grid-template-columns:1.35fr .9fr .95fr}}
+.grid-2{display:grid;gap:var(--s2);grid-template-columns:1fr;margin-top:var(--s2)}
+@media(min-width:1100px){.grid-2{grid-template-columns:1.1fr .9fr}}
+.card h3{margin:0 0 var(--s3);font-size:1rem;font-weight:400;letter-spacing:-.01em}
+.card h3 .more{float:right;font-family:var(--mono);font-size:.5625rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);cursor:pointer}
+
+/* the eight numbers */
+.figs{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2);
+  margin:0 0 var(--s2)}
+@media(min-width:760px){.figs{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1500px){.figs{grid-template-columns:repeat(8,1fr)}}
+.fig-box{background:var(--room);border:1px solid var(--hair);border-radius:.5rem;
+  padding:var(--s3);display:grid;gap:var(--s1)}
+.fig-ic{width:2rem;height:2rem;border-radius:50%;background:var(--under);
+  display:grid;place-items:center}
+.fig-ic svg{width:1rem;height:1rem;stroke:var(--ink);fill:none;stroke-width:1.4}
+.fig-box .lab{font-size:.8125rem;color:var(--muted)}
+.fig-box b{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:1.5rem;font-weight:400;line-height:1.1}
+.delta{font-family:var(--mono);font-size:.6875rem}
+.delta.up{color:#3F6B45}
+.delta.down{color:var(--claret)}
+.delta.flat{color:var(--muted)}
+.fig-box.warn b{color:var(--claret)}
+.fig-box .warn-note{font-family:var(--mono);font-size:.5625rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--claret)}
+
+/* ---------- the revenue line ----------
+   Drawn as inline SVG rather than pulling in a charting library. The whole site
+   has no dependencies and one graph is not a reason to start. */
+.chart{width:100%;height:13rem;display:block;overflow:visible}
+.chart .area{fill:var(--under)}
+.chart .line{fill:none;stroke:var(--ink);stroke-width:1.5;
+  stroke-linejoin:round;stroke-linecap:round}
+.chart .dot{fill:var(--ink)}
+.chart .grid{stroke:var(--hair);stroke-width:1}
+.chart text{font-family:var(--mono);font-size:8px;fill:var(--muted)}
+.ranges{display:flex;gap:var(--s0);float:right}
+.range{font-family:var(--mono);font-size:.5625rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:var(--s0) var(--s2);border-radius:.3rem;
+  border:1px solid transparent;background:none;cursor:pointer;color:var(--muted)}
+.range[aria-pressed="true"]{background:var(--ink);color:var(--room)}
+
+/* ---------- the pipeline ---------- */
+.pipe{display:flex;justify-content:space-between;gap:var(--s1);text-align:center}
+.pipe div{flex:1;min-width:0}
+.pipe .ring{width:2.2rem;height:2.2rem;margin:0 auto var(--s1);border-radius:50%;
+  background:var(--under);display:grid;place-items:center;
+  font-family:var(--mono);font-size:.6875rem}
+.pipe .nm{font-family:var(--mono);font-size:.5rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);display:block}
+.pipe b{font-family:var(--mono);font-size:1.1rem;font-weight:400}
+
+/* ---------- action required ---------- */
+.todo{display:grid;gap:var(--s2)}
+.todo button{display:flex;align-items:center;gap:var(--s2);width:100%;
+  text-align:left;background:none;border:0;cursor:pointer;padding:var(--s1) 0}
+.todo button:hover .what{text-decoration:underline;text-underline-offset:3px}
+.todo .ic{width:2rem;height:2rem;border-radius:50%;flex:0 0 auto;
+  display:grid;place-items:center;font-family:var(--mono);font-size:.6875rem}
+.todo .ic.red{background:#F3E3E3;color:#8C2F2F}
+.todo .ic.amber{background:#F6EEDC;color:#8A6A18}
+.todo .ic.green{background:#E6EDE4;color:#3F6B45}
+.todo .what{display:grid;line-height:1.3}
+.todo .what b{font-weight:400;font-size:.9375rem}
+.todo .what span{font-size:.8125rem;color:var(--muted)}
+.todo .clear{margin:0;color:var(--muted);font-size:.9375rem}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;font-size:.9375rem}
+.scroll{overflow-x:auto}
+th{text-align:left;font-family:var(--mono);font-size:.5625rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);font-weight:400;white-space:nowrap;
+  padding:0 var(--s2) var(--s2) 0;border-bottom:1px solid var(--hair)}
+td{padding:var(--s2) var(--s2) var(--s2) 0;border-bottom:1px solid var(--hair);
+  vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.low{color:#8A6A18}
+td.out{color:var(--claret)}
+.sw{width:1.4rem;height:1.4rem;display:inline-block;vertical-align:middle;
+  border-radius:.2rem;background:var(--g,#888)}
+.tag{font-family:var(--mono);font-size:.5rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:2px var(--s1);border-radius:.25rem;
+  background:var(--under);white-space:nowrap}
+.tag.new{background:#EDEAE4}
+.tag.making{background:#F6EEDC;color:#8A6A18}
+.tag.packed{background:#E7EBF2;color:#3A4A6B}
+.tag.shipped{background:#E6EDE4;color:#3F6B45}
+.tag.delivered{background:#E6EDE4;color:#3F6B45}
+.tag.cancelled{background:#F3E3E3;color:#8C2F2F}
+
+/* ---------- the gate ---------- */
 .gate{max-width:24rem;margin:var(--sy) auto;display:grid;gap:var(--s3)}
 .gate p{margin:0;color:var(--muted);font-size:.9375rem;line-height:1.6}
 .f{display:grid;gap:var(--s0);margin:0}
 .f label{font-size:.8125rem;color:var(--muted)}
-.f input{width:100%;background:var(--room);border:1px solid var(--hair);
-  padding:0 var(--s2);min-height:2.875rem;font-size:1rem;color:var(--ink)}
-.f input:focus{outline:0;border-color:var(--ink)}
+.f input,.f select{width:100%;background:var(--room);border:1px solid var(--hair);
+  padding:0 var(--s2);min-height:2.875rem;font-size:1rem;color:var(--ink);
+  border-radius:.4rem}
+.f input:focus,.f select:focus{outline:0;border-color:var(--ink)}
 .btn{border:1px solid currentColor;background:none;padding:var(--s3) var(--s5);
   font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
-  text-transform:uppercase;cursor:pointer;
+  text-transform:uppercase;cursor:pointer;border-radius:.4rem;
   transition:background-color .35s var(--settle),color .35s var(--settle)}
 .btn:hover{background:var(--ink);color:var(--room)}
 .btn.small{padding:var(--s1) var(--s3);font-size:.5625rem;letter-spacing:.14em}
 .note{margin:0;font-size:.8125rem;line-height:1.6}
 .note.bad{color:var(--claret)}
 
-/* what needs doing — deliberately the first thing on the page */
-.todo{border:1px solid var(--ink);padding:var(--s4);margin:0 0 var(--s5);
-  display:grid;gap:var(--s2)}
-.todo h3{margin:0;font-family:var(--mono);font-size:.5625rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--muted);font-weight:400}
-.todo button{display:flex;align-items:center;gap:var(--s2);width:100%;
-  text-align:left;background:none;border:0;cursor:pointer;font-size:1rem;
-  padding:var(--s1) 0}
-.todo button:hover{text-decoration:underline;text-underline-offset:3px}
-.dot{width:.5rem;height:.5rem;border-radius:50%;flex:0 0 auto}
-.dot.red{background:var(--claret)}
-.dot.amber{background:#B8860B}
-.dot.green{background:#4A6741}
-.todo b{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.todo .clear{margin:0;color:var(--muted);font-size:.9375rem}
+input.cell{width:5.5rem;background:var(--room);border:1px solid var(--hair);
+  padding:var(--s1);font-family:var(--mono);font-size:.8125rem;color:var(--ink);
+  border-radius:.3rem}
+input.cell:focus{outline:0;border-color:var(--ink)}
+input.cell.saved{border-color:var(--ink);background:var(--under)}
+.wide{width:100%;max-width:22rem}
+/* In a table cell, width:100% resolves against a column that is sizing itself
+   from its content — so the field collapses to the width of its placeholder.
+   A min-width gives the column something real to size from. */
+td .cell.wide{min-width:13rem}
+select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1);
+  font-family:var(--mono);font-size:.75rem;color:var(--ink);border-radius:.3rem}
+.tick{display:inline-flex;align-items:center;gap:var(--s1);cursor:pointer;
+  font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;text-transform:uppercase}
+.tick input{width:1.1rem;height:1.1rem}
+/* the default checkbox is system blue, which is the one colour the house does
+   not own — accent-color tints it without rebuilding the control */
+input[type=checkbox],input[type=radio]{accent-color:var(--ink)}
+.empty{padding:var(--s5) 0;color:var(--muted);max-width:52ch;line-height:1.6}
+.hint{margin:0 0 var(--s3);color:var(--muted);font-size:.875rem;line-height:1.6;
+  max-width:62ch}
+.stock-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1)}
+.stock-grid label{display:grid;gap:var(--s0);font-family:var(--mono);
+  font-size:.5625rem;letter-spacing:.12em;color:var(--muted)}
+.stock-grid input{width:100%;background:var(--room);border:1px solid var(--hair);
+  padding:var(--s1);font-family:var(--mono);font-size:.8125rem;color:var(--ink);
+  text-align:center;border-radius:.3rem}
+.stock-grid input.zero{border-color:var(--claret);color:var(--claret)}
+.stock-grid input.low{border-color:#8A6A18}
+.filters{display:flex;flex-wrap:wrap;gap:var(--s1);margin:0 0 var(--s4)}
+/* ---------- the toolbar above a list ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:var(--s1);margin:0 0 var(--s3)}
+.tab{font-family:var(--mono);font-size:.5625rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:var(--s2) var(--s3);border-radius:.4rem;
+  border:1px solid var(--hair);background:var(--room);cursor:pointer;
+  color:var(--muted);display:inline-flex;gap:var(--s1);align-items:center}
+.tab b{font-weight:400;color:var(--ink)}
+.tab[aria-selected="true"]{border-color:var(--ink);color:var(--ink)}
+.toolbar{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;
+  margin:0 0 var(--s3)}
+.search{flex:1;min-width:14rem;position:relative}
+.search input{width:100%;background:var(--room);border:1px solid var(--hair);
+  border-radius:.4rem;padding:0 var(--s3);min-height:2.5rem;font-size:.9375rem;
+  color:var(--ink)}
+.search input:focus{outline:0;border-color:var(--ink)}
+/* a toggle button is pressed, not selected — aria-selected belongs to a real
+   tablist, and these are plain buttons that filter a table */
+.tab[aria-pressed="true"]{border-color:var(--ink);color:var(--ink)}
 
-/* the numbers */
-.figs{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
-@media(min-width:680px){.figs{grid-template-columns:repeat(4,1fr)}}
-.fig-box{border:1px solid var(--hair);padding:var(--s3);display:grid;gap:var(--s0)}
-.fig-box b{font-family:var(--mono);font-variant-numeric:tabular-nums;
-  font-size:1.6rem;font-weight:400;line-height:1.1}
-.fig-box span{font-family:var(--mono);font-size:.5625rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--muted)}
-.fig-box.warn b{color:var(--claret)}
+/* ---------- the comparison chart ----------
+   "Then" is dashed and thin; "now" is solid. Both share one scale, because two
+   revenue lines on two axes can be made to tell any story you like. */
+.chart .line.was{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4;opacity:.75}
+.legend2{display:flex;gap:var(--s3);margin:var(--s2) 0 0;font-family:var(--mono);
+  font-size:.5625rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.legend2 span{display:inline-flex;align-items:center;gap:var(--s1)}
+.legend2 span::before{content:'';width:1.1rem;height:0;border-top:2px solid var(--ink)}
+.legend2 .then::before{border-top:1px dashed var(--muted)}
+.card h3 .more{cursor:default}
+.card h3 .more[data-go]{cursor:pointer}
+.sub-h{margin:var(--s4) 0 var(--s2);font-size:.8125rem;font-weight:400;
+  color:var(--muted)}
+.ranges{display:flex;gap:var(--s1);flex-wrap:wrap}
 
-.block{margin:var(--sy) 0 0}
-.block h3{margin:0 0 var(--s3);font-family:var(--mono);font-size:.5625rem;
-  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:400}
+/* ---------- reports ---------- */
+.rep{display:grid;gap:var(--s2);grid-template-columns:1fr;align-items:start;
+  margin-top:var(--s2)}
+@media (min-width:60rem){.rep{grid-template-columns:15rem minmax(0,1fr)}}
+.rep-side{display:grid;gap:var(--s0);align-content:start}
+.rep-side button{text-align:left;background:none;border:1px solid transparent;
+  border-radius:.4rem;padding:var(--s2) var(--s3);cursor:pointer;color:var(--ink);
+  font:inherit;display:grid;gap:1px}
+.rep-side button span{font-size:.75rem;color:var(--muted);line-height:1.35}
+.rep-side button:hover{border-color:var(--hair)}
+.rep-side button[aria-current="true"]{background:var(--under);border-color:var(--hair)}
 
-/* the funnel, as bars rather than a chart library */
+/* ---------- marketing ---------- */
+.tag.active,.tag.ready,.tag.done{background:#E6EDE4;color:#3F6B45}
+.grid-2 + .scroll{margin-top:var(--s2)}
+.tag.scheduled{background:#E7EBF2;color:#3A4A6B}
+.tag.expired,.tag.cold{background:#F3E3E3;color:#8C2F2F}
+.tag.draft{background:#EDEAE4;color:var(--muted)}
+tr.done td{opacity:.5}
+.btn.danger{color:var(--claret)}
+.btn.danger:hover{background:var(--claret);color:var(--room)}
+
+/* the ring of channels. One circle per slice, rotated so the first begins at
+   twelve o'clock rather than three. */
+.chan{display:grid;grid-template-columns:auto 1fr;gap:var(--s4);align-items:center}
+.donut{width:8.75rem;height:8.75rem;transform:rotate(-90deg)}
+.donut circle{fill:none;stroke-width:16}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:var(--s2)}
+.legend li{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s2);
+  align-items:center;font-size:.875rem}
+.legend i{width:.5rem;height:.5rem;border-radius:50%}
+.legend .n{font-family:var(--mono);font-size:.75rem;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+@media (max-width:40rem){.chan{grid-template-columns:1fr;justify-items:center}}
+
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);
+  margin:0 0 var(--s3)}
+.mini b{display:block;font-family:var(--mono);font-size:1.375rem;font-weight:400;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.mini span{font-size:.8125rem;color:var(--muted);line-height:1.4}
+
+.quick{display:grid;gap:var(--s1);margin-top:var(--s3)}
+.quick button{text-align:left;background:none;border:1px solid var(--hair);
+  border-radius:.4rem;padding:var(--s3);cursor:pointer;display:grid;
+  gap:var(--s0);color:var(--ink);font:inherit}
+.quick button:hover{border-color:var(--ink)}
+.quick b{font-weight:400}
+.quick span{font-size:.8125rem;color:var(--muted)}
+
+/* ---------- the two-column make-a-thing screens ---------- */
+.grid-side{display:grid;gap:var(--s2);grid-template-columns:1fr;
+  align-items:start;margin-top:var(--s2)}
+@media (min-width:60rem){.grid-side{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}}
+
+.f2{display:grid;gap:var(--s4)}
+.f2 p{margin:0;display:grid;gap:var(--s1)}
+/* a class that sets display beats the browser's own [hidden] rule, so hiding a
+   field by setting .hidden would otherwise do nothing at all */
+.f2 p[hidden]{display:none}
+/* a hint is a sentence, not a stack — left alone it stretches any button
+   inside it across the whole column */
+.f2 p.hint{display:block}
+.f2 label,.f2 legend{font-size:.8125rem;color:var(--muted);padding:0}
+/* text fields only. Without the :not() a checkbox inherits width:100% and a
+   2.75rem min-height and renders as a large square box beside its label. */
+.f2 input:not([type=checkbox]):not([type=radio]),
+.f2 select,.f2 textarea{background:var(--room);border:1px solid var(--hair);
+  border-radius:.4rem;padding:var(--s2) var(--s3);min-height:2.75rem;
+  font:inherit;font-size:.9375rem;color:var(--ink);width:100%}
+.f2 textarea{min-height:8rem;line-height:1.6;resize:vertical}
+.f2 input:focus,.f2 select:focus,.f2 textarea:focus{outline:0;border-color:var(--ink)}
+.f2 input[readonly]{background:var(--under);color:var(--muted)}
+.f2 fieldset{border:0;padding:0;margin:0;display:grid;gap:var(--s2)}
+.pair{display:grid;gap:var(--s3);grid-template-columns:1fr}
+@media (min-width:34rem){.pair{grid-template-columns:1fr 1fr}}
+
+.picks{display:grid;gap:var(--s1);grid-template-columns:repeat(auto-fit,minmax(11rem,1fr))}
+.picks.stack{grid-template-columns:1fr}
+.pick{display:flex;gap:var(--s2);align-items:flex-start;padding:var(--s3);
+  border:1px solid var(--hair);border-radius:.4rem;cursor:pointer}
+.pick:has(input:checked){border-color:var(--ink);background:var(--under)}
+.pick input{width:1rem;height:1rem;margin-top:.15rem;flex:none}
+.pick b{display:block;font-weight:400;font-size:.9375rem}
+.pick small{display:block;font-size:.8125rem;color:var(--muted);line-height:1.4}
+
+.row-end{display:flex;gap:var(--s2);justify-content:flex-end;flex-wrap:wrap;
+  align-items:center}
+
+.summary{font-size:.9375rem;line-height:1.7}
+.summary ul,.summary ol{margin:0;padding-left:1.1rem;display:grid;gap:var(--s1)}
+.summary li{color:var(--muted)}
+.summary li b{color:var(--ink);font-weight:400}
+.code-chip{display:inline-block;margin:0 0 var(--s3);padding:var(--s1) var(--s3);
+  background:var(--under);border-radius:.3rem;font-family:var(--mono);
+  font-size:.875rem;letter-spacing:.08em}
+.steps li{margin-bottom:var(--s1)}
+.msg{margin:0 0 var(--s3);padding:var(--s3);background:var(--under);
+  border-radius:.4rem;font:inherit;font-size:.9375rem;line-height:1.7;
+  white-space:pre-wrap;word-break:break-word}
+
+/* ---------- media ---------- */
+.files{display:grid;gap:var(--s2);margin-top:var(--s3);
+  grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));align-items:start}
+.file{margin:0;background:var(--room);border:1px solid var(--hair);
+  border-radius:.5rem;overflow:hidden}
+.file > a{display:block}
+.file img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;
+  background:var(--under)}
+.file .filetype{display:grid;place-items:center;aspect-ratio:4/5;
+  background:var(--under);font-family:var(--mono);font-size:.75rem;
+  letter-spacing:.14em;color:var(--muted)}
+.file figcaption{padding:var(--s2);display:grid;gap:var(--s1)}
+.file figcaption input{width:100%;min-width:0}
+.file figcaption .row-end{display:grid;grid-template-columns:1fr 1fr;gap:var(--s1);
+  justify-content:stretch}
+.file figcaption .row-end .btn{text-align:center;padding-inline:0}
+.file figcaption b{font-weight:400;font-size:.8125rem;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.file figcaption .muted{font-family:var(--mono);font-size:.625rem}
+
+.shots{display:grid;gap:var(--s2);margin-top:var(--s3);
+  grid-template-columns:repeat(auto-fill,minmax(12rem,1fr))}
+/* The shared stylesheet makes .shot a shop gallery tile: the caption is laid
+   OVER the photograph, bottom-left, which is right on a shop and unreadable on
+   a desk where the caption holds a text field and two buttons. Reset both
+   positions rather than rename the class — the drag-to-reorder handlers on the
+   cloth screen already look for .shot, and this fixes that screen too. */
+.shot{position:static;margin:0;background:var(--room);border:1px solid var(--hair);
+  border-radius:.5rem;overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.shot img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;
+  background:var(--under)}
+.shot .filetype{display:grid;place-items:center;aspect-ratio:4/5;
+  background:var(--under);font-family:var(--mono);font-size:.75rem;
+  letter-spacing:.14em;color:var(--muted)}
+.shot figcaption{position:static;background:none;padding:var(--s2);display:grid;
+  gap:var(--s1);align-content:start;color:var(--ink)}
+.shot img{transform:none}
+/* the native file button is the one control on this page nobody designed */
+input[type=file]{font:inherit;font-size:.8125rem;color:var(--muted)}
+input[type=file]::file-selector-button{font-family:var(--mono);font-size:.5625rem;
+  letter-spacing:.14em;text-transform:uppercase;padding:var(--s2) var(--s3);
+  margin-right:var(--s2);border:1px solid var(--ink);border-radius:.4rem;
+  background:none;color:var(--ink);cursor:pointer}
+input[type=file]::file-selector-button:hover{background:var(--ink);color:var(--room)}
+.shot figcaption b{font-weight:400;font-size:.8125rem;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.shot figcaption .muted{font-family:var(--mono);font-size:.625rem}
+.barprev{margin-bottom:var(--s3)}
+/* a colour well should look like the colour, not like a form control */
+input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
+  background:var(--room);border:1px solid var(--hair);border-radius:.4rem;cursor:pointer}
+
+/* ---------- restored ----------
+   These went missing when I removed what I had measured as a duplicated CSS
+   region. The measurement compared rule TEXT inside the block but the block
+   boundaries cut across rules, so a run of real ones went with it — the funnel
+   bars, the sheet, the measurement inputs, the to-do list. Caught by diffing
+   every selector in the file against the last commit, which is the check that
+   should have run at the time. */
 .funnel{display:grid;gap:var(--s1)}
 .step{display:grid;grid-template-columns:11rem 1fr auto;gap:var(--s2);
   align-items:center;font-size:.875rem}
@@ -125,75 +429,111 @@ body{overflow-x:hidden}
 .bar i{position:absolute;inset:0 auto 0 0;background:var(--ink);display:block}
 .step .n{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.8125rem}
 .step .pc{color:var(--muted);font-family:var(--mono);font-size:.6875rem}
-
-/* the lists */
-table{width:100%;border-collapse:collapse;font-size:.9375rem}
-.scroll{overflow-x:auto}
-th{text-align:left;font-family:var(--mono);font-size:.5625rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--muted);font-weight:400;white-space:nowrap;
-  padding:0 var(--s2) var(--s2) 0;border-bottom:1px solid var(--hair)}
-td{padding:var(--s2) var(--s2) var(--s2) 0;border-bottom:1px solid var(--hair);
-  vertical-align:middle}
-td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
-.sw{width:1.4rem;height:1.4rem;display:inline-block;vertical-align:middle;
-  background:var(--g,#888)}
-input.cell{width:5.5rem;background:var(--room);border:1px solid var(--hair);
-  padding:var(--s1);font-family:var(--mono);font-size:.8125rem;color:var(--ink)}
-input.cell:focus{outline:0;border-color:var(--ink)}
-input.cell.saved{border-color:var(--ink);background:var(--under)}
-.wide{width:100%;max-width:22rem}
-select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1);
-  font-family:var(--mono);font-size:.75rem;color:var(--ink)}
-.tick{display:inline-flex;align-items:center;gap:var(--s1);cursor:pointer;
-  font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;text-transform:uppercase}
-.tick input{width:1.1rem;height:1.1rem}
-.empty{padding:var(--sy) 0;color:var(--muted);max-width:52ch;line-height:1.6}
-.hint{margin:0 0 var(--s3);color:var(--muted);font-size:.875rem;line-height:1.6;
-  max-width:62ch}
-.stock-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1)}
-.stock-grid label{display:grid;gap:var(--s0);font-family:var(--mono);
-  font-size:.5625rem;letter-spacing:.12em;color:var(--muted)}
-.stock-grid input{width:100%;background:var(--room);border:1px solid var(--hair);
-  padding:var(--s1);font-family:var(--mono);font-size:.8125rem;color:var(--ink);
-  text-align:center}
-.stock-grid input.zero{border-color:var(--claret);color:var(--claret)}
-.stock-grid input.low{border-color:#B8860B}
-.pill{font-family:var(--mono);font-size:.5625rem;letter-spacing:.14em;
-  text-transform:uppercase;border:1px solid var(--hair);padding:2px var(--s1);
-  white-space:nowrap}
-.filters{display:flex;flex-wrap:wrap;gap:var(--s1);margin:0 0 var(--s4);
-  align-items:center}
-
-/* ---------- the measurement sheet ----------
-   Eight numbers in a row a tailor can fill without moving his eyes far. On a
-   phone they fall to four and then two, because a sitting is often typed
-   standing up with the tape still in hand. */
+.block{margin:var(--sy) 0 0}
+.block h3{margin:0 0 var(--s3);font-family:var(--mono);font-size:.5625rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.dot{width:.5rem;height:.5rem;border-radius:50%;flex:0 0 auto}
+.dot.red{background:var(--claret)}
+.dot.amber{background:#B8860B}
+.dot.green{background:#4A6741}
+.f1{display:grid;gap:var(--s0)}
+.f3{display:grid;grid-template-columns:1fr;gap:var(--s2)}
+.f input{width:100%;background:var(--room);border:1px solid var(--hair);
+  padding:0 var(--s2);min-height:2.875rem;font-size:1rem;color:var(--ink)}
+.f input:focus{outline:0;border-color:var(--ink)}
+.meas{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
+.meas input{font-family:var(--mono);text-align:center;
+  font-variant-numeric:tabular-nums}
 .sheet{display:grid;gap:var(--s3);max-width:52rem;margin:0 0 var(--s5)}
 .sheet label{display:grid;gap:var(--s0);font-size:.8125rem;color:var(--muted)}
 .sheet input,.sheet select{background:var(--room);border:1px solid var(--hair);
   padding:var(--s1) var(--s2);min-height:2.5rem;font-size:1rem;color:var(--ink)}
 .sheet input:focus,.sheet select:focus{outline:0;border-color:var(--ink)}
-.f3{display:grid;grid-template-columns:1fr;gap:var(--s2)}
-@media(min-width:640px){.f3{grid-template-columns:repeat(3,1fr)}}
-.f1{display:grid;gap:var(--s0)}
-.meas{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2)}
-@media(min-width:520px){.meas{grid-template-columns:repeat(4,1fr)}}
-@media(min-width:900px){.meas{grid-template-columns:repeat(8,1fr)}}
-.meas input{font-family:var(--mono);text-align:center;
-  font-variant-numeric:tabular-nums}
-
-/* ---------- photographs ----------
-   Big enough to judge, because the whole reason this screen exists is that a
-   thumbnail grid cannot tell you whether the cuff shot is the good one. */
-.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(9rem,1fr));
-  gap:var(--s2)}
-.shot{margin:0;border:1px solid var(--hair);background:var(--under);
-  cursor:grab;display:grid;gap:var(--s1)}
 .shot:first-child{border-color:var(--ink)}
-.shot img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
-.shot figcaption{display:flex;gap:var(--s1);align-items:center;
-  justify-content:space-between;padding:0 var(--s1) var(--s1);flex-wrap:wrap}
 .shot.lift{opacity:.4;cursor:grabbing}
+.side h2:first-of-type{margin-top:0}
+.rail .nav-item[aria-current="true"]{background:var(--ink);color:var(--room);
+  border-color:var(--ink)}
+.todo h3{margin:0;font-family:var(--mono);font-size:.5625rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);font-weight:400}
+.todo b{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.todo button:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- the strip of figures above a list ---------- */
+.strip{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s2);
+  margin:0 0 var(--s4)}
+@media(min-width:900px){.strip{grid-template-columns:repeat(6,1fr)}}
+.strip div{background:var(--room);border:1px solid var(--hair);
+  border-radius:.5rem;padding:var(--s3);display:grid;gap:var(--s0)}
+.strip b{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:1.35rem;font-weight:400;line-height:1.1}
+.strip span{font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.strip .bad b{color:var(--claret)}
+.strip .warn b{color:#8A6A18}
+
+/* the little photograph in a list row */
+.thumb{width:2.6rem;height:3.2rem;border-radius:.3rem;object-fit:cover;
+  background:var(--under);display:block}
+
+/* ---------- the order, as a panel over the list ----------
+   A slide-over rather than a page, because packing is a rhythm: open, read,
+   move it along, close, next. A full page navigation between each one loses
+   the list position and the thread. */
+.over{position:fixed;inset:0;z-index:60;display:none}
+.over.on{display:block}
+.over-veil{position:absolute;inset:0;background:rgba(12,11,10,.4)}
+.over-card{position:absolute;top:0;right:0;bottom:0;width:min(30rem,100%);
+  background:var(--room);border-left:1px solid var(--hair);overflow-y:auto;
+  padding:var(--s4);animation:slide .32s var(--settle)}
+@keyframes slide{from{transform:translateX(100%)}to{transform:none}}
+@media(prefers-reduced-motion:reduce){.over-card{animation:none}}
+.over h2{margin:0;font-weight:400;font-size:1.2rem;display:flex;
+  align-items:center;gap:var(--s2)}
+.over .x{position:absolute;top:var(--s3);right:var(--s3);font-size:1.1rem;
+  line-height:1;padding:var(--s1)}
+.over section{margin:var(--s4) 0 0;padding-top:var(--s3);
+  border-top:1px solid var(--hair)}
+.over h4{margin:0 0 var(--s2);font-family:var(--mono);font-size:.5625rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.over .kv{display:flex;justify-content:space-between;gap:var(--s3);
+  padding:var(--s1) 0;font-size:.9375rem}
+.over .kv b{font-weight:400;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.over .line{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s2);
+  align-items:center;padding:var(--s2) 0;border-bottom:1px solid var(--hair)}
+.over .acts{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s4)}
+.over .acts .btn{flex:1;min-width:9rem;text-align:center}
+.over .btn.dark{background:var(--ink);color:var(--room);border-color:var(--ink)}
+.over .btn.warn{color:var(--claret);border-color:var(--claret)}
+.over .btn.warn:hover{background:var(--claret);color:var(--room)}
+
+/* the timeline */
+.tl{display:grid;gap:0}
+.tl div{display:grid;grid-template-columns:auto 1fr;gap:var(--s2);
+  padding:0 0 var(--s3);position:relative}
+.tl div:not(:last-child)::before{content:'';position:absolute;left:.28rem;
+  top:1em;bottom:0;width:1px;background:var(--hair)}
+.tl .pin{width:.6rem;height:.6rem;border-radius:50%;background:var(--ink);
+  /* em, not a scale step: this centres the dot on the cap-height of the line
+     beside it, so it is leading, not air */
+  margin-top:.38em}
+.tl b{font-weight:400;font-size:.9375rem;display:block;text-transform:capitalize}
+.tl span{font-family:var(--mono);font-size:.6875rem;color:var(--muted)}
+
+.pager{display:flex;gap:var(--s1);align-items:center;justify-content:space-between;
+  margin-top:var(--s3);flex-wrap:wrap}
+.pager .n{font-size:.8125rem;color:var(--muted)}
+.pager .pages{display:flex;gap:var(--s0)}
+.pager button{min-width:2rem;height:2rem;border:1px solid var(--hair);
+  border-radius:.3rem;background:var(--room);font-family:var(--mono);
+  font-size:.75rem;cursor:pointer}
+.pager button[aria-current="true"]{background:var(--ink);color:var(--room);
+  border-color:var(--ink)}
+.pager button[disabled]{opacity:.4;cursor:not-allowed}
+
+.missing-fact{border:1px solid var(--claret);color:var(--claret);
+  padding:var(--s2) var(--s3);margin:0 0 var(--s3);font-size:.8125rem;
+  line-height:1.5;border-radius:.4rem}
 
 /* ---------- paper ----------
    The invoice and the shipping label are the only things here meant to leave
@@ -216,9 +556,6 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
 .label-box .to{font-size:1.15rem;font-weight:400;margin:var(--s2) 0 0}
 .label-box .ref{font-family:var(--mono);font-size:1.4rem;letter-spacing:.06em;
   border-top:2px solid #111;margin-top:var(--s3);padding-top:var(--s2)}
-.missing-fact{border:1px solid var(--claret);color:var(--claret);
-  padding:var(--s2) var(--s3);margin:0 0 var(--s3);font-size:.8125rem;
-  line-height:1.5}
 @media print{
   .side,.rail,.top,.filters,.hint,.btn,.eyebrow,h1{display:none!important}
   .work{padding:0}
@@ -244,11 +581,13 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
       <div class="work" id="work"></div>
     </div>
   </div>
+  <div class="over" id="over"><div class="over-veil"></div>
+    <div class="over-card"></div></div>
 </main>
 
-<script src="assets/admin.js?v=1786793410"></script>
-<script src="assets/iar-house.js?v=1786793410"></script>
-<script src="assets/mark.js?v=1786793410"></script>
+<script src="assets/admin.js?v=1786795456"></script>
+<script src="assets/iar-house.js?v=1786795456"></script>
+<script src="assets/mark.js?v=1786795456"></script>
 <script>
 (function () {
   'use strict';
@@ -309,13 +648,51 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
 
   /* ---------- navigation ---------- */
 
+  /* One path each, drawn on a 24x24 grid — a handful of inline strokes rather
+     than an icon font, because a font is a network request and a licence. Any
+     key without a drawing falls back to the dot, so a new section added to NAV
+     can never leave the sidebar throwing. */
+  var ICON = {
+    dashboard:'M3 10.5 12 4l9 6.5M5 9.5V20h14V9.5',
+    orders:'M4 7h16l-1.2 12.2a1 1 0 0 1-1 .8H6.2a1 1 0 0 1-1-.8ZM9 7V5a3 3 0 0 1 6 0v2',
+    returns:'M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3',
+    customers:'M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20M9.5 10.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7',
+    book:'M4 5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-2ZM8 8h7M8 12h7',
+    products:'M4 8.5 12 4l8 4.5v7L12 20l-8-4.5ZM4 8.5 12 13l8-4.5M12 13v7',
+    inventory:'M3 8h18M3 8v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8M3 8l2-4h14l2 4M10 12h4',
+    collections:'M4 6h7v5H4ZM13 6h7v5h-7ZM4 13h7v5H4ZM13 13h7v5h-7Z',
+    website:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3 12h18M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18',
+    discounts:'M8 16 16 8M9 9h.01M15 15h.01M4 12V6a2 2 0 0 1 2-2h6l8 8-8 8-8-8Z',
+    marketing:'M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1ZM17 8a5 5 0 0 1 0 8',
+    homepage:'M4 4h16v5H4ZM4 12h7v8H4ZM13 12h7v8h-7Z',
+    navigation:'M4 6h16M4 12h16M4 18h10',
+    media:'M3 5h18v14H3ZM3 15l5-5 4 4 3-3 6 6M8.5 9.5h.01',
+    bar:'M3 5h18v4H3ZM6 13h12M6 17h8',
+    pages:'M8 3h6l4 4v14H8ZM14 3v4h4M11 12h4M11 16h4',
+    campaigns:'M3 11 21 3l-8 18-2-7-8-3Z',
+    carts:'M4 5h2l2.4 10.2a1 1 0 0 0 1 .8h7.8a1 1 0 0 0 1-.8L20 8H7M10 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2m8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2M15 3l4 4M19 3l-4 4',
+    analytics:'M4 20V10M10 20V4M16 20v-7M22 20H2',
+    reports:'M7 3h7l5 5v13H7ZM14 3v5h5M10 13h6M10 17h6',
+    demand:'M12 3v18M5 9l7-6 7 6M8 21h8',
+    enquiries:'M21 12a8 8 0 0 1-8 8H4l2-3a8 8 0 1 1 15-5Z',
+    settings:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM4 12a8 8 0 0 1 .5-2.8L3 7l2-2 2.2 1.5A8 8 0 0 1 10 5l.5-2h3l.5 2a8 8 0 0 1 2.8 1.5L19 5l2 2-1.5 2.2A8 8 0 0 1 21 12'
+  };
+  function ic(k) {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' +
+      (ICON[k] || 'M12 12h.01') + '"/></svg>';
+  }
+
   var NAV = [
     ['', 'Dashboard', [['dashboard','Dashboard']]],
     ['Commerce', null, [['orders','Orders'],['returns','Returns'],
                         ['customers','Customers'],['book','Measurement book']]],
     ['Catalogue', null, [['products','The range'],['inventory','Inventory'],
                          ['collections','Collections']]],
-    ['Shop front', null, [['website','Website'],['discounts','Offers']]],
+    ['Marketing', null, [['marketing','Overview'],['discounts','Offers'],
+                         ['campaigns','Campaigns'],['carts','Abandoned carts']]],
+    ['Shop front', null, [['website','Website'],['homepage','Home page'],
+                          ['navigation','Menu'],['media','Media'],
+                          ['bar','Announcement bar'],['pages','Pages']]],
     ['Insights', null, [['analytics','Analytics'],['reports','Reports'],
                         ['demand','Bespoke demand'],['enquiries','Enquiries']]],
     ['System', null, [['settings','Settings']]]
@@ -332,14 +709,22 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
 
   function drawNav() {
     var p = pips();
-    side.innerHTML = NAV.map(function (g) {
-      return (g[0] ? '<h2>' + g[0] + '</h2>' : '') + g[2].map(function (it) {
-        return '<button class="nav-item" data-go="' + it[0] + '"' +
-          (here === it[0] ? ' aria-current="true"' : '') + '>' +
-          '<span>' + it[1] + '</span>' +
-          '<span class="pip">' + (p[it[0]] ? p[it[0]] : '') + '</span></button>';
-      }).join('');
-    }).join('');
+    side.innerHTML =
+      '<div class="brand"><b>I AM RATAN</b><span>Shirting</span></div>' +
+      NAV.map(function (g) {
+        return (g[0] ? '<h2>' + g[0] + '</h2>' : '') + g[2].map(function (it) {
+          return '<button class="nav-item" data-go="' + it[0] + '"' +
+            (here === it[0] ? ' aria-current="true"' : '') + '>' + ic(it[0]) +
+            '<span>' + it[1] + '</span>' +
+            '<span class="pip">' + (p[it[0]] ? p[it[0]] : '') + '</span></button>';
+        }).join('');
+      }).join('') +
+      '<div class="whoami"><b>' + esc(A.email || '') + '</b>' +
+        '<a href="#" id="out">Sign out</a></div>';
+    var o = document.getElementById('out');
+    if (o) o.addEventListener('click', function (e) {
+      e.preventDefault(); A.signOut(); gate('Signed out.');
+    });
     rail.innerHTML = NAV.reduce(function (a, g) { return a.concat(g[2]); }, [])
       .map(function (it) {
         return '<button class="nav-item" data-go="' + it[0] + '"' +
@@ -352,6 +737,10 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
     var b = e.target.closest('[data-go]');
     if (!b) return;
     here = b.getAttribute('data-go');
+    /* arriving at the offer form through the nav means a NEW offer; the edit
+       button reaches the same screen by setting CODE_EDIT first and rendering
+       itself, so it never comes through here */
+    if (here === 'newcode') CODE_EDIT = null;
     drawNav(); render();
   });
 
@@ -363,12 +752,42 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
     analytics:'Analytics.', demand:'Bespoke demand.', enquiries:'Enquiries.',
     settings:'Settings.', book:'The measurement book.', sheet:'The sheet.',
     collections:'Collections.', discounts:'Offers.', website:'The shop windows.',
-    reports:'Reports.', cloth:'The cloth.'
+    reports:'Reports.', cloth:'The cloth.',
+    marketing:'Marketing.', campaigns:'Campaigns.', campaign:'The campaign.',
+    newcode:'A new offer.', newcamp:'A new campaign.', carts:'Abandoned carts.',
+    homepage:'The home page.', navigation:'The menu.', media:'Media.',
+    bar:'The announcement bar.', pages:'Pages.'
   };
 
+  var SUBS = {
+    dashboard:'Here\u2019s what is happening with the shop today.',
+    orders:'Every order, and where it has got to.',
+    returns:'Exchanges and refunds, and why they came back.',
+    customers:'Built from the orders themselves.',
+    products:'Price, visibility and what is left.',
+    inventory:'Every cloth against every neck the house cuts.',
+    analytics:'Where the shop is winning and losing people.',
+    demand:'Necks the house does not cut, that people asked for anyway.',
+    enquiries:'Bespoke and wardrobe leads.',
+    settings:'What the house controls without a deploy.',
+    marketing:'What the money spent on getting people here actually did.',
+    discounts:'Every code, and what it gave away to earn what it earned.',
+    campaigns:'A message, and the real people it is going to.',
+    carts:'People who got as far as the checkout and stopped.',
+    newcode:'The database decides what it is worth, not the browser.',
+    newcamp:'Build the list first. Then decide what to say.',
+    website:'What the house can change without me.',
+    homepage:'The three bands, in the order they are read.',
+    navigation:'Four links that ship in the HTML of every page.',
+    media:'Photographs and files, without a deploy.',
+    bar:'The line across the top of the shop.',
+    pages:'Every page that exists, and what it is called.'
+  };
   function shell(inner) {
-    work.innerHTML = '<p class="eyebrow">The house</p><h1>' +
-      (TITLES[here] || '') + '</h1><div id="body">' + inner + '</div>';
+    work.innerHTML =
+      '<div class="topbar"><div><h1>' + (TITLES[here] || '') + '</h1>' +
+        '<p class="sub">' + (SUBS[here] || '') + '</p></div></div>' +
+      '<div id="body">' + inner + '</div>';
   }
   function body(html) { document.getElementById('body').innerHTML = html; }
   function waiting() { return '<p class="empty">Reading\u2026</p>'; }
@@ -384,100 +803,405 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
        products:products, inventory:inventory, analytics:analytics,
        demand:demand, enquiries:enquiries, settings:settings,
        book:book, collections:collections, discounts:discounts,
-       website:website, reports:reports }[here] || dashboard)();
+       website:website, reports:reports,
+       marketing:marketing, campaigns:campaigns, carts:carts,
+       newcode:newcode, newcamp:newcamp, homepage:homepage,
+       navigation:navigation, media:media, bar:bar, pages:pages }[here] || dashboard)();
   }
 
-  /* ---------- dashboard ---------- */
+  /* ---------- dashboard ----------
+     Laid out as the house asked for it: the eight numbers, the revenue line,
+     the pipeline, what needs doing, and then the two tables a shirt shop
+     actually reads — what is selling, and which necks have run out.
+
+     The sizes across the stock table are NECK sizes. A shirt shop can hold
+     fifty units of a cloth and be unable to sell one, because the necks people
+     take are the ones that are gone. */
+
+  var CHART_RANGE = 'today';
+
+  function pct(now, then) {
+    now = Number(now || 0); then = Number(then || 0);
+    if (!then) return now ? null : 0;          /* null = no base to compare to */
+    return Math.round((now - then) / then * 1000) / 10;
+  }
+  /* The window being compared against has to be NAMED. This said "vs yesterday"
+     wherever it was used, so the analytics screen — which compares thirty days
+     against the thirty before them — was labelling a monthly movement as a
+     daily one. A number is only as good as the period under it. */
+  function deltaHTML(d, against) {
+    against = against || 'yesterday';
+    if (d === null) return '<span class="delta flat">no figure for ' + against + '</span>';
+    if (!d) return '<span class="delta flat">level with ' + against + '</span>';
+    return '<span class="delta ' + (d > 0 ? 'up' : 'down') + '">' +
+      (d > 0 ? '↑' : '↓') + ' ' + Math.abs(d) + '% vs ' + against + '</span>';
+  }
+
+  var FIG_IC = {
+    money:'M12 3v18M8 7h6a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h7',
+    cart:'M4 5h2l2.4 10.2a1 1 0 0 0 1 .8h7.8a1 1 0 0 0 1-.8L20 8H7M10 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2m8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2',
+    tag:'M3 12V4h8l9 9-8 8-9-9ZM7.5 7.5h.01',
+    shirt:'M8 3 4 5.5V10h3v11h10V10h3V5.5L16 3a4 4 0 0 1-8 0Z',
+    clock:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3 2',
+    alert:'M12 3 2 20h20L12 3ZM12 10v4M12 17h.01',
+    back:'M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3',
+    rise:'M3 17l6-6 4 4 7-7M17 8h4v4',
+    customers:'M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20M9.5 10.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M21 20v-1.5a4 4 0 0 0-3-3.9'
+  };
+  /* Two icon sets exist — one for the sidebar, one for the figures — and asking
+     the wrong one drew a literal path of "undefined", which the browser throws
+     away silently, leaving an empty circle. So try the figure set, then the
+     sidebar set, then a dot: a figure can never render blank again, and the
+     obvious key is always the right key. */
+  function figIcon(k) {
+    return '<span class="fig-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' +
+      '<path d="' + (FIG_IC[k] || ICON[k] || 'M12 12h.01') + '"/></svg></span>';
+  }
+
+  /* An inline SVG line. No chart library: the whole project has no
+     dependencies and one graph is not a reason to start. */
+  function chart(rows) {
+    if (!rows || !rows.length) return '<p class="empty">Nothing to draw yet.</p>';
+    var W = 640, H = 180, P = 26;
+    var vals = rows.map(function (r) { return Number(r.value) || 0; });
+    var top = Math.max.apply(null, vals) || 1;
+    var x = function (i) {
+      return P + (rows.length === 1 ? 0 : i * (W - P * 2) / (rows.length - 1));
+    };
+    var y = function (v) { return H - P - (v / top) * (H - P * 2); };
+    var pts = rows.map(function (r, i) { return x(i) + ',' + y(vals[i]); });
+    var area = 'M' + x(0) + ',' + (H - P) + ' L' + pts.join(' L') +
+               ' L' + x(rows.length - 1) + ',' + (H - P) + ' Z';
+    var every = Math.ceil(rows.length / 6);
+    return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H +
+      '" preserveAspectRatio="none" role="img" aria-label="Revenue over time">' +
+      [0, 0.5, 1].map(function (f) {
+        var yy = P + f * (H - P * 2);
+        return '<line class="grid" x1="' + P + '" y1="' + yy + '" x2="' +
+          (W - P) + '" y2="' + yy + '"/>';
+      }).join('') +
+      '<path class="area" d="' + area + '"/>' +
+      '<polyline class="line" points="' + pts.join(' ') + '"/>' +
+      rows.map(function (r, i) {
+        return (i % every === 0 || i === rows.length - 1)
+          ? '<text x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="middle">' +
+            esc(r.label) + '</text>'
+          : '';
+      }).join('') +
+      '<circle class="dot" cx="' + x(rows.length - 1) + '" cy="' +
+        y(vals[vals.length - 1]) + '" r="3"/>' +
+      '</svg>';
+  }
 
   function dashboard() {
-    Promise.all([A.kpis(), A.actions(), A.best()]).then(function (r) {
+    Promise.all([
+      A.kpis(), A.actions(), A.best(),
+      A.deltas().catch(function () { return {}; }),
+      A.pipeline().catch(function () { return []; }),
+      A.neckStock().catch(function () { return []; }),
+      A.recent().catch(function () { return []; }),
+      A.series(CHART_RANGE).catch(function () { return []; })
+    ]).then(function (r) {
       KPI = r[0] || {}; drawNav();
-      var acts = r[1] || [], best = r[2] || [];
+      var acts = r[1] || [], best = r[2] || [], d = r[3] || {},
+          pipe = r[4] || [], necks = r[5] || [], recent = r[6] || [],
+          series = r[7] || [];
+
+      var figs = [
+        ['money', "Today's sales", rupees(KPI.sales_today), deltaHTML(pct(d.sales_now, d.sales_then)), false],
+        ['cart', 'Orders today', KPI.orders_today || 0, deltaHTML(pct(d.orders_now, d.orders_then)), false],
+        ['tag', 'Average order', rupees(KPI.avg_order), '<span class="delta flat">last 7 days</span>', false],
+        ['shirt', 'Shirts sold', KPI.units_today || 0, deltaHTML(pct(d.units_now, d.units_then)), false],
+        ['clock', 'Pending orders', KPI.orders_new || 0,
+          KPI.orders_new > 0 ? '<span class="warn-note">Needs attention</span>'
+                             : '<span class="delta flat">nothing waiting</span>', KPI.orders_new > 0],
+        ['alert', 'Necks sold out', KPI.necks_out || 0,
+          '<span class="delta flat">' + (KPI.necks_low || 0) + ' more running low</span>',
+          KPI.necks_out > 0],
+        ['back', 'Returns open', KPI.returns_open || 0,
+          '<span class="delta flat">exchanges and refunds</span>', KPI.returns_open > 0],
+        ['rise', 'Conversion, 7 days', (KPI.conversion_week || 0) + '%',
+          '<span class="delta flat">' + (KPI.visitors_week || 0) + ' visitors</span>', false]
+      ].map(function (f) {
+        return '<div class="fig-box' + (f[4] ? ' warn' : '') + '">' + figIcon(f[0]) +
+          '<span class="lab">' + f[1] + '</span><b>' + esc(f[2]) + '</b>' +
+          f[3] + '</div>';
+      }).join('');
+
+      var ranges = [['today','Today'],['7d','7 days'],['30d','30 days'],['12m','12 months']]
+        .map(function (x) {
+          return '<button class="range" data-range="' + x[0] + '" aria-pressed="' +
+            (CHART_RANGE === x[0]) + '">' + x[1] + '</button>';
+        }).join('');
+
+      var pipeHTML = pipe.length
+        ? '<div class="pipe">' + pipe.map(function (p) {
+            return '<div><span class="ring">' + p.n + '</span>' +
+              '<span class="nm">' + esc(p.stage) + '</span></div>';
+          }).join('') + '</div>'
+        : '<p class="empty">No orders yet.</p>';
 
       var todo = acts.length
         ? acts.map(function (a) {
             return '<button data-go="' + a.go + '">' +
-              '<span class="dot ' + a.urgency + '"></span>' +
-              '<b>' + a.n + '</b> ' + esc(a.what) + '</button>';
+              '<span class="ic ' + a.urgency + '">' + a.n + '</span>' +
+              '<span class="what"><b>' + a.n + ' ' + esc(a.what.split(' ')[0]) +
+                '</b><span>' + esc(a.what.split(' ').slice(1).join(' ')) +
+                '</span></span></button>';
           }).join('')
         : '<p class="clear">Nothing needs you. The shop is in order.</p>';
 
-      var figs = [
-        ['Sales today', rupees(KPI.sales_today), false],
-        ['Orders today', KPI.orders_today || 0, false],
-        ['Average order', rupees(KPI.avg_order), false],
-        ['Shirts today', KPI.units_today || 0, false],
-        ['Awaiting confirmation', KPI.orders_new || 0, KPI.orders_new > 0],
-        ['Necks sold out', KPI.necks_out || 0, KPI.necks_out > 0],
-        ['Returns open', KPI.returns_open || 0, KPI.returns_open > 0],
-        ['Conversion, 7 days', (KPI.conversion_week || 0) + '%', false]
-      ].map(function (f) {
-        return '<div class="fig-box' + (f[2] ? ' warn' : '') + '"><b>' +
-          esc(f[1]) + '</b><span>' + f[0] + '</span></div>';
-      }).join('');
-
       var sellers = best.length
         ? '<div class="scroll"><table><thead><tr><th>Cloth</th><th>Sold</th>' +
-          '<th>Left</th><th>Revenue</th></tr></thead><tbody>' +
-          best.slice(0, 8).map(function (b) {
+          '<th>Stock</th><th>Revenue</th></tr></thead><tbody>' +
+          best.slice(0, 5).map(function (b) {
             return '<tr><td>' + esc(b.name || b.slug) + '</td>' +
               '<td class="num">' + b.sold + '</td>' +
-              '<td class="num"' + (b.in_stock <= 3 ? ' style="color:var(--claret)"' : '') +
-                '>' + b.in_stock + (b.in_stock <= 3 ? ' \u26A0' : '') + '</td>' +
+              '<td class="num ' + (b.in_stock === 0 ? 'out' : b.in_stock <= 3 ? 'low' : '') +
+                '">' + b.in_stock + (b.in_stock <= 3 ? ' low' : '') + '</td>' +
               '<td class="num">' + rupees(b.revenue) + '</td></tr>';
           }).join('') + '</tbody></table></div>'
-        : '<p class="empty">No sales yet. When the first order arrives the ' +
-          'best sellers appear here, with what is left of each.</p>';
+        : '<p class="empty">No sales yet. This fills with what is selling, and ' +
+          'flags any cloth selling well with nothing left.</p>';
+
+      var neckTable = necks.length
+        ? '<div class="scroll"><table><thead><tr><th>Cloth</th>' +
+          NECKS.map(function (n) { return '<th>' + n + '</th>'; }).join('') +
+          '</tr></thead><tbody>' +
+          necks.slice(0, 6).map(function (n) {
+            return '<tr><td>' + esc(n.name) + '</td>' +
+              NECKS.map(function (z) {
+                var q = n['n' + z];
+                return '<td class="num ' + (q === 0 ? 'out' : q <= 3 ? 'low' : '') +
+                  '">' + q + '</td>';
+              }).join('') + '</tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No stock recorded.</p>';
+
+      var recentHTML = recent.length
+        ? recent.map(function (o) {
+            return '<tr><td class="num">' + esc(o.ref) + '</td>' +
+              '<td>' + esc(o.name) + '</td>' +
+              '<td class="num">' + rupees(o.total) + '</td>' +
+              '<td><span class="tag ' + esc(o.status) + '">' + esc(o.status) +
+                '</span></td></tr>';
+          }).join('')
+        : '';
 
       body(
-        '<div class="todo"><h3>Needs you today</h3>' + todo + '</div>' +
         '<div class="figs">' + figs + '</div>' +
-        '<div class="block"><h3>Best selling</h3>' + sellers + '</div>'
+
+        '<div class="grid-3">' +
+          '<div class="card"><h3>Revenue<span class="ranges">' + ranges +
+            '</span></h3><div id="chart">' + chart(series) + '</div></div>' +
+          '<div class="card"><h3>Orders</h3>' + pipeHTML +
+            '<p class="hint" style="margin:var(--s3) 0 0">' +
+            '<button class="btn small" data-go="orders">All orders</button></p></div>' +
+          '<div class="card"><h3>Needs you today</h3><div class="todo">' + todo +
+            '</div></div>' +
+        '</div>' +
+
+        '<div class="grid-2">' +
+          '<div class="card"><h3>Best selling<span class="more" data-go="products">' +
+            'All products</span></h3>' + sellers + '</div>' +
+          '<div class="card"><h3>Neck stock alert<span class="more" ' +
+            'data-go="inventory">All inventory</span></h3>' + neckTable + '</div>' +
+        '</div>' +
+
+        (recentHTML
+          ? '<div class="grid-2"><div class="card"><h3>Recent orders' +
+            '<span class="more" data-go="orders">View all</span></h3>' +
+            '<div class="scroll"><table><thead><tr><th>Ref</th><th>Who</th>' +
+            '<th>Total</th><th>Stage</th></tr></thead><tbody>' + recentHTML +
+            '</tbody></table></div></div></div>'
+          : '')
       );
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
-  /* ---------- orders ---------- */
+  /* ---------- orders ----------
+     The most-used screen in the desk, so it is built for repetition: filter,
+     find, open, move it along, close, next. The order opens as a panel over
+     the list rather than a page of its own — packing is a rhythm, and a page
+     navigation between each one loses both the scroll position and the thread. */
 
   var FLOW = ['new','making','packed','shipped','delivered','cancelled'];
-  var ofilter = 'all';
+  var ofilter = 'all', ofind = '', opage = 0, OSIZE = 10;
+
+  function stageTag(st) {
+    return '<span class="tag ' + esc(st) + '">' + esc(st) + '</span>';
+  }
+  function thumbFor(slug) {
+    return slug ? 'images/set/' + slug + '/1-hero-t.jpg' : '';
+  }
 
   function orders() {
-    A.orders().then(function (rows) {
-      var shown = ofilter === 'all' ? rows
-        : rows.filter(function (o) { return o.status === ofilter; });
-      var chips = ['all'].concat(FLOW).map(function (f) {
-        var n = f === 'all' ? rows.length
-          : rows.filter(function (o) { return o.status === f; }).length;
-        return '<button class="btn small" data-of="' + f + '"' +
-          (ofilter === f ? ' style="background:var(--ink);color:var(--room)"' : '') +
-          '>' + f + (n ? ' ' + n : '') + '</button>';
+    Promise.all([
+      A.ordersPage({ status: ofilter, find: ofind, page: opage, size: OSIZE }),
+      A.pipeline().catch(function () { return []; })
+    ]).then(function (r) {
+      var rows = r[0].rows || [], total = r[0].total || 0, pipe = r[1] || [];
+      var counts = {};
+      pipe.forEach(function (p) { counts[p.stage] = p.n; });
+      var all = pipe.reduce(function (a, p) { return a + p.n; }, 0);
+
+      var tabs = [['all','All orders',all]].concat(FLOW.map(function (f) {
+        return [f, f, counts[f] || 0];
+      })).map(function (t) {
+        return '<button class="tab" data-of="' + t[0] + '" aria-selected="' +
+          (ofilter === t[0]) + '">' + esc(t[1]) + ' <b>' + t[2] + '</b></button>';
       }).join('');
 
-      body('<div class="filters">' + chips + '</div>' + (shown.length
-        ? '<div class="scroll"><table><thead><tr><th>Ref</th><th>Who</th>' +
-          '<th>What</th><th>Total</th><th>Placed</th><th>Stage</th>' +
-          '</tr></thead><tbody>' +
-          shown.map(function (o) {
-            var what = (o.items || []).map(function (i) {
-              return esc(i.name || i.slug) + ' \u00B7 neck ' + esc(i.size) +
-                ' \u00D7' + (i.qty || 1);
-            }).join('<br>');
-            return '<tr><td class="num"><button class="btn small" data-open="' +
-                o.id + '">' + esc(o.ref) + '</button></td>' +
-              '<td>' + esc(o.name) + '<br><span class="muted">' + esc(o.phone) +
-                '</span><br><span class="muted">' + esc(o.city || '') + '</span></td>' +
-              '<td>' + what + '</td>' +
-              '<td class="num">' + rupees(o.total) + '</td>' +
-              '<td class="num">' + day(o.placed_at) + '</td>' +
-              '<td><select class="cell" data-order="' + o.id + '">' +
-                FLOW.map(function (st) {
-                  return '<option value="' + st + '"' +
-                    (st === o.status ? ' selected' : '') + '>' + st + '</option>';
-                }).join('') + '</select></td></tr>';
-          }).join('') + '</tbody></table></div>'
-        : '<p class="empty">No orders in that stage.</p>'));
+      var pages = Math.max(1, Math.ceil(total / OSIZE));
+      var pager = '<div class="pager"><span class="n">' +
+        (total ? 'Showing ' + (opage * OSIZE + 1) + ' to ' +
+          Math.min((opage + 1) * OSIZE, total) + ' of ' + total : 'None') +
+        '</span><span class="pages">' +
+        '<button data-page="' + (opage - 1) + '"' + (opage === 0 ? ' disabled' : '') +
+          '>&lsaquo;</button>' +
+        Array.apply(null, { length: Math.min(pages, 6) }).map(function (_, i) {
+          return '<button data-page="' + i + '" aria-current="' + (i === opage) +
+            '">' + (i + 1) + '</button>';
+        }).join('') +
+        '<button data-page="' + (opage + 1) + '"' +
+          (opage >= pages - 1 ? ' disabled' : '') + '>&rsaquo;</button>' +
+        '</span></div>';
+
+      body(
+        '<div class="tabs">' + tabs + '</div>' +
+        '<div class="toolbar"><span class="search">' +
+          '<input id="ofind" placeholder="Search by reference, name or mobile" ' +
+            'value="' + esc(ofind) + '"></span></div>' +
+        (rows.length
+          ? '<div class="card"><div class="scroll"><table><thead><tr>' +
+            '<th>Order</th><th>Customer</th><th>Items</th><th>Amount</th>' +
+            '<th>Payment</th><th>Placed</th><th>Stage</th><th></th>' +
+            '</tr></thead><tbody>' +
+            rows.map(function (o) {
+              var items = o.items || [];
+              var first = items[0] || {};
+              return '<tr>' +
+                '<td class="num">' + esc(o.ref) + '</td>' +
+                '<td>' + esc(o.name) + '<br><span class="muted">' +
+                  esc(o.phone) + '</span></td>' +
+                '<td><div style="display:flex;gap:var(--s2);align-items:center">' +
+                  (first.slug
+                    ? '<img class="thumb" src="' + thumbFor(first.slug) +
+                      '" alt="" loading="lazy">' : '') +
+                  '<span>' + items.map(function (i) {
+                    return esc(i.name || i.slug) + ' &times;' + (i.qty || 1) +
+                      '<br><span class="muted">neck ' + esc(i.size) + '</span>';
+                  }).join('<br>') + '</span></div></td>' +
+                '<td class="num">' + rupees(o.total) + '</td>' +
+                '<td><span class="tag">' + esc(o.payment_method || 'prepaid') +
+                  '</span></td>' +
+                '<td class="num">' + day(o.placed_at) + '</td>' +
+                '<td>' + stageTag(o.status) + '</td>' +
+                '<td><button class="btn small" data-open="' + o.id +
+                  '">Open</button></td></tr>';
+            }).join('') + '</tbody></table></div>' + pager + '</div>'
+          : '<p class="empty">' + (ofind
+              ? 'Nothing matches “' + esc(ofind) + '”.'
+              : 'No orders in that stage yet.') + '</p>')
+      );
+
+      var fi = document.getElementById('ofind');
+      if (fi) {
+        var t;
+        fi.addEventListener('input', function () {
+          clearTimeout(t);
+          t = setTimeout(function () {
+            ofind = fi.value.trim(); opage = 0; orders();
+            var again = document.getElementById('ofind');
+            if (again) { again.focus(); again.setSelectionRange(9999, 9999); }
+          }, 350);
+        });
+      }
     }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- the order panel ---------- */
+
+  var NEXT = { new:'making', making:'packed', packed:'shipped', shipped:'delivered' };
+  var NEXT_WORD = { new:'Start making', making:'Mark packed', packed:'Ship it',
+                    shipped:'Mark delivered' };
+
+  function closeOver() {
+    var o = document.getElementById('over');
+    if (o) o.classList.remove('on');
+  }
+
+  function openOrder(id) {
+    var over = document.getElementById('over');
+    over.classList.add('on');
+    over.querySelector('.over-card').innerHTML = '<p class="empty">Reading…</p>';
+
+    Promise.all([A.order(id), A.tax(id).catch(function () { return {}; }),
+                 A.timeline(id).catch(function () { return []; }), loadSettings()])
+      .then(function (r) {
+        var o = r[0], t = r[1] || {}, tl = r[2] || [];
+        var items = (o.items || []).map(function (i) {
+          return '<div class="line">' +
+            (i.slug ? '<img class="thumb" src="' + thumbFor(i.slug) + '" alt="">'
+                    : '<span></span>') +
+            '<span><b style="font-weight:400">' + esc(i.name || i.slug) + '</b>' +
+              '<br><span class="muted">Neck ' + esc(i.size) + ' &middot; qty ' +
+              (i.qty || 1) + '</span></span>' +
+            '<span class="num">' + rupees((i.price || 0) * (i.qty || 1)) +
+            '</span></div>';
+        }).join('');
+
+        var nxt = NEXT[o.status];
+        over.querySelector('.over-card').innerHTML =
+          '<button class="btn small x" id="overX" aria-label="Close">&times;</button>' +
+          '<h2>' + esc(o.ref) + ' ' + stageTag(o.status) + '</h2>' +
+          '<p class="sub">' + day(o.placed_at) + '</p>' +
+
+          '<section><h4>Customer</h4>' +
+            '<div>' + esc(o.name) + '</div>' +
+            '<div class="muted">' + esc(o.phone) + '</div>' +
+            (o.email ? '<div class="muted">' + esc(o.email) + '</div>' : '') +
+          '</section>' +
+
+          '<section><h4>Shipping to</h4>' +
+            '<div>' + esc(o.address || '') + '</div>' +
+            '<div>' + esc(o.city || '') + ' ' + esc(o.pincode || '') + '</div>' +
+            '<div>' + esc(o.state || '') + '</div>' +
+          '</section>' +
+
+          '<section><h4>What was ordered</h4>' + items +
+            '<div class="kv"><span>Taxable</span><b>' + rupees(t.taxable) + '</b></div>' +
+            (t.same_state
+              ? '<div class="kv"><span>CGST + SGST</span><b>' +
+                rupees((Number(t.cgst) || 0) + (Number(t.sgst) || 0)) + '</b></div>'
+              : '<div class="kv"><span>IGST</span><b>' + rupees(t.igst) + '</b></div>') +
+            '<div class="kv" style="border-top:1px solid var(--ink);margin-top:var(--s2)">' +
+              '<span>Total</span><b>' + rupees(o.total) + '</b></div>' +
+          '</section>' +
+
+          '<section><h4>What has happened</h4><div class="tl">' +
+            (tl.length ? tl.map(function (e) {
+              return '<div><span class="pin"></span><span><b>' + esc(e.stage) +
+                '</b><span>' + String(e.at).slice(0, 16).replace('T', ' ') +
+                (e.by_email ? ' &middot; ' + esc(e.by_email) : '') +
+                '</span></span></div>';
+            }).join('') : '<p class="muted">Nothing recorded.</p>') +
+          '</div></section>' +
+
+          '<div class="acts">' +
+            (nxt ? '<button class="btn dark" data-stage="' + o.id + '|' + nxt +
+                   '">' + NEXT_WORD[o.status] + '</button>' : '') +
+            '<button class="btn" data-invoice="' + o.id + '">Invoice &amp; label</button>' +
+            (o.status !== 'cancelled' && o.status !== 'delivered'
+              ? '<button class="btn warn" data-stage="' + o.id +
+                '|cancelled">Cancel</button>' : '') +
+          '</div>';
+
+        document.getElementById('overX').addEventListener('click', closeOver);
+      }).catch(function (e) {
+        over.querySelector('.over-card').innerHTML =
+          '<p class="empty">' + esc(e.message) + '</p>';
+      });
   }
 
   /* ---------- one order: invoice and label ----------
@@ -495,11 +1219,16 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
     });
   }
 
-  function openOrder(id) {
-    here = 'order'; drawNav();
+  function invoicePage(id) {
+    here = 'order'; drawNav(); closeOver();
     shell(waiting());
     Promise.all([A.order(id), A.tax(id), loadSettings()]).then(function (r) {
       var o = r[0], t = r[1] || {};
+      /* An EMPTY field is not the only way an invoice can be illegal, and it is
+         the less dangerous way: a blank GSTIN is obviously blank, whereas a
+         stand-in one looks exactly like a real one on a printed page. So the
+         check is "are these facts confirmed real", not "is there text here". */
+      var real = String(SET.facts_are_real).toLowerCase() === 'true';
       var missing = [];
       if (!SET.gstin) missing.push('GSTIN');
       if (!SET.registered_address) missing.push('registered address');
@@ -530,7 +1259,14 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
           ? '<p class="missing-fact">This invoice is not yet legal: no ' +
             esc(missing.join(' and ')) + '. Fill it in under Settings and it ' +
             'appears here and on the site. Nothing is invented in the meantime.</p>'
-          : '') +
+          : !real
+            ? '<p class="missing-fact"><b>SPECIMEN — do not send this to a ' +
+              'customer.</b><br>The seller details on it are stand-ins, put ' +
+              'there so this page could be built and checked. A printed invoice ' +
+              'carrying an invented GSTIN is the one document here that causes ' +
+              'real trouble if it leaves the building. Enter the house’s own ' +
+              'facts under Settings and switch <code>facts_are_real</code> on.</p>'
+            : '') +
 
         '<div class="paper">' +
           '<div class="row"><div>' +
@@ -588,54 +1324,73 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
   var WHY = { too_small:'Too small', too_large:'Too large', fabric:'Fabric',
     colour:'Colour', defect:'Defect', wrong:'Wrong product', other:'Other' };
 
+  var rfilter = 'all';
+
   function returns() {
     A.returns().then(function (rows) {
-      body(rows.length
-        ? '<p class="hint">Move each one along as it comes back. The reason is ' +
-          'worth more than the refund \u2014 a cloth that keeps coming back in ' +
-          'one neck means the block is wrong on that cut, not that the customer ' +
-          'was.</p><div class="scroll"><table><thead><tr><th>Order</th>' +
-          '<th>Cloth</th><th>Neck</th><th>Why</th><th>Wants</th><th>Stage</th>' +
-          '</tr></thead><tbody>' +
-          rows.map(function (r) {
+      var counts = {};
+      rows.forEach(function (r) { counts[r.stage] = (counts[r.stage] || 0) + 1; });
+      var tabs = [['all','All',rows.length]].concat(STAGES.map(function (st) {
+        return [st, st, counts[st] || 0];
+      })).map(function (t) {
+        return '<button class="tab" data-rf="' + t[0] + '" aria-selected="' +
+          (rfilter === t[0]) + '">' + esc(t[1]) + ' <b>' + t[2] + '</b></button>';
+      }).join('');
+      var shown = rfilter === 'all' ? rows
+        : rows.filter(function (r) { return r.stage === rfilter; });
+
+      body('<div class="tabs">' + tabs + '</div>' + (shown.length
+        ? '<p class="hint">The reason is worth more than the refund. A cloth that ' +
+          'keeps coming back in one neck means the block is wrong on that cut, ' +
+          'not that the customer was.</p>' +
+          '<div class="card"><div class="scroll"><table><thead><tr>' +
+          '<th>Order</th><th>Cloth</th><th>Neck</th><th>Why</th><th>Wants</th>' +
+          '<th>Kind</th><th>Opened</th><th>Stage</th></tr></thead><tbody>' +
+          shown.map(function (r) {
             return '<tr><td class="num">' + esc(r.order_ref) + '</td>' +
               '<td>' + esc(r.slug) + '</td>' +
               '<td class="num">' + esc(r.size) + '</td>' +
-              '<td>' + esc(WHY[r.reason] || r.reason || '\u2014') + '</td>' +
-              '<td class="num">' + esc(r.want_size || (r.kind === 'refund' ? 'refund' : '\u2014')) + '</td>' +
+              '<td>' + esc(WHY[r.reason] || r.reason || '—') + '</td>' +
+              '<td class="num">' + esc(r.want_size || '—') + '</td>' +
+              '<td><span class="tag">' + esc(r.kind) + '</span></td>' +
+              '<td class="num">' + day(r.opened_at) + '</td>' +
               '<td><select class="cell" data-return="' + r.id + '">' +
                 STAGES.map(function (st) {
                   return '<option value="' + st + '"' +
                     (st === r.stage ? ' selected' : '') + '>' + st + '</option>';
                 }).join('') + '</select></td></tr>';
-          }).join('') + '</tbody></table></div>'
-        : '<p class="empty">No returns. For a shirt shop most of these will be ' +
-          'neck exchanges rather than refunds \u2014 when they start arriving, ' +
-          'the reason column is the one to read.</p>');
+          }).join('') + '</tbody></table></div></div>'
+        : '<p class="empty">Nothing in that stage. For a shirt shop most returns ' +
+          'will be neck exchanges rather than refunds — when they start arriving, ' +
+          'the reason column is the one to read.</p>'));
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
   /* ---------- customers ---------- */
 
   function customers() {
-    A.people().then(function (rows) {
+    A.people2().then(function (rows) {
       body(rows.length
-        ? '<p class="hint">Built from the orders themselves, grouped by mobile ' +
-          '\u2014 nobody has to key a customer in. The usual neck is what makes ' +
-          'the next sale a conversation instead of a form.</p>' +
-          '<div class="scroll"><table><thead><tr><th>Who</th><th>Orders</th>' +
-          '<th>Lifetime</th><th>Average</th><th>Usual neck</th><th>Last</th>' +
-          '</tr></thead><tbody>' +
+        ? '<p class="hint">Built from the orders themselves, grouped by mobile — ' +
+          'nobody keys a customer in. The usual neck is what makes the next sale ' +
+          'a conversation instead of a form. “Quiet” means nothing bought in six ' +
+          'months, which for a shirt is not long enough to write anyone off.</p>' +
+          '<div class="card"><div class="scroll"><table><thead><tr><th>Who</th>' +
+          '<th>Contact</th><th>Orders</th><th>Lifetime</th><th>Average</th>' +
+          '<th>Usual neck</th><th>Last order</th><th></th></tr></thead><tbody>' +
           rows.map(function (c) {
-            return '<tr><td>' + esc(c.name) + '<br><span class="muted">' +
-                esc(c.phone) + '</span></td>' +
+            return '<tr><td>' + esc(c.name) + '</td>' +
+              '<td class="muted">' + esc(c.phone) +
+                (c.email ? '<br>' + esc(c.email) : '') + '</td>' +
               '<td class="num">' + c.orders + '</td>' +
               '<td class="num">' + rupees(c.lifetime) + '</td>' +
-              '<td class="num">' + rupees(c.avg_order) + '</td>' +
-              '<td class="num">' + esc(c.usual_neck || '\u2014') + '</td>' +
-              '<td class="num">' + day(c.last_order) + '</td></tr>';
-          }).join('') + '</tbody></table></div>'
-        : '<p class="empty">No customers yet. This fills itself from orders \u2014 ' +
+              '<td class="num">' + rupees(c.aov) + '</td>' +
+              '<td class="num">' + esc(c.usual_neck || '—') + '</td>' +
+              '<td class="num">' + day(c.last_order) + '</td>' +
+              '<td><span class="tag ' + (c.state === 'active' ? 'shipped' : '') +
+                '">' + esc(c.state) + '</span></td></tr>';
+          }).join('') + '</tbody></table></div></div>'
+        : '<p class="empty">No customers yet. This fills itself from orders — ' +
           'lifetime spend, average order and the neck they always take.</p>');
     }).catch(function (e) { body(needsSQL(e)); });
   }
@@ -652,36 +1407,68 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
   }
 
   function products() {
-    loadRange().then(function () {
-      body('<p class="hint">Price is in whole rupees, inclusive of tax. Untick ' +
-        'a cloth to take it off the shop without deleting anything. Open one to ' +
-        'set its garment details and order its photographs.</p>' +
-        '<div class="scroll"><table><thead><tr><th></th><th>Cloth</th>' +
-        '<th>Price</th><th>Collection</th><th>In stock</th><th>On the shop</th>' +
-        '</tr></thead><tbody>' +
-        PRODUCTS.map(function (p) {
-          var s = STOCK[p.id] || {};
-          var tot = NECKS.reduce(function (a, z) { return a + (+s[z] || 0); }, 0);
-          return '<tr>' +
-            '<td><span class="sw" style="--g:' + esc(p.hex || '#888') + '"></span></td>' +
-            '<td><button class="btn small" data-cloth-open="' + p.id + '">' +
-              esc(p.name) + '</button></td>' +
-            '<td><input class="cell" inputmode="numeric" value="' + p.price +
-              '" data-price="' + p.id + '"></td>' +
-            '<td>' + esc(p.collection || '\u2014') + '</td>' +
-            '<td class="num"' + (tot === 0 ? ' style="color:var(--claret)"' : '') +
-              '>' + tot + '</td>' +
-            '<td><label class="tick"><input type="checkbox" data-visible="' + p.id +
-              '"' + (p.visible ? ' checked' : '') + '> shown</label></td></tr>';
-        }).join('') + '</tbody></table></div>');
-    }).catch(function (e) { body(needsSQL(e)); });
+    Promise.all([loadRange(), A.productStats().catch(function () { return {}; })])
+      .then(function (r) {
+        var st = r[1] || {};
+        var figs = [
+          ['Total products', st.total, ''],
+          ['Active', st.active, ''],
+          ['Out of stock', st.out_of_stock, 'bad'],
+          ['Low stock', st.low_stock, 'warn'],
+          ['Neck variants', st.variants, ''],
+          ['Collections', st.collections, '']
+        ].map(function (f) {
+          return '<div class="' + f[2] + '"><b>' + (f[1] == null ? 0 : f[1]) +
+            '</b><span>' + f[0] + '</span></div>';
+        }).join('');
+
+        body('<div class="strip">' + figs + '</div>' +
+          '<p class="hint">Price is in whole rupees, inclusive of tax. Untick a ' +
+          'cloth to take it off the shop without deleting anything.</p>' +
+          '<div class="card"><div class="scroll"><table><thead><tr><th></th>' +
+          '<th>Cloth</th><th>SKU</th><th>Price</th><th>Necks</th><th>Stock</th>' +
+          '<th>Collection</th><th>On the shop</th></tr></thead><tbody>' +
+          PRODUCTS.map(function (p) {
+            var s2 = STOCK[p.id] || {};
+            var tot = NECKS.reduce(function (a, z) { return a + (+s2[z] || 0); }, 0);
+            var gone = NECKS.filter(function (z) { return (+s2[z] || 0) === 0; }).length;
+            return '<tr>' +
+              '<td><img class="thumb" src="' + thumbFor(p.slug) + '" alt="" ' +
+                'loading="lazy" onerror="this.style.visibility=\'hidden\'"></td>' +
+              '<td>' + esc(p.name) + '</td>' +
+              '<td class="num muted">' + esc(p.sku || '—') + '</td>' +
+              '<td><input class="cell" inputmode="numeric" value="' + p.price +
+                '" data-price="' + p.id + '"></td>' +
+              '<td class="num">' + (NECKS.length - gone) + ' of ' + NECKS.length + '</td>' +
+              '<td class="num ' + (tot === 0 ? 'out' : tot <= 10 ? 'low' : '') + '">' +
+                tot + '</td>' +
+              '<td>' + esc(p.collection || '—') + '</td>' +
+              '<td><label class="tick"><input type="checkbox" data-visible="' +
+                p.id + '"' + (p.visible ? ' checked' : '') + '> shown</label></td>' +
+            '</tr>';
+          }).join('') + '</tbody></table></div></div>');
+      }).catch(function (e) { body(needsSQL(e)); });
   }
 
   function inventory() {
-    Promise.all([loadRange(), A.moves().catch(function () { return []; })])
+    Promise.all([loadRange(), A.moves().catch(function () { return []; }),
+                 A.invStats().catch(function () { return {}; })])
       .then(function (r) {
         var moves = r[1] || [];
-        body('<p class="hint">Type a number and it saves itself, with a reason ' +
+        var iv = r[2] || {};
+        var strip = [
+          ['Total stock', iv.total_stock, ''],
+          ['Running low', iv.low, 'warn'],
+          ['Sold out', iv.out, 'bad'],
+          ['Received, 30 days', iv.incoming, ''],
+          ['Damaged', iv.damaged, 'warn'],
+          ['Necks tracked', PRODUCTS.length * NECKS.length, '']
+        ].map(function (f) {
+          return '<div class="' + f[2] + '"><b>' + (f[1] == null ? 0 : f[1]) +
+            '</b><span>' + f[0] + '</span></div>';
+        }).join('');
+        body('<div class="strip">' + strip + '</div>' +
+          '<p class="hint">Type a number and it saves itself, with a reason ' +
           'recorded beside it. Zero marks that neck sold out on the shop \u2014 ' +
           'the size is struck through and cannot be ordered. Whether shoppers ' +
           'see counts at all is under Settings.</p>' +
@@ -730,45 +1517,223 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
 
   /* ---------- analytics ---------- */
 
-  function analytics() {
-    Promise.all([A.funnel(), A.necks().catch(function () { return []; }),
-                 A.best().catch(function () { return []; })])
-      .then(function (r) {
-        var f = r[0] || {}, necks = r[1] || [];
-        var steps = [
-          ['Visited the site', f.visitors],
-          ['Opened a cloth', f.viewed_a_cloth],
-          ['Chose a neck', f.chose_a_size],
-          ['Added to cart', f.added_to_cart],
-          ['Ordered', f.ordered]
-        ];
-        var top = Math.max(1, f.visitors || 1);
-        body('<p class="hint">Thirty days. Every step is counted from what the ' +
-          'site already records \u2014 no cookies, nobody identified. The gap ' +
-          'between two rows is where the shop is losing people.</p>' +
-          '<div class="funnel">' + steps.map(function (s) {
-            var n = s[1] || 0, pc = Math.round(n / top * 100);
-            return '<div class="step"><span>' + s[0] + '</span>' +
-              '<span class="bar"><i style="width:' + pc + '%"></i></span>' +
-              '<span class="n">' + n + ' <span class="pc">' + pc + '%</span></span></div>';
-          }).join('') + '</div>' +
-          '<div class="block"><h3>Asked for a neck the house does not cut</h3>' +
-            '<p class="empty" style="padding-top:0">' + (f.asked_uncut || 0) +
-            ' times in thirty days. Each one is a bespoke lead \u2014 see ' +
-            '<button class="btn small" data-go="demand">Bespoke demand</button></p></div>' +
-          '<div class="block"><h3>Which necks sell</h3>' + (necks.length
-            ? '<div class="funnel">' + necks.map(function (n) {
-                var mx = Math.max.apply(null, necks.map(function (x) { return x.sold; }));
-                return '<div class="step"><span>Neck ' + esc(n.neck) + '</span>' +
-                  '<span class="bar"><i style="width:' +
-                    Math.round(n.sold / mx * 100) + '%"></i></span>' +
-                  '<span class="n">' + n.sold + '</span></div>';
-              }).join('') + '</div>'
-            : '<p class="empty">Nothing sold yet. This becomes the most useful ' +
-              'chart on the page \u2014 it says which necks to cut more of.</p>') +
-          '</div>');
-      }).catch(function (e) { body(needsSQL(e)); });
+  /* Two lines on one grid: this window, and the same window before it. The
+     comparison IS the information — ₹1,24,000 means nothing without the
+     ₹98,000 it beat, and a single line invites the house to read noise as a
+     trend. Dashed for "then", solid for "now", and no second axis: two revenue
+     lines share one scale or they are not comparable. */
+  function chart2(rows, key, prevKey, label) {
+    if (!rows || !rows.length) return '<p class="empty">Nothing to draw yet.</p>';
+    var W = 640, H = 190, P = 26;
+    var now = rows.map(function (r) { return Number(r[key]) || 0; });
+    var was = rows.map(function (r) { return Number(r[prevKey]) || 0; });
+    var top = Math.max.apply(null, now.concat(was)) || 1;
+    var x = function (i) {
+      return P + (rows.length === 1 ? 0 : i * (W - P * 2) / (rows.length - 1));
+    };
+    var y = function (v) { return H - P - (v / top) * (H - P * 2); };
+    var line = function (a) {
+      return a.map(function (v, i) { return x(i) + ',' + y(v); }).join(' ');
+    };
+    var pts = line(now);
+    var area = 'M' + x(0) + ',' + (H - P) + ' L' + pts.split(' ').join(' L') +
+               ' L' + x(rows.length - 1) + ',' + (H - P) + ' Z';
+    var every = Math.ceil(rows.length / 6);
+    var anyPrev = was.some(function (v) { return v > 0; });
+
+    return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H +
+      '" preserveAspectRatio="none" role="img" aria-label="' + esc(label) + '">' +
+      [0, 0.5, 1].map(function (f) {
+        var yy = P + f * (H - P * 2);
+        return '<line class="grid" x1="' + P + '" y1="' + yy + '" x2="' +
+          (W - P) + '" y2="' + yy + '"/>';
+      }).join('') +
+      '<path class="area" d="' + area + '"/>' +
+      (anyPrev ? '<polyline class="line was" points="' + line(was) + '"/>' : '') +
+      '<polyline class="line" points="' + pts + '"/>' +
+      rows.map(function (r, i) {
+        return (i % every === 0 || i === rows.length - 1)
+          ? '<text x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="middle">' +
+            esc(r.label) + '</text>'
+          : '';
+      }).join('') +
+      '<circle class="dot" cx="' + x(rows.length - 1) + '" cy="' +
+        y(now[now.length - 1]) + '" r="3"/>' +
+      '</svg>' +
+      '<p class="legend2"><span class="now">This period</span>' +
+      (anyPrev ? '<span class="then">Previous period</span>'
+               : '<span class="muted">nothing to compare with yet</span>') + '</p>';
   }
+
+  /* ---------- analytics ----------
+     The mockup asked for six figures, two comparison lines, a channel ring,
+     best sellers, campaign performance and customer insight. All of it is here
+     except a payment-method split, which cannot be honest until there is a
+     payment gateway — every order is 'prepaid' by default today, and a pie of
+     UPI against cards would be a drawing, not a measurement. */
+
+  var A_RANGE = '30d';
+
+  function analytics() {
+    Promise.all([
+      A.aKpis(), A.aSeries(A_RANGE), A.traffic(), A.best().catch(nil),
+      A.campaignResults().catch(nil), A.insights().catch(function () { return {}; }),
+      A.locations().catch(nil), A.devices().catch(nil), A.funnel()
+    ]).then(function (r) {
+      var k = r[0] || {}, series = r[1] || [], chans = r[2] || [], best = r[3] || [],
+          camps = r[4] || [], ins = r[5] || {}, locs = r[6] || [], devs = r[7] || [],
+          f = r[8] || {};
+
+      var figs = [
+        ['money', 'Revenue', rupees(k.revenue), pct(k.revenue, k.revenue_before)],
+        ['cart', 'Orders', k.orders || 0, pct(k.orders, k.orders_before)],
+        ['customers', 'Customers', k.customers || 0, pct(k.customers, k.customers_before)],
+        ['tag', 'Average order', rupees(k.aov), pct(k.aov, k.aov_before)],
+        ['rise', 'Conversion', (k.conversion || 0) + '%', pct(k.conversion, k.conversion_before)],
+        ['back', 'Refund rate', (k.refund_rate || 0) + '%', null]
+      ].map(function (x) {
+        return '<div class="fig-box">' + figIcon(x[0]) +
+          '<span class="lab">' + x[1] + '</span><b>' + esc(x[2]) + '</b>' +
+          (x[3] === null ? '<span class="delta flat">30 days</span>'
+                        : deltaHTML(x[3], 'the 30 days before')) +
+          '</div>';
+      }).join('');
+
+      var ranges = [['today','Today'],['7d','7 days'],['30d','30 days'],['12m','12 months']]
+        .map(function (x) {
+          return '<button class="range" data-arange="' + x[0] + '" aria-pressed="' +
+            (A_RANGE === x[0]) + '">' + x[1] + '</button>';
+        }).join('');
+
+      var total = chans.reduce(function (a, c) { return a + Number(c.revenue || 0); }, 0);
+      var TONE = ['#2F6F5B','#B08A46','#7A6A9B','#A65A4A','#5B7C99','#8A8578'];
+      var chanBlock = total
+        ? '<div class="chan">' + donut(chans, total) +
+            '<ul class="legend">' + chans.slice(0, 6).map(function (c, i) {
+              return '<li><i style="background:' + TONE[i % TONE.length] + '"></i>' +
+                '<span class="nm">' + esc(c.channel) + '</span>' +
+                '<span class="n">' + rupees(c.revenue) + '</span></li>';
+            }).join('') + '</ul></div>'
+        : '<p class="empty">No orders carry a channel yet. Put ' +
+          '<code>?utm_source=instagram</code> on a link and both the visits and ' +
+          'the orders it brings appear here.</p>';
+
+      var steps = [['Visited the site', f.visitors],
+                   ['Opened a cloth', f.viewed_a_cloth],
+                   ['Chose a neck', f.chose_a_size],
+                   ['Added to cart', f.added_to_cart],
+                   ['Ordered', f.ordered]];
+      var topv = Math.max(1, f.visitors || 1);
+
+      body(
+        '<div class="toolbar"><div class="ranges">' + ranges + '</div></div>' +
+        '<div class="figs">' + figs + '</div>' +
+
+        '<div class="grid-2">' +
+          '<div class="card"><h3>Revenue<span class="more">' + esc(rupees(k.revenue)) +
+            '</span></h3>' + chart2(series, 'revenue', 'prev_revenue', 'Revenue over time') +
+          '</div>' +
+          '<div class="card"><h3>Orders<span class="more">' + (k.orders || 0) +
+            '</span></h3>' + chart2(series, 'order_count', 'prev_order_count', 'Orders over time') +
+          '</div>' +
+        '</div>' +
+
+        '<div class="grid-2">' +
+          '<div class="card"><h3>Where the money came from' +
+            '<span class="more" data-go="marketing">Marketing</span></h3>' +
+            chanBlock + '</div>' +
+          '<div class="card"><h3>Where the shop loses people</h3>' +
+            '<div class="funnel">' + steps.map(function (s) {
+              var n = s[1] || 0, pc = Math.round(n / topv * 100);
+              return '<div class="step"><span>' + s[0] + '</span>' +
+                '<span class="bar"><i style="width:' + pc + '%"></i></span>' +
+                '<span class="n">' + n + ' <span class="pc">' + pc + '%</span></span></div>';
+            }).join('') + '</div>' +
+            '<p class="hint" style="margin-top:var(--s3)">Thirty days, nobody ' +
+            'identified. The gap between two rows is the shop’s biggest ' +
+            'problem, whatever it is.</p></div>' +
+        '</div>' +
+
+        '<div class="grid-3">' +
+          '<div class="card"><h3>Best selling' +
+            '<span class="more" data-go="products">All</span></h3>' + (best.length
+            ? '<div class="scroll"><table><thead><tr><th>Cloth</th><th>Sold</th>' +
+              '<th>Revenue</th></tr></thead><tbody>' +
+              best.slice(0, 6).map(function (b) {
+                return '<tr><td>' + esc(b.name) + '</td>' +
+                  '<td class="num">' + b.sold + '</td>' +
+                  '<td class="num">' + rupees(b.revenue) + '</td></tr>';
+              }).join('') + '</tbody></table></div>'
+            : '<p class="empty">Nothing sold yet.</p>') + '</div>' +
+
+          '<div class="card"><h3>Campaigns' +
+            '<span class="more" data-go="campaigns">All</span></h3>' + (camps.length
+            ? '<div class="scroll"><table><thead><tr><th>Campaign</th><th>Sent to</th>' +
+              '<th>Revenue</th></tr></thead><tbody>' +
+              camps.slice(0, 6).map(function (c) {
+                return '<tr><td>' + esc(c.name) + '<br><span class="muted">' +
+                    esc(c.channel) + '</span></td>' +
+                  '<td class="num">' + (c.recipients || 0) + '</td>' +
+                  '<td class="num">' + rupees(c.revenue) + '</td></tr>';
+              }).join('') + '</tbody></table></div>'
+            : '<p class="empty">No campaigns yet.</p>') + '</div>' +
+
+          '<div class="card"><h3>Customers</h3>' +
+            '<div class="mini" style="grid-template-columns:1fr 1fr">' +
+              '<div><b>' + (ins.new_customers || 0) + '</b><span>new, 30 days</span></div>' +
+              '<div><b>' + (ins.returning_customers || 0) + '</b><span>returning</span></div>' +
+              '<div><b>' + rupees(ins.lifetime_value) + '</b><span>lifetime value</span></div>' +
+              '<div><b>' + (ins.repeat_rate || 0) + '%</b><span>buy again</span></div>' +
+            '</div>' +
+            (locs.length
+              ? '<h4 class="sub-h">Where they are</h4>' +
+                '<ul class="legend">' + locs.slice(0, 5).map(function (l) {
+                  return '<li><i style="background:var(--hair)"></i>' +
+                    '<span class="nm">' + esc(l.place) + '</span>' +
+                    '<span class="n">' + rupees(l.revenue) + '</span></li>';
+                }).join('') + '</ul>'
+              : '') +
+          '</div>' +
+        '</div>' +
+
+        '<div class="grid-2">' +
+          '<div class="card"><h3>Visits by channel</h3>' + (chans.length
+            ? '<div class="scroll"><table><thead><tr><th>Channel</th><th>Visits</th>' +
+              '<th>Orders</th><th>Conversion</th><th>Revenue</th></tr></thead><tbody>' +
+              chans.map(function (c) {
+                return '<tr><td>' + esc(c.channel) + '</td>' +
+                  '<td class="num">' + (c.sessions || 0) + '</td>' +
+                  '<td class="num">' + (c.orders || 0) + '</td>' +
+                  '<td class="num">' + (c.conversion === null || c.conversion === undefined
+                      ? '—' : c.conversion + '%') + '</td>' +
+                  '<td class="num">' + rupees(c.revenue) + '</td></tr>';
+              }).join('') + '</tbody></table></div>' +
+              '<p class="hint" style="margin-top:var(--s3)">A visit is only ' +
+              'attributed from the day the tracker began carrying the channel. ' +
+              'Anything recorded before that reads as direct — which is what ' +
+              'we know, not a claim about where those people came from.</p>'
+            : '<p class="empty">No visits recorded yet.</p>') + '</div>' +
+
+          '<div class="card"><h3>Phone or desktop</h3>' + (devs.length
+            ? '<div class="funnel">' + (function () {
+                var t = devs.reduce(function (a, d) { return a + Number(d.sessions || 0); }, 0) || 1;
+                return devs.map(function (d) {
+                  var pcv = Math.round(d.sessions / t * 100);
+                  return '<div class="step"><span>' + esc(d.device) + '</span>' +
+                    '<span class="bar"><i style="width:' + pcv + '%"></i></span>' +
+                    '<span class="n">' + d.sessions + ' <span class="pc">' +
+                    pcv + '%</span></span></div>';
+                }).join('');
+              })() + '</div>'
+            : '<p class="empty">No visits recorded yet.</p>') +
+            '<p class="hint" style="margin-top:var(--s3)">Two buckets, because ' +
+            'the tracker records two. A tablet row would mean guessing.</p>' +
+          '</div>' +
+        '</div>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function nil() { return []; }
 
   function demand() {
     A.demand().then(function (rows) {
@@ -808,9 +1773,45 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
+  /* ---------- the facts the law asks for ----------
+     Shown at the top of Settings, above everything else, because until these
+     are real the shop is publishing none of them — and a shop that goes live
+     without them is the single most expensive mistake on the checklist. */
+
+  function factsBanner(facts, real) {
+    if (!facts || !facts.length) return '';
+    var missing = facts.filter(function (f) {
+      return f.is_placeholder && f.required_by_law;
+    });
+    if (real && !missing.length) {
+      return '<p class="note" style="color:#3F6B45;margin-bottom:var(--s4)">' +
+        'The seller details are real and are printed on every page of the shop.</p>';
+    }
+    return '<div class="missing-fact" style="margin-bottom:var(--s4)">' +
+      '<b>The shop is publishing no seller details at all.</b><br>' +
+      (missing.length
+        ? missing.length + ' of the ' + facts.filter(function (f) {
+            return f.required_by_law; }).length +
+          ' facts the law requires are still stand-ins: ' +
+          missing.map(function (f) { return esc(f.label); }).join(', ') + '.'
+        : 'Every fact is filled in, but they have not been confirmed as real yet.') +
+      '<br><br>An Indian shop must publish its registered address, its GSTIN and ' +
+      'a named Grievance Officer who answers a complaint within 48 hours. Until ' +
+      'the real ones are typed in below, the site prints nothing rather than ' +
+      'something invented — a complaints line nobody answers is worse than none.' +
+      '<br><br>See them as they will look: ' +
+      '<a href="index.html?preview=facts" target="_blank" rel="noopener">preview ' +
+      'the shop front</a>. Then set <code>facts_are_real</code> to on, below.' +
+      '</div>';
+  }
+
   function settings() {
-    A.settings().then(function (rows) {
-      body('<p class="hint">These change the shop the moment they are saved. ' +
+    Promise.all([A.settings(), A.facts().catch(nil)]).then(function (r) {
+      var rows = r[0] || [], facts = r[1] || [];
+      var realRow = rows.filter(function (s) { return s.key === 'facts_are_real'; })[0];
+      var real = realRow && realRow.value === 'true';
+      body(factsBanner(facts, real) +
+        '<p class="hint">These change the shop the moment they are saved. ' +
         'No deploy, nobody to ask.</p>' +
         '<div class="scroll"><table><thead><tr><th>Setting</th><th>Value</th>' +
         '</tr></thead><tbody>' +
@@ -821,8 +1822,16 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
               '"' + (s.value === 'true' ? ' checked' : '') + '> on</label>'
             : '<input class="cell wide" value="' + esc(s.value) +
               '" data-set="' + esc(s.key) + '">';
-          return '<tr><td>' + esc(s.note || s.key) + '</td><td>' + field +
-            '</td></tr>';
+          /* A note explains a setting; it is not always a good NAME for one.
+             "FALSE while the seller details are stand-ins" beside an unchecked
+             box reads as a value being displayed rather than a switch to throw. */
+          var label = s.key === 'facts_are_real'
+            ? 'The seller details are the house’s real ones' +
+              '<br><span class="muted">Leave this off until the client’s own ' +
+              'GSTIN, address and Grievance Officer are entered above. While it ' +
+              'is off the site publishes none of them.</span>'
+            : esc(s.note || s.key);
+          return '<tr><td>' + label + '</td><td>' + field + '</td></tr>';
         }).join('') + '</tbody></table></div>');
     }).catch(function (e) { body(needsSQL(e)); });
   }
@@ -979,78 +1988,1054 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
+  /* ================================ MARKETING ================================
+     WHAT IS MEASURED HERE AND WHAT IS NOT.
+
+     Revenue, orders, channels and carts are counted from things that actually
+     happened. ROAS is left blank until somebody types in what they spent,
+     because no database can know an ad bill, and a dashboard that invents one
+     is worse than a dashboard that admits it does not know.
+
+     There is no open rate and no click rate anywhere in this section. Measuring
+     those needs a mail provider, there isn't one yet, and a fabricated 32%
+     would get read as a fact and planned against. */
+
+  /* A ring drawn with one circle per slice. No chart library, same as the
+     revenue line — the project has no dependencies and two graphs are still
+     not a reason to start. */
+  function donut(rows, total) {
+    var R = 54, C = 2 * Math.PI * R, at = 0;
+    var TONE = ['#2F6F5B','#B08A46','#7A6A9B','#A65A4A','#5B7C99','#8A8578'];
+    if (!total) return '<p class="empty">Nothing to draw yet.</p>';
+    return '<svg class="donut" viewBox="0 0 140 140" aria-hidden="true">' +
+      rows.map(function (r, i) {
+        var share = Number(r.revenue || 0) / total;
+        var seg = '<circle cx="70" cy="70" r="' + R + '" stroke="' +
+          TONE[i % TONE.length] + '" stroke-dasharray="' +
+          (share * C).toFixed(1) + ' ' + C.toFixed(1) + '" stroke-dashoffset="' +
+          (-at * C).toFixed(1) + '"/>';
+        at += share;
+        return seg;
+      }).join('') + '</svg>';
+  }
+
+  function marketing() {
+    Promise.all([A.marketing(), A.channels(), A.activity(), A.cartStats()])
+      .then(function (r) {
+        var m = r[0] || {}, chans = r[1] || [], acts = r[2] || [], carts = r[3] || {};
+        var total = chans.reduce(function (a, c) { return a + Number(c.revenue || 0); }, 0);
+
+        var figs = [
+          ['money', 'Revenue from marketing', rupees(m.revenue),
+            deltaHTML(pct(m.revenue, m.revenue_before)), false],
+          ['cart', 'Orders from marketing', m.orders || 0,
+            deltaHTML(pct(m.orders, m.orders_before)), false],
+          ['customers', 'New customers', m.new_customers || 0,
+            '<span class="delta flat">first order in 30 days</span>', false],
+          ['rise', 'Return on ad spend', m.roas ? m.roas + '×' : '—',
+            m.roas ? '<span class="delta flat">on ' + rupees(m.spent) + ' spent</span>'
+                   : '<span class="delta flat">enter your ad spend below</span>',
+            false]
+        ].map(function (f) {
+          return '<div class="fig-box' + (f[4] ? ' warn' : '') + '">' + figIcon(f[0]) +
+            '<span class="lab">' + f[1] + '</span><b>' + esc(f[2]) + '</b>' +
+            f[3] + '</div>';
+        }).join('');
+
+        var TONE = ['#2F6F5B','#B08A46','#7A6A9B','#A65A4A','#5B7C99','#8A8578'];
+        var legend = chans.length
+          ? '<ul class="legend">' + chans.slice(0, 6).map(function (c, i) {
+              var share = total ? Math.round(Number(c.revenue) / total * 1000) / 10 : 0;
+              return '<li><i style="background:' + TONE[i % TONE.length] + '"></i>' +
+                '<span class="nm">' + esc(c.channel) + '</span>' +
+                '<span class="n">' + share + '% · ' + rupees(c.revenue) + '</span></li>';
+            }).join('') + '</ul>'
+          : '';
+
+        body(
+          '<div class="figs">' + figs + '</div>' +
+
+          '<div class="grid-2">' +
+            '<div class="card"><h3>Where the orders came from' +
+              '<span class="more" data-go="analytics">Analytics</span></h3>' +
+              (chans.length
+                ? '<div class="chan">' + donut(chans, total) + legend + '</div>' +
+                  '<p class="hint">Read from the link a customer arrived on. An ' +
+                  'order with nothing on the link is counted as direct, which is ' +
+                  'what it is — not a guess.</p>'
+                : '<p class="empty">Nothing attributed yet. Put ' +
+                  '<code>?utm_source=instagram</code> on the end of a link in a ' +
+                  'bio or an ad and every order through it lands here.</p>') +
+            '</div>' +
+
+            '<div class="card"><h3>Carts left behind' +
+              '<span class="more" data-go="carts">All carts</span></h3>' +
+              '<div class="mini">' +
+                '<div><b>' + (carts.abandoned || 0) + '</b><span>abandoned, 7 days</span></div>' +
+                '<div><b>' + (carts.recovered || 0) + '</b><span>came back</span></div>' +
+                '<div><b>' + rupees(carts.at_stake) + '</b><span>still sitting there</span></div>' +
+              '</div>' +
+              '<p class="hint">A cart is only recorded once somebody has typed a ' +
+              'way to reach them into the checkout. Browsing is never recorded ' +
+              'against a person.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="grid-2">' +
+            '<div class="card"><h3>Lately</h3>' + (acts.length
+              ? '<div class="scroll"><table><thead><tr><th>What</th><th>Kind</th>' +
+                '<th>State</th><th>Revenue</th><th>Made</th></tr></thead><tbody>' +
+                acts.map(function (a) {
+                  return '<tr><td>' + esc(a.what) + '</td>' +
+                    '<td>' + esc(a.kind) + '</td>' +
+                    '<td><span class="tag ' + esc(a.state || '') + '">' +
+                      esc(a.state || '—') + '</span></td>' +
+                    '<td class="num">' + rupees(a.revenue) + '</td>' +
+                    '<td class="num">' + day(a.at) + '</td></tr>';
+                }).join('') + '</tbody></table></div>'
+              : '<p class="empty">No offers or campaigns yet.</p>') + '</div>' +
+
+            '<div class="card"><h3>What you spent</h3>' +
+              '<p class="hint">There is no way for the shop to know an ad bill. ' +
+              'Type what a channel cost this month and the return above starts ' +
+              'working. Leave it and it stays honestly blank.</p>' +
+              '<form class="filters" id="spendform">' +
+                '<input class="cell" name="channel" placeholder="instagram" ' +
+                  'required style="width:9rem">' +
+                '<input class="cell" name="amount" type="number" min="0" ' +
+                  'placeholder="₹ this month" required style="width:9rem">' +
+                '<button class="btn small" type="submit">Record it</button>' +
+              '</form>' +
+              '<div class="quick">' +
+                '<button data-go="newcode"><b>Make an offer</b>' +
+                  '<span>A code that works at checkout today</span></button>' +
+                '<button data-go="newcamp"><b>Start a campaign</b>' +
+                  '<span>Build a list from your own customers</span></button>' +
+                '<button data-go="carts"><b>Chase a cart</b>' +
+                  '<span>People who stopped at the last step</span></button>' +
+              '</div>' +
+            '</div>' +
+          '</div>');
+
+        document.getElementById('spendform').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var f = e.target, d = new Date();
+          A.setSpend({
+            month: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-01',
+            channel: f.elements.channel.value.trim().toLowerCase(),
+            amount: Number(f.elements.amount.value) || 0
+          }).then(marketing).catch(function (err) { alert(err.message); });
+        });
+      }).catch(function (e) { body(needsSQL(e)); });
+  }
+
   /* ---------- offers ----------
      A code is never shown without what it cost. A coupon that brought three
-     lakhs and gave away thirty thousand is a different decision from one that
+     lakh and gave away thirty thousand is a different decision from one that
      brought thirty thousand and gave away three. */
+
+  var CODE_TAB = 'all', CODE_EDIT = null;
 
   function discounts() {
     A.discounts().then(function (rows) {
-      body('<p class="hint">Every code, with what it earned and what it gave ' +
-        'away. Turning one off stops it at the next checkout.</p>' +
-        '<form class="filters" id="newcode">' +
-          '<input class="cell" name="code" placeholder="CODE" required style="width:8rem">' +
-          '<select class="cell" name="kind">' +
-            '<option value="percent">% off</option>' +
-            '<option value="flat">₹ off</option>' +
-            '<option value="free_shipping">free shipping</option></select>' +
-          '<input class="cell" name="value" type="number" min="0" value="10" style="width:5rem">' +
-          '<input class="cell" name="min_spend" type="number" min="0" ' +
-            'placeholder="min spend" style="width:7rem">' +
-          '<button class="btn small" type="submit">Make it</button></form>' +
-        (rows.length
-        ? '<div class="scroll"><table><thead><tr><th>Code</th><th>Worth</th>' +
-          '<th>Used</th><th>Revenue</th><th>Given away</th><th>Ends</th><th>Live</th>' +
+      var counts = { all: rows.length, active: 0, scheduled: 0, expired: 0 };
+      rows.forEach(function (d) { counts[d.state] = (counts[d.state] || 0) + 1; });
+      var shown = rows.filter(function (d) {
+        return CODE_TAB === 'all' || d.state === CODE_TAB;
+      });
+
+      var tabs = [['all','All'],['active','Active'],['scheduled','Scheduled'],
+                  ['expired','Expired']].map(function (t) {
+        return '<button class="tab" data-codetab="' + t[0] + '" aria-pressed="' +
+          (CODE_TAB === t[0]) + '">' + t[1] + ' (' + (counts[t[0]] || 0) + ')</button>';
+      }).join('');
+
+      body(
+        '<div class="toolbar"><div class="tabs">' + tabs + '</div>' +
+          '<button class="btn" data-go="newcode">+ Create offer</button></div>' +
+        '<div class="filters"><input class="cell" id="codeq" ' +
+          'style="flex:1;min-width:16rem;max-width:26rem" ' +
+          'placeholder="Search by code…"></div>' +
+        (shown.length
+        ? '<div class="scroll"><table id="codetable"><thead><tr><th>Code</th><th>Worth</th>' +
+          '<th>Type</th><th>Used</th><th>Revenue</th><th>Given away</th>' +
+          '<th>Valid till</th><th>State</th><th>Live</th><th></th>' +
           '</tr></thead><tbody>' +
-          rows.map(function (d) {
-            var worth = d.kind === 'percent' ? d.value + '%'
-              : d.kind === 'flat' ? rupees(d.value) : 'free shipping';
-            return '<tr><td class="num">' + esc(d.code) + '</td>' +
+          shown.map(function (d) {
+            var worth = d.kind === 'percent' ? d.value + '% OFF'
+              : d.kind === 'flat' ? rupees(d.value) + ' OFF' : 'Free shipping';
+            return '<tr data-code="' + esc(d.code) + '">' +
+              '<td class="num"><b>' + esc(d.code) + '</b>' +
+                (d.note ? '<br><span class="muted">' + esc(d.note) + '</span>' : '') + '</td>' +
               '<td>' + worth + '</td>' +
+              '<td class="muted">' + esc(d.kind.replace('_', ' ')) + '</td>' +
               '<td class="num">' + (d.uses || 0) +
-                (d.usage_limit ? ' / ' + d.usage_limit : '') + '</td>' +
+                (d.usage_limit ? ' / ' + d.usage_limit : ' / ∞') + '</td>' +
               '<td class="num">' + rupees(d.revenue) + '</td>' +
               '<td class="num">' + rupees(d.given) + '</td>' +
               '<td class="num">' + (d.ends_at ? day(d.ends_at) : '—') + '</td>' +
-              '<td><label class="tick"><input type="checkbox" data-code="' +
-                esc(d.code) + '"' + (d.live ? ' checked' : '') + '></label></td></tr>';
+              '<td><span class="tag ' + esc(d.state) + '">' + esc(d.state) + '</span></td>' +
+              '<td><label class="tick"><input type="checkbox" data-live="' +
+                esc(d.code) + '"' + (d.live ? ' checked' : '') + '></label></td>' +
+              '<td><button class="btn small" data-editcode="' + esc(d.code) +
+                '">Edit</button></td></tr>';
           }).join('') + '</tbody></table></div>'
-        : '<p class="empty">No codes yet.</p>'));
+        : '<p class="empty">No codes here yet. An offer made on the next screen ' +
+          'works at the checkout the moment you save it.</p>'));
 
-      document.getElementById('newcode').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var f = e.target;
-        A.addDiscount({
-          code: f.elements.code.value.trim().toUpperCase(),
-          kind: f.elements.kind.value,
-          value: Number(f.elements.value.value) || 0,
-          min_spend: Number(f.elements.min_spend.value) || 0
-        }).then(discounts).catch(function (err) { alert(err.message); });
+      var q = document.getElementById('codeq');
+      if (q) q.addEventListener('input', function () {
+        var v = this.value.trim().toUpperCase();
+        [].forEach.call(document.querySelectorAll('#codetable tbody tr'), function (tr) {
+          tr.style.display = !v || tr.getAttribute('data-code').indexOf(v) > -1 ? '' : 'none';
+        });
       });
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
-  /* ---------- the shop windows ---------- */
+  /* ---------- making an offer ----------
+     Everything on the left is a rule; the panel on the right is that rule read
+     back in a sentence, because "10, 1499, 1000" is not a thing anyone can
+     check and "10% off orders over ₹1,499, capped at ₹1,000" is. */
+
+  var KINDS = [['percent','Percentage','Off in per cent'],
+               ['flat','Fixed amount','Off in rupees'],
+               ['free_shipping','Free shipping','No charge to deliver']];
+
+  function newcode() {
+    var d = CODE_EDIT || {};
+    Promise.all([A.collections().catch(function () { return []; })])
+      .then(function (r) {
+        var cols = r[0] || [];
+        body(
+          '<div class="filters"><button class="btn small" data-go="discounts">' +
+            '&larr; Offers</button></div>' +
+          '<div class="grid-side">' +
+            '<div class="card"><h3>The offer</h3><form id="codeform" class="f2">' +
+              '<fieldset><legend>What kind</legend><div class="picks">' +
+                KINDS.map(function (k) {
+                  return '<label class="pick"><input type="radio" name="kind" value="' +
+                    k[0] + '"' + ((d.kind || 'percent') === k[0] ? ' checked' : '') +
+                    '><span><b>' + k[1] + '</b><small>' + k[2] + '</small></span></label>';
+                }).join('') + '</div></fieldset>' +
+
+              '<div class="pair">' +
+                '<p><label for="c-code">Code</label>' +
+                  '<input id="c-code" name="code" required placeholder="SUMMER10" ' +
+                  'value="' + esc(d.code || '') + '"' +
+                  (CODE_EDIT ? ' readonly' : '') + '></p>' +
+                '<p><label for="c-value">Value</label>' +
+                  '<input id="c-value" name="value" type="number" min="0" step="1" ' +
+                  'value="' + esc(d.value == null ? 10 : d.value) + '"></p>' +
+              '</div>' +
+              (CODE_EDIT ? '' : '<p class="hint">' +
+                '<button type="button" class="btn small" id="gen">Generate a code' +
+                '</button> — or type one people can say on the phone.</p>') +
+
+              '<div class="pair">' +
+                '<p><label for="c-min">Minimum order (optional)</label>' +
+                  '<input id="c-min" name="min_spend" type="number" min="0" ' +
+                  'value="' + esc(d.min_spend || '') + '"></p>' +
+                '<p><label for="c-max">Most it may give away (optional)</label>' +
+                  '<input id="c-max" name="max_discount" type="number" min="0" ' +
+                  'value="' + esc(d.max_discount || '') + '"></p>' +
+              '</div>' +
+
+              '<div class="pair">' +
+                '<p><label for="c-limit">Total uses (blank = unlimited)</label>' +
+                  '<input id="c-limit" name="usage_limit" type="number" min="1" ' +
+                  'value="' + esc(d.usage_limit || '') + '"></p>' +
+                '<p><label for="c-per">Uses per customer</label>' +
+                  '<input id="c-per" name="per_customer" type="number" min="1" ' +
+                  'value="' + esc(d.per_customer == null ? 1 : d.per_customer) + '"></p>' +
+              '</div>' +
+
+              '<fieldset><legend>Applies to</legend>' +
+                '<div class="pair">' +
+                  '<p><select name="applies_to" id="c-apply">' +
+                    '<option value="all">Everything</option>' +
+                    '<option value="collection"' +
+                      (d.applies_to === 'collection' ? ' selected' : '') +
+                      '>One collection</option></select></p>' +
+                  '<p><select name="collection" id="c-col">' +
+                    '<option value="">—</option>' +
+                    cols.map(function (c) {
+                      return '<option value="' + esc(c.slug || c.name) + '"' +
+                        (d.collection === (c.slug || c.name) ? ' selected' : '') +
+                        '>' + esc(c.name) + '</option>';
+                    }).join('') + '</select></p>' +
+                '</div></fieldset>' +
+
+              '<div class="pair">' +
+                '<p><label for="c-from">Starts</label>' +
+                  '<input id="c-from" name="starts_at" type="date" value="' +
+                  esc(d.starts_at ? String(d.starts_at).slice(0, 10) : '') + '"></p>' +
+                '<p><label for="c-to">Ends (blank = runs on)</label>' +
+                  '<input id="c-to" name="ends_at" type="date" value="' +
+                  esc(d.ends_at ? String(d.ends_at).slice(0, 10) : '') + '"></p>' +
+              '</div>' +
+
+              '<p><label for="c-note">A note to yourself (optional)</label>' +
+                '<input id="c-note" name="note" value="' + esc(d.note || '') + '"></p>' +
+
+              '<div class="row-end">' +
+                (CODE_EDIT ? '<button type="button" class="btn small danger" id="killcode">' +
+                  'Delete</button>' : '') +
+                '<button type="button" class="btn small" data-go="discounts">Cancel</button>' +
+                '<button class="btn" type="submit">' +
+                  (CODE_EDIT ? 'Save the offer' : 'Create the offer') + '</button>' +
+              '</div>' +
+            '</form></div>' +
+
+            '<aside class="card"><h3>In plain words</h3>' +
+              '<div id="c-sum" class="summary"></div>' +
+              '<p class="hint">The database checks all of this again when the ' +
+              'order arrives, so an edited page cannot get a bigger discount ' +
+              'than this says.</p>' +
+            '</aside>' +
+          '</div>');
+
+        var form = document.getElementById('codeform');
+
+        function say() {
+          var f = form.elements;
+          var kind = form.querySelector('[name=kind]:checked').value;
+          var v = Number(f.value.value) || 0;
+          var worth = kind === 'percent' ? v + '% off'
+                    : kind === 'flat' ? rupees(v) + ' off' : 'Free shipping';
+          var bits = [];
+          bits.push('<b>' + worth + '</b>' +
+            (f.applies_to.value === 'collection' && f.collection.value
+              ? ' on ' + esc(f.collection.value) : ' on everything'));
+          if (f.min_spend.value) bits.push('Only on orders over ' + rupees(f.min_spend.value));
+          if (kind === 'percent' && f.max_discount.value)
+            bits.push('Never gives away more than ' + rupees(f.max_discount.value));
+          bits.push(f.usage_limit.value
+            ? f.usage_limit.value + ' uses in total'
+            : 'Unlimited uses');
+          bits.push((Number(f.per_customer.value) || 1) + ' use per customer');
+          bits.push(f.starts_at.value || f.ends_at.value
+            ? 'Runs ' + (f.starts_at.value || 'from today') +
+              (f.ends_at.value ? ' to ' + f.ends_at.value : ' onwards')
+            : 'Runs from today, with no end date');
+          return '<p class="code-chip">' + esc(f.code.value || 'YOURCODE') + '</p>' +
+            '<ul>' + bits.map(function (b) { return '<li>' + b + '</li>'; }).join('') + '</ul>';
+        }
+        function repaint() { document.getElementById('c-sum').innerHTML = say(); }
+        form.addEventListener('input', repaint);
+        form.addEventListener('change', repaint);
+        repaint();
+
+        var gen = document.getElementById('gen');
+        if (gen) gen.addEventListener('click', function () {
+          form.elements.code.value =
+            'IAR' + Math.random().toString(36).slice(2, 6).toUpperCase();
+          repaint();
+        });
+
+        var kill = document.getElementById('killcode');
+        if (kill) kill.addEventListener('click', function () {
+          if (!confirm('Delete ' + CODE_EDIT.code + '? Orders that already used it ' +
+                       'keep their discount.')) return;
+          A.delDiscount(CODE_EDIT.code).then(function () {
+            CODE_EDIT = null; here = 'discounts'; drawNav(); render();
+          }).catch(function (err) { alert(err.message); });
+        });
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var f = form.elements;
+          var row = {
+            kind: form.querySelector('[name=kind]:checked').value,
+            value: Number(f.value.value) || 0,
+            min_spend: Number(f.min_spend.value) || 0,
+            max_discount: f.max_discount.value ? Number(f.max_discount.value) : null,
+            usage_limit: f.usage_limit.value ? Number(f.usage_limit.value) : null,
+            per_customer: f.per_customer.value ? Number(f.per_customer.value) : null,
+            applies_to: f.applies_to.value,
+            collection: f.applies_to.value === 'collection' ? (f.collection.value || null) : null,
+            starts_at: f.starts_at.value || null,
+            ends_at: f.ends_at.value || null,
+            note: f.note.value.trim() || null
+          };
+          var done = function () {
+            CODE_EDIT = null; here = 'discounts'; drawNav(); render();
+          };
+          var fail = function (err) { alert(err.message); };
+          if (CODE_EDIT) A.setDiscount(CODE_EDIT.code, row).then(done, fail);
+          else {
+            row.code = f.code.value.trim().toUpperCase();
+            if (!row.code) return;
+            A.addDiscount(row).then(done, fail);
+          }
+        });
+      }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- campaigns ----------
+     HONEST ABOUT WHAT THIS IS. There is no mail server and no SMS gateway, so
+     nothing here claims to have sent anything it did not. What it does do is
+     real: it builds a named list of real customers from real orders, merges the
+     message, and — for WhatsApp, which needs no provider at all — hands the
+     house one link per person. Email and SMS come out as a file until a
+     provider is connected, and say so on the screen. */
+
+  var CAMP_TAB = 'all', CAMP_OPEN = null;
+  var CHANNELS = [['whatsapp','WhatsApp','Sent by you, one tap each. Works today.'],
+                  ['email','Email','Needs a mail provider before it can send.'],
+                  ['sms','SMS','Needs an SMS gateway before it can send.']];
+
+  function campaigns() {
+    A.campaigns().then(function (rows) {
+      var counts = { all: rows.length };
+      rows.forEach(function (c) { counts[c.channel] = (counts[c.channel] || 0) + 1; });
+      var shown = rows.filter(function (c) {
+        return CAMP_TAB === 'all' || c.channel === CAMP_TAB;
+      });
+      var tabs = [['all','All']].concat(CHANNELS.map(function (c) { return [c[0], c[1]]; }))
+        .map(function (t) {
+          return '<button class="tab" data-camptab="' + t[0] + '" aria-pressed="' +
+            (CAMP_TAB === t[0]) + '">' + t[1] + ' (' + (counts[t[0]] || 0) + ')</button>';
+        }).join('');
+
+      body(
+        '<div class="toolbar"><div class="tabs">' + tabs + '</div>' +
+          '<button class="btn" data-go="newcamp">+ Create campaign</button></div>' +
+        (shown.length
+        ? '<div class="scroll"><table><thead><tr><th>Campaign</th><th>Channel</th>' +
+          '<th>Audience</th><th>People</th><th>Sent</th><th>State</th><th>Made</th>' +
+          '<th></th></tr></thead><tbody>' +
+          shown.map(function (c) {
+            return '<tr><td><b>' + esc(c.name) + '</b>' +
+                (c.subject ? '<br><span class="muted">' + esc(c.subject) + '</span>' : '') +
+                '</td>' +
+              '<td>' + esc(c.channel) + '</td>' +
+              '<td class="muted">' + esc(c.audience) + '</td>' +
+              '<td class="num">' + (c.recipients || 0) + '</td>' +
+              '<td class="num">' + (c.sent || 0) + '</td>' +
+              '<td><span class="tag ' + esc(c.state) + '">' + esc(c.state) + '</span></td>' +
+              '<td class="num">' + day(c.made_at) + '</td>' +
+              '<td><button class="btn small" data-camp="' + c.id + '">Open</button></td>' +
+              '</tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No campaigns yet. A campaign here is a list of your ' +
+          'own customers and something to say to them — never a bought list.</p>'));
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function newcamp() {
+    A.audiences().then(function (auds) {
+      body(
+        '<div class="filters"><button class="btn small" data-go="campaigns">' +
+          '&larr; Campaigns</button></div>' +
+        '<div class="grid-side">' +
+          '<div class="card"><h3>The campaign</h3><form id="campform" class="f2">' +
+            '<fieldset><legend>Where it goes</legend><div class="picks">' +
+              CHANNELS.map(function (c, i) {
+                return '<label class="pick"><input type="radio" name="channel" value="' +
+                  c[0] + '"' + (i === 0 ? ' checked' : '') + '><span><b>' + c[1] +
+                  '</b><small>' + c[2] + '</small></span></label>';
+              }).join('') + '</div></fieldset>' +
+
+            '<p><label for="m-name">Campaign name</label>' +
+              '<input id="m-name" name="name" required placeholder="Summer collection launch"></p>' +
+
+            '<fieldset><legend>Who it goes to</legend><div class="picks stack">' +
+              auds.map(function (a, i) {
+                return '<label class="pick"><input type="radio" name="audience" value="' +
+                  esc(a.kind) + '"' + (i === 0 ? ' checked' : '') + '><span><b>' +
+                  esc(a.label) + '</b><small>' + a.n + ' ' +
+                  (a.n === 1 ? 'person' : 'people') + '</small></span></label>';
+              }).join('') + '</div>' +
+              '<p class="hint">Every one of these is somebody who gave the house ' +
+              'their number while buying or asking. Nothing here is bought or ' +
+              'scraped.</p></fieldset>' +
+
+            '<p id="subwrap" hidden><label for="m-sub">Subject line</label>' +
+              '<input id="m-sub" name="subject" placeholder="Introducing our summer collection"></p>' +
+
+            '<p><label for="m-msg">The message</label>' +
+              '<textarea id="m-msg" name="message" rows="6" ' +
+              'placeholder="Hello {name}, the new season’s cloth has arrived…"></textarea></p>' +
+            '<p class="hint"><code>{name}</code> becomes their first name. ' +
+              'Nothing else is substituted — a merge field that silently ' +
+              'fails prints the braces to a customer.</p>' +
+
+            '<p><label for="m-utm">Tag the links (optional)</label>' +
+              '<input id="m-utm" name="utm_campaign" placeholder="summer-launch"></p>' +
+            '<p class="hint">Put <code>?utm_source=whatsapp&amp;utm_campaign=' +
+              '<span id="utmecho">…</span></code> on any link in the message ' +
+              'and the orders it brings show up against this campaign.</p>' +
+
+            '<div class="row-end">' +
+              '<button type="button" class="btn small" data-go="campaigns">Cancel</button>' +
+              '<button class="btn" type="submit">Build the list</button>' +
+            '</div>' +
+          '</form></div>' +
+
+          '<aside class="card"><h3>What happens next</h3>' +
+            '<div class="summary"><ol class="steps">' +
+              '<li><b>Build the list.</b> The audience is resolved into real ' +
+                'people, now, and stored with the campaign.</li>' +
+              '<li><b>Check it.</b> You see every name before anything goes out.</li>' +
+              '<li><b>Send.</b> WhatsApp opens one chat at a time with the ' +
+                'message already written, and ticks each person off as you go.</li>' +
+            '</ol>' +
+            '<p class="note bad" id="chanwarn" hidden></p></div>' +
+          '</aside>' +
+        '</div>');
+
+      var form = document.getElementById('campform');
+      function chanChange() {
+        var ch = form.querySelector('[name=channel]:checked').value;
+        document.getElementById('subwrap').hidden = ch !== 'email';
+        var w = document.getElementById('chanwarn');
+        if (ch === 'whatsapp') { w.hidden = true; return; }
+        w.hidden = false;
+        w.textContent = ch === 'email'
+          ? 'Email cannot be sent from here yet — there is no mail provider ' +
+            'connected. The list and the message are saved, and download as a ' +
+            'file you can hand to one. No open rate is recorded, because nothing ' +
+            'here can measure one.'
+          : 'SMS cannot be sent from here yet — there is no gateway connected. ' +
+            'The list downloads as a file. Indian promotional SMS also needs a ' +
+            'registered DLT template before any provider will carry it.';
+      }
+      form.addEventListener('change', chanChange);
+      form.addEventListener('input', function () {
+        document.getElementById('utmecho').textContent =
+          form.elements.utm_campaign.value.trim() || '…';
+      });
+      chanChange();
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var f = form.elements;
+        A.addCampaign({
+          name: f.name.value.trim(),
+          channel: form.querySelector('[name=channel]:checked').value,
+          audience: form.querySelector('[name=audience]:checked').value,
+          subject: f.subject.value.trim() || null,
+          message: f.message.value,
+          utm_campaign: f.utm_campaign.value.trim() || null
+        }).then(function (c) {
+          return A.buildAudience(c.id).then(function () { return c.id; });
+        }).then(function (id) {
+          CAMP_OPEN = id; openCampaign(id);
+        }).catch(function (err) { alert(err.message); });
+      });
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- one campaign: the actual sending ----------
+     For WhatsApp this is the whole product. One button per person, the message
+     already merged, and a tick the moment the chat opens — which is the only
+     thing this can honestly claim to know. */
+
+  function merge(msg, name) {
+    var first = String(name || '').trim().split(/\s+/)[0] || 'there';
+    return String(msg || '').replace(/\{name\}/g, first);
+  }
+
+  function openCampaign(id) {
+    here = 'campaign'; drawNav(); shell(waiting());
+    Promise.all([A.campaign(id), A.recipients(id)]).then(function (r) {
+      var c = r[0] || {}, list = r[1] || [];
+      var sent = list.filter(function (x) { return x.sent_at; }).length;
+
+      var rows = list.map(function (p) {
+        var text = merge(c.message, p.name);
+        var wa = 'https://wa.me/91' + String(p.phone || '').replace(/\D/g, '').slice(-10) +
+                 '?text=' + encodeURIComponent(text);
+        return '<tr' + (p.sent_at ? ' class="done"' : '') + '>' +
+          '<td>' + esc(p.name || '—') + '</td>' +
+          '<td class="num">' + esc(p.phone || '') + '</td>' +
+          '<td class="muted">' + esc(p.email || '—') + '</td>' +
+          '<td>' + (p.sent_at
+            ? '<span class="tag delivered">sent</span>'
+            : c.channel === 'whatsapp'
+              ? '<a class="btn small" target="_blank" rel="noopener" ' +
+                'data-send="' + p.id + '" href="' + esc(wa) + '">Open chat</a>'
+              : '<span class="muted">waiting on a provider</span>') + '</td></tr>';
+      }).join('');
+
+      body(
+        '<div class="filters"><button class="btn small" data-go="campaigns">' +
+          '&larr; Campaigns</button>' +
+          '<button class="btn small" id="exportcamp">Download the list (CSV)</button>' +
+          '<button class="btn small" id="rebuild">Rebuild the list</button></div>' +
+
+        '<div class="figs">' + [
+          ['customers', 'People on the list', list.length, ''],
+          ['cart', 'Reached', sent + ' of ' + list.length, ''],
+          ['tag', 'Channel', c.channel || '', ''],
+          ['clock', 'State', c.state || '', '']
+        ].map(function (f) {
+          return '<div class="fig-box">' + figIcon(f[0]) +
+            '<span class="lab">' + f[1] + '</span><b>' + esc(f[2]) + '</b></div>';
+        }).join('') + '</div>' +
+
+        '<div class="grid-2">' +
+          '<div class="card"><h3>The message</h3>' +
+            (c.subject ? '<p><b>' + esc(c.subject) + '</b></p>' : '') +
+            '<pre class="msg">' + esc(c.message || '') + '</pre>' +
+            '<p class="hint">Shown here exactly as it will arrive, except that ' +
+            '<code>{name}</code> becomes each person’s first name.</p></div>' +
+          '<div class="card"><h3>How this sends</h3>' +
+            (c.channel === 'whatsapp'
+              ? '<p class="hint">WhatsApp needs no provider and no approval: each ' +
+                'button opens a chat with the message already written. Tick as ' +
+                'you go — the count above is people you actually opened, ' +
+                'which is the only thing this can honestly know. It cannot know ' +
+                'whether they read it.</p>'
+              : '<p class="note bad">There is no ' +
+                (c.channel === 'email' ? 'mail provider' : 'SMS gateway') +
+                ' connected, so nothing can be sent from this screen. Download ' +
+                'the list and hand it to one. Delivery and open rates will only ' +
+                'appear once a provider is wired and reports them back — ' +
+                'they are not estimated here.</p>') +
+          '</div>' +
+        '</div>' +
+
+        (list.length
+          ? '<div class="scroll"><table><thead><tr><th>Name</th><th>Phone</th>' +
+            '<th>Email</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+          : '<p class="empty">Nobody matched that audience yet.</p>'));
+
+      document.getElementById('rebuild').addEventListener('click', function () {
+        A.buildAudience(id).then(function () { openCampaign(id); })
+          .catch(function (err) { alert(err.message); });
+      });
+
+      document.getElementById('exportcamp').addEventListener('click', function () {
+        var csv = 'name,phone,email,message\n' + list.map(function (p) {
+          return [p.name, p.phone, p.email, merge(c.message, p.name)]
+            .map(function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; })
+            .join(',');
+        }).join('\n');
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = (c.name || 'campaign').replace(/\W+/g, '-').toLowerCase() + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- abandoned carts ---------- */
+
+  function carts() {
+    Promise.all([A.cartStats(), A.carts()]).then(function (r) {
+      var s = r[0] || {}, list = r[1] || [];
+      var figs = [
+        ['cart', 'Abandoned, 7 days', s.abandoned || 0,
+          '<span class="delta flat">left at the last step</span>', false],
+        ['back', 'Came back', s.recovered || 0,
+          '<span class="delta flat">and finished the order</span>', false],
+        ['money', 'Recovered', rupees(s.revenue),
+          '<span class="delta flat">from carts that came back</span>', false],
+        ['clock', 'Still sitting there', rupees(s.at_stake),
+          '<span class="delta flat">worth chasing</span>', (s.at_stake || 0) > 0]
+      ].map(function (f) {
+        return '<div class="fig-box' + (f[4] ? ' warn' : '') + '">' + figIcon(f[0]) +
+          '<span class="lab">' + f[1] + '</span><b>' + esc(f[2]) + '</b>' + f[3] +
+          '</div>';
+      }).join('');
+
+      body('<div class="figs">' + figs + '</div>' +
+        '<p class="hint">A cart appears here thirty minutes after somebody typed ' +
+        'their details into the checkout and stopped. Under half an hour they are ' +
+        'still shopping, and a message then is an interruption rather than a ' +
+        'recovery.</p>' +
+        (list.length
+        ? '<div class="scroll"><table><thead><tr><th>Customer</th><th>Phone</th>' +
+          '<th>Items</th><th>Worth</th><th>Left</th><th>State</th><th></th>' +
+          '</tr></thead><tbody>' +
+          list.map(function (c) {
+            var what = (c.items || []).map(function (i) {
+              return (i.name || i.slug) + ' · neck ' + i.size;
+            }).join(', ');
+            var text = 'Hello ' + String(c.name || '').split(' ')[0] +
+              ', this is I Am Ratan. You left something with us — ' + what +
+              '. Shall we hold it for you?';
+            var wa = 'https://wa.me/91' + String(c.phone || '').replace(/\D/g, '').slice(-10) +
+                     '?text=' + encodeURIComponent(text);
+            return '<tr><td>' + esc(c.name || '—') + '<br>' +
+                '<span class="muted">' + esc(c.email || '') + '</span></td>' +
+              '<td class="num">' + esc(c.phone || '—') + '</td>' +
+              '<td>' + esc(what || (c.lines + ' items')) + '</td>' +
+              '<td class="num">' + rupees(c.value) + '</td>' +
+              '<td class="num">' + day(c.updated_at) + '</td>' +
+              '<td><span class="tag ' + (c.state === 'recovered' ? 'delivered' :
+                c.state === 'cold' ? 'cancelled' : 'new') + '">' + esc(c.state) +
+                '</span></td>' +
+              '<td>' + (c.phone && c.state !== 'recovered'
+                ? '<a class="btn small" target="_blank" rel="noopener" href="' +
+                  esc(wa) + '">Ask them</a>' : '') + '</td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">Nothing left behind. Either everybody is finishing, ' +
+          'or nobody has reached the checkout yet.</p>'));
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ============================ THE SHOP WINDOWS ============================
+     WHAT THESE SCREENS ARE, AND WHAT THEY ARE NOT.
+
+     Every page of this site is finished, hand-built HTML that renders with no
+     JavaScript and no database. These screens do not build pages — they let the
+     house OVERRIDE a page that is already correct: hide a band, reorder two,
+     rename a link, change a photograph.
+
+     So there is no "add a section" here, and no page builder. A band that is
+     not in the HTML has no design, no photography and no words, and a switch
+     for it would be a switch wired to nothing. What the house gets instead is
+     the thing it actually needs twice a year, working, on a page that still
+     loads instantly on a bad phone. */
 
   function website() {
-    Promise.all([A.content(), A.settings()]).then(function (r) {
-      var slots = r[0] || [];
-      var ann = (r[1] || []).filter(function (s) { return s.key === 'announcement'; })[0];
-      body('<p class="hint">The parts of the shop the house can change without ' +
-        'me. Saved the moment you leave the field.</p>' +
-        (ann ? '<div class="block"><h3>The announcement bar</h3>' +
-          '<input class="cell wide" value="' + esc(ann.value || '') +
-          '" data-set="announcement" placeholder="Free shipping over ₹2,999">' +
-          '<p class="hint" style="margin-top:var(--s1)">Empty hides the bar ' +
-          'altogether.</p></div>' : '') +
-        '<div class="block"><h3>The home page</h3><div class="scroll">' +
-        '<table><thead><tr><th>Slot</th><th>Value</th></tr></thead><tbody>' +
-        slots.map(function (s) {
-          return '<tr><td>' + esc(s.note || s.slot) + '<br><span class="muted">' +
-            esc(s.slot) + '</span></td>' +
-            '<td><input class="cell wide" value="' + esc(s.value || '') +
-            '" data-slot="' + esc(s.slot) + '"></td></tr>';
-        }).join('') + '</tbody></table></div></div>');
+    Promise.all([A.siteStats(), A.settings(), A.content()]).then(function (r) {
+      var st = r[0] || {}, sets = r[1] || [], slots = r[2] || [];
+      var val = function (k) {
+        var s = sets.filter(function (x) { return x.key === k; })[0];
+        return s ? s.value : '';
+      };
+      var barOn = String(val('bar_on')).toLowerCase() === 'true';
+
+      var figs = [
+        ['pages', 'Pages', st.pages || 0, (st.pages_all || 0) + ' in all'],
+        ['collections', 'Collections', st.collections || 0, 'in the range'],
+        ['media', 'Files', st.files || 0, mb(st.bytes)],
+        ['homepage', 'Bands on the home page', st.sections_live || 0,
+          'of ' + (st.sections_all || 0)]
+      ].map(function (f) {
+        return '<div class="fig-box">' + figIcon(f[0]) +
+          '<span class="lab">' + f[1] + '</span><b>' + esc(f[2]) + '</b>' +
+          '<span class="delta flat">' + esc(f[3]) + '</span></div>';
+      }).join('');
+
+      body('<div class="figs">' + figs + '</div>' +
+        '<div class="grid-2">' +
+          '<div class="card"><h3>The shop front</h3>' +
+            '<div class="scroll"><table><tbody>' +
+            [['Address', '<a href="https://iar-next.vercel.app" target="_blank" ' +
+              'rel="noopener">iar-next.vercel.app</a> <span class="muted">' +
+              '(the working link — the domain is the last thing we wire)</span>'],
+             ['Announcement bar', barOn
+                ? '<span class="tag active">on</span> ' + esc(val('announcement') || '(no words yet)')
+                : '<span class="tag draft">off</span>'],
+             ['Menu', (st.menu_items || 0) + ' links'],
+             ['Taking orders', String(val('shop_open')).toLowerCase() === 'false'
+                ? '<span class="tag cancelled">closed</span>'
+                : '<span class="tag active">open</span>']
+            ].map(function (row) {
+              return '<tr><td class="muted" style="width:12rem">' + row[0] + '</td>' +
+                     '<td>' + row[1] + '</td></tr>';
+            }).join('') + '</tbody></table></div>' +
+            '<div class="quick">' +
+              '<button data-go="media"><b>Upload a photograph</b>' +
+                '<span>Straight to the shop, with no deploy</span></button>' +
+              '<button data-go="bar"><b>Change the announcement bar</b>' +
+                '<span>The line across the top of every page</span></button>' +
+              '<button data-go="homepage"><b>Reorder the home page</b>' +
+                '<span>Hide a band, or move one up</span></button>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="card"><h3>Words the house owns</h3>' +
+            '<p class="hint">Each of these replaces a line already on the site. ' +
+            'Leave one empty and the page keeps what it was built with — so a ' +
+            'blank box is never a blank page.</p>' + (slots.length
+            ? '<div class="scroll"><table><tbody>' + slots.map(function (s) {
+                return '<tr><td style="width:45%">' + esc(s.note || s.slot) + '<br>' +
+                  '<span class="muted">' + esc(s.slot) + '</span></td>' +
+                  '<td><input class="cell" style="width:100%" value="' +
+                  esc(s.value || '') + '" data-slot="' + esc(s.slot) + '"></td></tr>';
+              }).join('') + '</tbody></table></div>'
+            : '<p class="empty">No slots yet.</p>') + '</div>' +
+        '</div>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function mb(b) {
+    b = Number(b || 0);
+    if (!b) return 'nothing yet';
+    if (b < 1048576) return Math.round(b / 1024) + ' KB';
+    return (b / 1048576).toFixed(1) + ' MB';
+  }
+
+  /* ---------- the home page ---------- */
+
+  function homepage() {
+    A.bands().then(function (rows) {
+      body('<p class="hint">The three bands the home page is built from, in the ' +
+        'order they are read. Turning one off removes it from the page ' +
+        'altogether — not hidden with the screen reader still announcing it.</p>' +
+        (rows.length
+        ? '<div class="scroll"><table><thead><tr><th>Band</th><th>Order</th>' +
+          '<th>Heading, if you want to change it</th><th>On</th></tr></thead><tbody>' +
+          rows.map(function (b) {
+            return '<tr><td><b>' + esc(b.label) + '</b><br>' +
+                '<span class="muted">' + esc(b.note || '') + '</span></td>' +
+              '<td><input class="cell" type="number" min="1" style="width:4.5rem" ' +
+                'value="' + esc(b.sort_order) + '" data-band="' + esc(b.key) +
+                '" data-bfield="sort_order"></td>' +
+              '<td><input class="cell wide" value="' + esc(b.heading || '') +
+                '" placeholder="leave empty to keep what the page says" ' +
+                'data-band="' + esc(b.key) + '" data-bfield="heading"></td>' +
+              '<td><label class="tick"><input type="checkbox" data-bandlive="' +
+                esc(b.key) + '"' + (b.live ? ' checked' : '') + '></label></td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No bands recorded.</p>') +
+        '<p class="hint" style="margin-top:var(--s4)">There is no "add a band" ' +
+        'here on purpose. A band that is not already in the page has no design, ' +
+        'no photographs and no words — a switch for it would be a switch wired ' +
+        'to nothing. A new band is a change to the site, and that is me.</p>');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- the menu ---------- */
+
+  function navigation() {
+    A.navItems().then(function (rows) {
+      var main = rows.filter(function (r) { return r.place === 'main'; });
+      body('<p class="hint">These four links are written into the HTML of every ' +
+        'page, so the header is right before a single script runs. Changing one ' +
+        'here overrides it everywhere. An empty menu is refused — the site would ' +
+        'have no way out of a page.</p>' +
+        '<form class="filters" id="newnav">' +
+          '<input class="cell" name="label" placeholder="Label" required style="width:10rem">' +
+          '<input class="cell" name="href" placeholder="shop.html" required style="width:12rem">' +
+          '<button class="btn small" type="submit">Add a link</button></form>' +
+        (main.length
+        ? '<div class="scroll"><table><thead><tr><th>Label</th><th>Goes to</th>' +
+          '<th>Order</th><th>On</th><th></th></tr></thead><tbody>' +
+          main.map(function (n) {
+            return '<tr><td><input class="cell wide" value="' + esc(n.label) +
+                '" data-nav="' + n.id + '" data-nfield="label"></td>' +
+              '<td><input class="cell wide" value="' + esc(n.href) +
+                '" data-nav="' + n.id + '" data-nfield="href"></td>' +
+              '<td><input class="cell" type="number" min="1" style="width:4.5rem" ' +
+                'value="' + esc(n.sort_order) + '" data-nav="' + n.id +
+                '" data-nfield="sort_order"></td>' +
+              '<td><label class="tick"><input type="checkbox" data-navlive="' + n.id +
+                '"' + (n.live ? ' checked' : '') + '></label></td>' +
+              '<td><button class="btn small danger" data-delnav="' + n.id +
+                '">Remove</button></td></tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No links recorded — the pages keep the menu they ' +
+          'were built with.</p>'));
+
+      document.getElementById('newnav').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var f = e.target;
+        A.addNav({ label: f.elements.label.value.trim(),
+                   href: f.elements.href.value.trim(),
+                   place: 'main', sort_order: main.length + 1 })
+          .then(navigation).catch(function (err) { alert(err.message); });
+      });
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- media ----------
+     The single biggest thing standing between the house and running its own
+     shop: until now a photograph lived in the repository, so changing one was
+     a deploy, so changing one was me. */
+
+  var MEDIA_FOLDER = 'all';
+
+  function media() {
+    A.media().then(function (rows) {
+      var folders = {};
+      rows.forEach(function (m) { folders[m.folder || 'Uncategorised'] =
+        (folders[m.folder || 'Uncategorised'] || 0) + 1; });
+      var shown = rows.filter(function (m) {
+        return MEDIA_FOLDER === 'all' || (m.folder || 'Uncategorised') === MEDIA_FOLDER;
+      });
+      var tabs = [['all', 'All files', rows.length]].concat(
+        Object.keys(folders).sort().map(function (k) { return [k, k, folders[k]]; })
+      ).map(function (t) {
+        return '<button class="tab" data-folder="' + esc(t[0]) + '" aria-pressed="' +
+          (MEDIA_FOLDER === t[0]) + '">' + esc(t[1]) + ' (' + t[2] + ')</button>';
+      }).join('');
+
+      body(
+        '<div class="card"><h3>Add files</h3>' +
+          '<p class="hint">JPEG, PNG, WebP, AVIF, SVG or PDF, up to 10 MB each. ' +
+          'The name is kept, so <code>cocoa-drift-cuff.jpg</code> stays findable ' +
+          'a year from now.</p>' +
+          '<div class="filters">' +
+            '<input class="cell" id="mfolder" placeholder="Folder, e.g. Products" ' +
+              'style="width:14rem" value="' +
+              esc(MEDIA_FOLDER === 'all' ? '' : MEDIA_FOLDER) + '">' +
+            '<input type="file" id="mfile" multiple ' +
+              'accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml,application/pdf">' +
+          '</div>' +
+          '<p class="note" id="mnote"></p>' +
+        '</div>' +
+        '<div class="tabs" style="margin-top:var(--s4)">' + tabs + '</div>' +
+        (shown.length
+        ? '<div class="files">' + shown.map(function (m) {
+            var pic = /^image\/(?!svg)/.test(m.kind || '')
+              ? '<img src="' + esc(m.url) + '" alt="" loading="lazy">'
+              : '<span class="filetype">' +
+                esc((m.kind || 'file').split('/').pop().toUpperCase()) + '</span>';
+            return '<figure class="file"><a href="' + esc(m.url) +
+              '" target="_blank" rel="noopener">' + pic + '</a>' +
+              '<figcaption>' +
+                '<b title="' + esc(m.name) + '">' + esc(m.name || m.path) + '</b>' +
+                '<span class="muted">' + mb(m.bytes) + '</span>' +
+                '<input class="cell wide" placeholder="What is this a picture of?" ' +
+                  'value="' + esc(m.alt || '') + '" data-alt="' + m.id + '">' +
+                '<span class="row-end">' +
+                  '<button class="btn small" data-copy="' + esc(m.url) + '">Copy link</button>' +
+                  '<button class="btn small danger" data-delmedia="' + m.id +
+                    '" data-path="' + esc(m.path) + '">Delete</button>' +
+                '</span>' +
+              '</figcaption></figure>';
+          }).join('') + '</div>'
+        : '<p class="empty">Nothing uploaded yet. Anything added here gets a ' +
+          'permanent public link you can paste onto a cloth, so a photograph can ' +
+          'change without the site being rebuilt.</p>'));
+
+      document.getElementById('mfile').addEventListener('change', function () {
+        var files = [].slice.call(this.files);
+        if (!files.length) return;
+        var folder = document.getElementById('mfolder').value.trim() || 'Uncategorised';
+        var note = document.getElementById('mnote');
+        var done = 0, failed = [];
+        note.className = 'note';
+        note.textContent = 'Uploading ' + files.length + '…';
+
+        /* one at a time. A free project and a phone on Indian mobile data are
+           both happier with a queue than with twelve parallel uploads. */
+        files.reduce(function (chain, f) {
+          return chain.then(function () {
+            return A.upload(f, folder).then(function () {
+              done++; note.textContent = 'Uploaded ' + done + ' of ' + files.length + '…';
+            }, function (err) {
+              failed.push(f.name + ' — ' + err.message);
+            });
+          });
+        }, Promise.resolve()).then(function () {
+          if (failed.length) {
+            note.className = 'note bad';
+            note.textContent = done + ' uploaded. ' + failed.length +
+              ' did not: ' + failed.join('; ');
+            setTimeout(media, 2500);
+          } else { MEDIA_FOLDER = folder; media(); }
+        });
+      });
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- the announcement bar ----------
+     This setting has existed since the first day and NOTHING HAS EVER DRAWN IT.
+     The house could type a line here and it went nowhere at all. */
+
+  function bar() {
+    A.settings().then(function (sets) {
+      var v = function (k, d) {
+        var s = sets.filter(function (x) { return x.key === k; })[0];
+        return s && s.value !== '' && s.value != null ? s.value : (d || '');
+      };
+      var on = String(v('bar_on', 'false')).toLowerCase() === 'true';
+
+      body(
+        '<div class="grid-side">' +
+          '<div class="card"><h3>The bar</h3>' +
+            '<div class="f2">' +
+              '<p><label class="tick" style="justify-content:flex-start">' +
+                '<input type="checkbox" data-set="bar_on"' + (on ? ' checked' : '') +
+                '> Show it on the shop</label></p>' +
+              '<p><label for="b-words">The line</label>' +
+                '<input id="b-words" class="cell wide" data-set="announcement" ' +
+                'value="' + esc(v('announcement')) + '" ' +
+                'placeholder="Free shipping on orders above ₹2,999"></p>' +
+              '<div class="pair">' +
+                '<p><label for="b-link">Where it goes (optional)</label>' +
+                  '<input id="b-link" class="cell wide" data-set="bar_link" ' +
+                  'value="' + esc(v('bar_link')) + '" placeholder="shop.html"></p>' +
+                '<p><label for="b-lt">The words on the link</label>' +
+                  '<input id="b-lt" class="cell wide" data-set="bar_link_text" ' +
+                  'value="' + esc(v('bar_link_text')) + '" placeholder="Shop now"></p>' +
+              '</div>' +
+              '<div class="pair">' +
+                '<p><label for="b-bg">Background</label>' +
+                  '<input id="b-bg" type="color" data-set="bar_bg" value="' +
+                  esc(v('bar_bg', '#141210')) + '"></p>' +
+                '<p><label for="b-fg">Text</label>' +
+                  '<input id="b-fg" type="color" data-set="bar_fg" value="' +
+                  esc(v('bar_fg', '#F5F2EC')) + '"></p>' +
+              '</div>' +
+              '<p><label for="b-where">Which pages</label>' +
+                '<select id="b-where" data-set="bar_where">' +
+                  '<option value="all"' + (v('bar_where','all') === 'all' ? ' selected' : '') +
+                    '>Every page</option>' +
+                  '<option value="home"' + (v('bar_where') === 'home' ? ' selected' : '') +
+                    '>The home page only</option></select></p>' +
+            '</div>' +
+            '<p class="hint" style="margin-top:var(--s4)">Saved the moment you ' +
+            'leave a field. An empty line hides the bar even when the switch is ' +
+            'on, so a half-written sentence can never reach a customer.</p>' +
+          '</div>' +
+
+          '<aside class="card"><h3>How it will look</h3>' +
+            '<div class="barprev" id="barprev"></div>' +
+            '<p class="hint">It sits above the header and pushes the page down ' +
+            'rather than covering it — the first thing anybody reads should not ' +
+            'be underneath something. A visitor may dismiss it, and it comes ' +
+            'back on their next visit.</p>' +
+          '</aside>' +
+        '</div>');
+
+      function preview() {
+        var el = document.getElementById('barprev');
+        var words = document.getElementById('b-words').value.trim();
+        var lt = document.getElementById('b-lt').value.trim();
+        var live = document.querySelector('[data-set="bar_on"]').checked;
+        if (!live || !words) {
+          el.innerHTML = '<p class="empty" style="padding:var(--s3) 0">' +
+            (live ? 'Write a line and it appears here.' : 'The bar is off.') + '</p>';
+          return;
+        }
+        el.innerHTML = '<div style="background:' +
+          document.getElementById('b-bg').value + ';color:' +
+          document.getElementById('b-fg').value + ';padding:.6rem 1rem;' +
+          'text-align:center;font-size:.8125rem;border-radius:.3rem">' +
+          esc(words) + (lt ? ' — <u>' + esc(lt) + '</u>' : '') + '</div>';
+      }
+      document.getElementById('body').addEventListener('input', preview);
+      document.getElementById('body').addEventListener('change', preview);
+      preview();
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- pages ---------- */
+
+  function pages() {
+    A.pages().then(function (rows) {
+      body('<p class="hint">Every page that exists on the site. This is a record ' +
+        'of them, not a builder: each one is a hand-built file with its own ' +
+        'layout and its own words.</p>' +
+        (rows.length
+        ? '<div class="scroll"><table><thead><tr><th>Page</th><th>Address</th>' +
+          '<th>Last touched</th><th>In the footer</th><th></th></tr></thead><tbody>' +
+          rows.map(function (p) {
+            return '<tr><td><b>' + esc(p.title) + '</b><br>' +
+                '<span class="muted">' + esc(p.slug) + '</span></td>' +
+              '<td class="num">/' + esc(p.path) + '</td>' +
+              '<td class="num">' + day(p.updated_at) + '</td>' +
+              '<td><label class="tick"><input type="checkbox" data-pagefoot="' +
+                esc(p.slug) + '"' + (p.in_footer ? ' checked' : '') + '></label></td>' +
+              '<td><a class="btn small" target="_blank" rel="noopener" ' +
+                'href="https://iar-next.vercel.app/' + esc(p.path) + '">View</a></td>' +
+              '</tr>';
+          }).join('') + '</tbody></table></div>'
+        : '<p class="empty">No pages recorded.</p>') +
+        '<p class="hint" style="margin-top:var(--s4)">A brand new page — its ' +
+        'layout, its photographs, its words — is a change to the site itself, ' +
+        'and that is me. What you can change here is what an existing page is ' +
+        'called and whether it appears in the footer.</p>');
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
@@ -1058,23 +3043,160 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
      Separate from the dashboard on purpose. The dashboard is for the morning;
      this is for the end of the month. */
 
+  /* ---------- reports ----------
+     Separate from the dashboard on purpose. The dashboard is for the morning;
+     this is for the end of the month, and for the accountant.
+
+     The mockup showed seven tabs. Four of them can be answered from what this
+     shop records, and they are here. The other three are named and told the
+     truth rather than filled with something that looks like data:
+
+       PAYMENT METHODS  — every order is 'prepaid' by default; there is no
+                          gateway. A UPI-vs-card split would be a drawing.
+       CUSTOM REPORTS   — a report builder is a product, not a screen. What it
+                          would really be used for is "give me this as a file",
+                          so every table here exports instead.
+       REFUNDS          — real, and folded into Sales rather than given a tab
+                          of its own, because it is three numbers. */
+
+  var R_TAB = 'sales';
+  var R_TABS = [
+    ['sales',     'Sales',     'Revenue, month by month, and what it netted'],
+    ['products',  'Products',  'Sell-through per cloth, and what is left'],
+    ['customers', 'Customers', 'Who buys, how often, and from where'],
+    ['traffic',   'Traffic',   'Visits by channel, and what they converted at']
+  ];
+
   function reports() {
-    Promise.all([A.reportSales(), A.reportProducts(), A.exchangeRate()])
+    var side = '<div class="rep-side">' + R_TABS.map(function (t) {
+      return '<button data-rtab="' + t[0] + '"' +
+        (R_TAB === t[0] ? ' aria-current="true"' : '') + '><b>' + t[1] + '</b>' +
+        '<span>' + t[2] + '</span></button>';
+    }).join('') + '</div>';
+
+    body('<div class="rep">' + side + '<div id="repbody">' + waiting() + '</div></div>');
+    ({ sales: repSales, products: repProducts,
+       customers: repCustomers, traffic: repTraffic }[R_TAB] || repSales)();
+  }
+
+  function repBody(html) {
+    var el = document.getElementById('repbody');
+    if (el) el.innerHTML = html;
+  }
+  function repFail(e) { repBody(needsSQL(e)); }
+
+  /* Every table on this screen exports. "Custom reports" in the mockup is, in
+     practice, somebody wanting the numbers in a spreadsheet — so rather than
+     build a report designer nobody asked for, each table hands over its own
+     rows exactly as shown, headings and all. */
+  function csv(name, head, rows) {
+    var body = [head].concat(rows).map(function (r) {
+      return r.map(function (v) {
+        return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+      }).join(',');
+    }).join('\n');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([body], { type: 'text/csv' }));
+    a.download = 'iar-' + name + '.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  var EXPORTS = {};
+  function exportBtn(key) {
+    return '<button class="btn small" data-export="' + key + '">Export CSV</button>';
+  }
+
+  function repSales() {
+    Promise.all([A.reportSales(), A.aKpis(), A.exchangeRate().catch(nil)])
       .then(function (r) {
-        var months = r[0] || [], prods = r[1] || [], exch = r[2] || [];
-        var peak = Math.max.apply(null, months.map(function (m) { return m.revenue; }).concat([1]));
+        var months = r[0] || [], k = r[1] || {}, exch = r[2] || [];
+        var peak = Math.max.apply(null, months.map(function (m) {
+          return Number(m.revenue) || 0;
+        }).concat([1]));
 
-        body(
-          '<div class="block"><h3>Revenue, twelve months</h3>' + (months.length
-            ? '<div class="funnel">' + months.map(function (m) {
-                return '<div class="step"><span>' + esc(m.month) + '</span>' +
-                  '<span class="bar"><i style="width:' +
-                    Math.round(100 * m.revenue / peak) + '%"></i></span>' +
-                  '<span class="n">' + rupees(m.revenue) + '</span></div>';
-              }).join('') + '</div>'
-            : '<p class="empty">No orders yet.</p>') + '</div>' +
+        EXPORTS.sales = function () {
+          csv('sales-by-month', ['Month', 'Orders', 'Revenue'],
+            months.map(function (m) { return [m.month, m.orders, m.revenue]; }));
+        };
 
-          '<div class="block"><h3>Sell-through by cloth</h3>' + (prods.length
+        var figs = [
+          ['money', 'Revenue, 30 days', rupees(k.revenue), pct(k.revenue, k.revenue_before)],
+          ['cart', 'Orders', k.orders || 0, pct(k.orders, k.orders_before)],
+          ['tag', 'Average order', rupees(k.aov), pct(k.aov, k.aov_before)],
+          ['back', 'Refund rate', (k.refund_rate || 0) + '%', null]
+        ].map(function (x) {
+          return '<div class="fig-box">' + figIcon(x[0]) +
+            '<span class="lab">' + x[1] + '</span><b>' + esc(x[2]) + '</b>' +
+            (x[3] === null ? '<span class="delta flat">30 days</span>'
+                          : deltaHTML(x[3], 'the 30 days before')) +
+            '</div>';
+        }).join('');
+
+        repBody('<div class="figs">' + figs + '</div>' +
+          '<div class="card"><h3>Twelve months' + '</h3>' +
+            '<div class="filters">' + exportBtn('sales') + '</div>' +
+            (months.length
+              ? '<div class="funnel">' + months.map(function (m) {
+                  return '<div class="step"><span>' + esc(m.month) + '</span>' +
+                    '<span class="bar"><i style="width:' +
+                      Math.round(100 * (Number(m.revenue) || 0) / peak) + '%"></i></span>' +
+                    '<span class="n">' + rupees(m.revenue) + '</span></div>';
+                }).join('') + '</div>'
+              : '<p class="empty">No orders yet.</p>') + '</div>' +
+
+          '<div class="card"><h3>Which neck comes back</h3>' +
+            '<p class="hint">A cloth and a neck that returns often is a cutting ' +
+            'problem, not a customer problem. Only size exchanges are counted — ' +
+            'somebody changing their mind says nothing about the pattern.</p>' +
+            (exch.filter(function (x) { return x.came_back > 0; }).length
+              ? '<div class="scroll"><table><thead><tr><th>Cloth</th><th>Neck</th>' +
+                '<th>Sold</th><th>Came back</th><th>Rate</th></tr></thead><tbody>' +
+                exch.filter(function (x) { return x.came_back > 0; }).map(function (x) {
+                  return '<tr><td>' + esc(x.slug) + '</td>' +
+                    '<td class="num">' + esc(x.size) + '</td>' +
+                    '<td class="num">' + x.sold + '</td>' +
+                    '<td class="num">' + x.came_back + '</td>' +
+                    '<td class="num">' + x.pct + '%</td></tr>';
+                }).join('') + '</tbody></table></div>'
+              : '<p class="empty">Nothing has come back for size. Good.</p>') +
+          '</div>' +
+
+          '<div class="card"><h3>Payment methods</h3>' +
+            '<p class="note bad">Not shown, because nothing here could be true ' +
+            'yet: there is no payment gateway, so every order is recorded as ' +
+            'prepaid by default. A split between UPI, cards and netbanking ' +
+            'appears the day Razorpay is live and starts reporting one.</p>' +
+          '</div>');
+      }).catch(repFail);
+  }
+
+  function repProducts() {
+    Promise.all([A.reportProducts(), A.productStats().catch(function () { return {}; })])
+      .then(function (r) {
+        var prods = r[0] || [], st = r[1] || {};
+        EXPORTS.products = function () {
+          csv('sell-through', ['Cloth', 'Collection', 'Sold', 'In stock', 'Sell-through %', 'Revenue'],
+            prods.map(function (p) {
+              return [p.name, p.collection, p.sold, p.in_stock, p.sell_through, p.revenue];
+            }));
+        };
+        var figs = [
+          ['products', 'Cloths', st.total || 0, (st.active || 0) + ' on the shop'],
+          ['inventory', 'Neck variants', st.variants || 0, 'across the range'],
+          ['alert', 'Out of stock', st.out_of_stock || 0, 'nothing left in any neck'],
+          ['clock', 'Running low', st.low_stock || 0, 'ten or fewer']
+        ].map(function (x) {
+          return '<div class="fig-box">' + figIcon(x[0]) +
+            '<span class="lab">' + x[1] + '</span><b>' + esc(x[2]) + '</b>' +
+            '<span class="delta flat">' + esc(x[3]) + '</span></div>';
+        }).join('');
+
+        repBody('<div class="figs">' + figs + '</div>' +
+          '<div class="card"><h3>Sell-through by cloth</h3>' +
+            '<p class="hint">Of everything that ever existed of a cloth, the ' +
+            'share that sold. A cloth selling well with nothing left is the ' +
+            'most urgent line on this page.</p>' +
+            '<div class="filters">' + exportBtn('products') + '</div>' + (prods.length
             ? '<div class="scroll"><table><thead><tr><th>Cloth</th><th>Sold</th>' +
               '<th>In stock</th><th>Sell-through</th><th>Revenue</th></tr></thead><tbody>' +
               prods.map(function (p) {
@@ -1085,25 +3207,111 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
                   '<td class="num">' + p.sell_through + '%</td>' +
                   '<td class="num">' + rupees(p.revenue) + '</td></tr>';
               }).join('') + '</tbody></table></div>'
-            : '<p class="empty">Nothing sold yet.</p>') + '</div>' +
+            : '<p class="empty">Nothing sold yet.</p>') + '</div>');
+      }).catch(repFail);
+  }
 
-          '<div class="block"><h3>Which neck comes back</h3>' +
-          '<p class="hint">A cloth and a neck that returns often is a cutting ' +
-          'problem, not a customer problem. Only size exchanges are counted.</p>' +
-          (exch.filter(function (x) { return x.came_back > 0; }).length
-            ? '<div class="scroll"><table><thead><tr><th>Cloth</th><th>Neck</th>' +
-              '<th>Sold</th><th>Came back</th><th>Rate</th></tr></thead><tbody>' +
-              exch.filter(function (x) { return x.came_back > 0; }).map(function (x) {
-                return '<tr><td>' + esc(x.slug) + '</td>' +
-                  '<td class="num">' + esc(x.size) + '</td>' +
-                  '<td class="num">' + x.sold + '</td>' +
-                  '<td class="num">' + x.came_back + '</td>' +
-                  '<td class="num">' + x.pct + '%</td></tr>';
+  function repCustomers() {
+    Promise.all([A.customers(), A.insights().catch(function () { return {}; }),
+                 A.locations().catch(nil)])
+      .then(function (r) {
+        var people = r[0] || [], ins = r[1] || {}, locs = r[2] || [];
+        EXPORTS.customers = function () {
+          csv('customers', ['Name', 'Phone', 'Email', 'City', 'Orders', 'Lifetime', 'Usual neck'],
+            people.map(function (p) {
+              return [p.name, p.phone, p.email, p.city, p.orders, p.lifetime, p.usual_neck];
+            }));
+        };
+        EXPORTS.locations = function () {
+          csv('by-state', ['State', 'Orders', 'Revenue'],
+            locs.map(function (l) { return [l.place, l.orders, l.revenue]; }));
+        };
+        var figs = [
+          ['customers', 'New, 30 days', ins.new_customers || 0, 'first order'],
+          ['back', 'Returning', ins.returning_customers || 0, 'bought before'],
+          ['money', 'Lifetime value', rupees(ins.lifetime_value), 'average'],
+          ['rise', 'Buy again', (ins.repeat_rate || 0) + '%', 'more than one order']
+        ].map(function (x) {
+          return '<div class="fig-box">' + figIcon(x[0]) +
+            '<span class="lab">' + x[1] + '</span><b>' + esc(x[2]) + '</b>' +
+            '<span class="delta flat">' + esc(x[3]) + '</span></div>';
+        }).join('');
+
+        repBody('<div class="figs">' + figs + '</div>' +
+          '<div class="card"><h3>Where the shirts go</h3>' +
+            '<div class="filters">' + exportBtn('locations') + '</div>' + (locs.length
+            ? '<div class="scroll"><table><thead><tr><th>State</th><th>Orders</th>' +
+              '<th>Revenue</th></tr></thead><tbody>' + locs.map(function (l) {
+                return '<tr><td>' + esc(l.place) + '</td>' +
+                  '<td class="num">' + l.orders + '</td>' +
+                  '<td class="num">' + rupees(l.revenue) + '</td></tr>';
               }).join('') + '</tbody></table></div>'
-            : '<p class="empty">Nothing has come back for size. Good.</p>') +
-          '</div>'
-        );
-      }).catch(function (e) { body(needsSQL(e)); });
+            : '<p class="empty">No orders yet.</p>') + '</div>' +
+
+          '<div class="card"><h3>Everyone who has ordered' +
+            '<span class="more" data-go="customers">All customers</span></h3>' +
+            '<div class="filters">' + exportBtn('customers') + '</div>' + (people.length
+            ? '<div class="scroll"><table><thead><tr><th>Who</th><th>Orders</th>' +
+              '<th>Lifetime</th><th>Usual neck</th></tr></thead><tbody>' +
+              people.slice(0, 25).map(function (p) {
+                return '<tr><td>' + esc(p.name || p.phone) + '<br>' +
+                    '<span class="muted">' + esc(p.city || '') + '</span></td>' +
+                  '<td class="num">' + p.orders + '</td>' +
+                  '<td class="num">' + rupees(p.lifetime) + '</td>' +
+                  '<td class="num">' + esc(p.usual_neck || '—') + '</td></tr>';
+              }).join('') + '</tbody></table></div>'
+            : '<p class="empty">Nobody has ordered yet.</p>') + '</div>');
+      }).catch(repFail);
+  }
+
+  function repTraffic() {
+    Promise.all([A.traffic(), A.devices().catch(nil), A.funnel()])
+      .then(function (r) {
+        var chans = r[0] || [], devs = r[1] || [], f = r[2] || {};
+        EXPORTS.traffic = function () {
+          csv('traffic-by-channel', ['Channel', 'Visits', 'Orders', 'Conversion %', 'Revenue'],
+            chans.map(function (c) {
+              return [c.channel, c.sessions, c.orders, c.conversion, c.revenue];
+            }));
+        };
+        var visits = chans.reduce(function (a, c) { return a + Number(c.sessions || 0); }, 0);
+        var dtot = devs.reduce(function (a, d) { return a + Number(d.sessions || 0); }, 0) || 1;
+
+        repBody(
+          '<div class="figs">' + [
+            ['rise', 'Visits, 30 days', visits, 'every channel'],
+            ['cart', 'Orders', f.ordered || 0, 'from those visits'],
+            ['tag', 'Asked for an uncut neck', f.asked_uncut || 0, 'bespoke leads'],
+            ['customers', 'Opened a cloth', f.viewed_a_cloth || 0, 'got past the door']
+          ].map(function (x) {
+            return '<div class="fig-box">' + figIcon(x[0]) +
+              '<span class="lab">' + x[1] + '</span><b>' + esc(x[2]) + '</b>' +
+              '<span class="delta flat">' + esc(x[3]) + '</span></div>';
+          }).join('') + '</div>' +
+
+          '<div class="card"><h3>By channel</h3>' +
+            '<div class="filters">' + exportBtn('traffic') + '</div>' + (chans.length
+            ? '<div class="scroll"><table><thead><tr><th>Channel</th><th>Visits</th>' +
+              '<th>Orders</th><th>Conversion</th><th>Revenue</th></tr></thead><tbody>' +
+              chans.map(function (c) {
+                return '<tr><td>' + esc(c.channel) + '</td>' +
+                  '<td class="num">' + (c.sessions || 0) + '</td>' +
+                  '<td class="num">' + (c.orders || 0) + '</td>' +
+                  '<td class="num">' + (c.conversion == null ? '—' : c.conversion + '%') + '</td>' +
+                  '<td class="num">' + rupees(c.revenue) + '</td></tr>';
+              }).join('') + '</tbody></table></div>'
+            : '<p class="empty">No visits recorded yet.</p>') + '</div>' +
+
+          '<div class="card"><h3>Phone or desktop</h3>' + (devs.length
+            ? '<div class="funnel">' + devs.map(function (d) {
+                var pcv = Math.round(d.sessions / dtot * 100);
+                return '<div class="step"><span>' + esc(d.device) + '</span>' +
+                  '<span class="bar"><i style="width:' + pcv + '%"></i></span>' +
+                  '<span class="n">' + d.sessions + ' <span class="pc">' +
+                  pcv + '%</span></span></div>';
+              }).join('') + '</div>'
+            : '<p class="empty">No visits recorded yet.</p>') + '</div>');
+      }).catch(repFail);
   }
 
   /* ---------- one cloth: its details and its photographs ---------- */
@@ -1218,6 +3426,28 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
     if (f) { ofilter = f.getAttribute('data-of'); orders(); }
     var op = e.target.closest('[data-open]');
     if (op) openOrder(op.getAttribute('data-open'));
+
+    var rf = e.target.closest('[data-rf]');
+    if (rf) { rfilter = rf.getAttribute('data-rf'); returns(); }
+
+    var pg = e.target.closest('[data-page]');
+    if (pg && !pg.disabled) { opage = Math.max(0, +pg.getAttribute('data-page')); orders(); }
+
+    var inv = e.target.closest('[data-invoice]');
+    if (inv) invoicePage(inv.getAttribute('data-invoice'));
+
+    /* moving an order along writes its own line in the timeline, because the
+       database records the change rather than this button doing it */
+    var stg = e.target.closest('[data-stage]');
+    if (stg) {
+      var bits = stg.getAttribute('data-stage').split('|');
+      stg.disabled = true;
+      A.setOrder(bits[0], { status: bits[1] }).then(function () {
+        openOrder(bits[0]); orders(); refreshKpis();
+      });
+    }
+
+    if (e.target.classList && e.target.classList.contains('over-veil')) closeOver();
     var sh = e.target.closest('[data-sheet]');
     if (sh) openSheet(sh.getAttribute('data-sheet'));
     var cl = e.target.closest('[data-cloth-open]');
@@ -1228,6 +3458,81 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
       var fig = di.closest('.shot');
       A.delImage(di.getAttribute('data-delimg')).then(function () {
         if (fig) fig.remove();
+      });
+    }
+
+    /* ---- marketing ---- */
+
+    var ar = e.target.closest('[data-arange]');
+    if (ar) { A_RANGE = ar.getAttribute('data-arange'); analytics(); }
+
+    var rt = e.target.closest('[data-rtab]');
+    if (rt) { R_TAB = rt.getAttribute('data-rtab'); reports(); }
+
+    var ex = e.target.closest('[data-export]');
+    if (ex) {
+      var fn = EXPORTS[ex.getAttribute('data-export')];
+      if (fn) fn();
+    }
+
+    var ct = e.target.closest('[data-codetab]');
+    if (ct) { CODE_TAB = ct.getAttribute('data-codetab'); discounts(); }
+
+    var ec = e.target.closest('[data-editcode]');
+    if (ec) {
+      var want = ec.getAttribute('data-editcode');
+      A.discounts().then(function (rows) {
+        CODE_EDIT = rows.filter(function (d) { return d.code === want; })[0] || null;
+        if (!CODE_EDIT) return;
+        here = 'newcode'; drawNav(); render();
+      });
+    }
+
+    var mt = e.target.closest('[data-camptab]');
+    if (mt) { CAMP_TAB = mt.getAttribute('data-camptab'); campaigns(); }
+
+    var oc = e.target.closest('[data-camp]');
+    if (oc) openCampaign(oc.getAttribute('data-camp'));
+
+    /* Ticked when the chat is opened — which is the only thing this can
+       honestly claim to know. It is not a read receipt and is not called one. */
+    /* ---- the shop windows ---- */
+
+    var mf = e.target.closest('[data-folder]');
+    if (mf) { MEDIA_FOLDER = mf.getAttribute('data-folder'); media(); }
+
+    var cp = e.target.closest('[data-copy]');
+    if (cp) {
+      var link = cp.getAttribute('data-copy');
+      navigator.clipboard.writeText(link).then(function () {
+        var was = cp.textContent; cp.textContent = 'Copied';
+        setTimeout(function () { cp.textContent = was; }, 1400);
+      }, function () { prompt('Copy this link:', link); });
+    }
+
+    var dm = e.target.closest('[data-delmedia]');
+    if (dm) {
+      if (confirm('Delete this file? Anything on the site pointing at it will ' +
+                  'show a broken picture.')) {
+        A.delMedia({ id: dm.getAttribute('data-delmedia'),
+                     path: dm.getAttribute('data-path') })
+          .then(media).catch(function (err) { alert(err.message); });
+      }
+    }
+
+    var dn = e.target.closest('[data-delnav]');
+    if (dn) {
+      if (confirm('Remove this link from the menu?'))
+        A.delNav(dn.getAttribute('data-delnav')).then(navigation)
+          .catch(function (err) { alert(err.message); });
+    }
+
+    var sd = e.target.closest('[data-send]');
+    if (sd) {
+      var row = sd.closest('tr');
+      A.markSent(sd.getAttribute('data-send')).then(function () {
+        if (row) row.classList.add('done');
+        sd.outerHTML = '<span class="tag delivered">sent</span>';
       });
     }
   });
@@ -1267,6 +3572,38 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
     if (has('data-slot'))
       A.setContent(t.getAttribute('data-slot'), t.value)
         .then(function () { flash(t); });
+    /* an offer switched off stops at the very next checkout — the database is
+       asked again on every order, never the page */
+    if (has('data-live'))
+      A.setDiscount(t.getAttribute('data-live'), { live: t.checked })
+        .then(function () { discounts(); });
+
+    /* ---- the shop windows ---- */
+
+    if (has('data-band')) {
+      var bf = t.getAttribute('data-bfield');
+      var bp = {};
+      bp[bf] = bf === 'sort_order' ? (parseInt(t.value, 10) || 1) : (t.value.trim() || null);
+      A.setBand(t.getAttribute('data-band'), bp).then(function () { flash(t); });
+    }
+    if (has('data-bandlive'))
+      A.setBand(t.getAttribute('data-bandlive'), { live: t.checked });
+
+    if (has('data-nav')) {
+      var nf = t.getAttribute('data-nfield');
+      var np = {};
+      np[nf] = nf === 'sort_order' ? (parseInt(t.value, 10) || 1) : t.value.trim();
+      A.setNav(t.getAttribute('data-nav'), np).then(function () { flash(t); });
+    }
+    if (has('data-navlive'))
+      A.setNav(t.getAttribute('data-navlive'), { live: t.checked });
+
+    if (has('data-alt'))
+      A.setMedia(t.getAttribute('data-alt'), { alt: t.value.trim() || null })
+        .then(function () { flash(t); });
+
+    if (has('data-pagefoot'))
+      A.setPage(t.getAttribute('data-pagefoot'), { in_footer: t.checked });
     if (has('data-col')) {
       var fld = t.getAttribute('data-field');
       var val = fld === 'sort_order' ? (parseInt(t.value, 10) || 0) : t.value;
@@ -1287,6 +3624,10 @@ select.cell{background:var(--room);border:1px solid var(--hair);padding:var(--s1
       A.setProduct(t.getAttribute('data-cloth'), cp)
         .then(function () { flash(t); });
     }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeOver();
   });
 
   function refreshKpis() {

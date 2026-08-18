@@ -20,3 +20,14 @@ assets/*.mp4
 
 # previews written by iar-lab/fit.py, alongside whatever it checked
 *-fit.jpg
+
+# placket correction working set: 2k PNG masters, not served
+placket-fixed
+tmp-src
+
+# Internal working documents. Nothing on the site links to a .md — checked with
+# a grep across every html and js before adding this — but every one of them was
+# being served: PENDING-FROM-CLIENT.md, LAUNCH.md and CONTENT.md all returned
+# 200 on the live domain, which put the client's open commercial risks, our
+# internal decisions and their unreleased copy one URL away from anybody.
+*.md

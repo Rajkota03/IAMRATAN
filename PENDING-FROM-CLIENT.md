@@ -1,11 +1,13 @@
 # Pending from the client
 
-Everything here is a fact only I Am Ratan can supply. **None of it is invented or
-approximated anywhere on the site** — where a fact is missing, the page is built
+Everything here is a fact only I Am Ratan can supply. **Nothing here is invented
+on the site, with one flagged exception — the Ratan's Circle panel, whose two
+sentences we wrote from a single deck line at the client's request (see the
+decisions table).** Where a fact is missing, the page is built
 without it rather than around a guess. Each item notes what it unblocks, so the
 cost of leaving it open is visible.
 
-Last updated 4 Aug 2026.
+Last updated 18 Aug 2026.
 
 ---
 
@@ -113,3 +115,4 @@ These were made to avoid stalling. Each is a small edit to reverse.
 | **"Premium"**, not "luxury", for the brand | their copy says *premium Indian apparel* | search and replace |
 | Home page copy assembled from **their About Us and Bespoke pages** | no home copy was supplied | swap in new copy when written |
 | Hero scrim strengthened on [index.html](index.html) | measured 1.27:1 — below AA. Now 8.47:1 | revert one CSS block |
+| **Ratan's Circle on the home page — with copy we wrote** | the client asked for it explicitly. But it appears nowhere in their website copy: only a single pitch-deck line — *"invite-only inner circle for our top clients: personalised access, experiences, privileges"*. The two sentences on the home-page panel are OURS, built from that line, using only nouns they used. This is the one place on the whole site carrying words we wrote. Its one hard number (a waitlist figure) is confidential and is kept off the site entirely. | needs their sign-off on the actual wording, and — if it is to do more than state that it exists — what a member gets and how one is invited |

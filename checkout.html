@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786795456">
 <style>
 /* ---------- CHECKOUT ----------
    Guest by default, and there is no account to make. Forced sign-in is the
@@ -45,9 +45,31 @@
   font-family:var(--mono);font-size:.875rem;display:grid;place-items:center}
 .qty button:hover{border-color:currentColor}
 .qty b{font-family:var(--mono);font-size:.8125rem;min-width:1.2rem;text-align:center}
-.tot{display:flex;justify-content:space-between;align-items:baseline;
-  padding-top:var(--s3);border-top:1px solid var(--ink);font-size:1.15rem}
+.tot{display:grid;gap:var(--s1);padding-top:var(--s3);
+  border-top:1px solid var(--ink);font-size:1.15rem}
+.tot .tr{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s2)}
+.tot .tr.sub,.tot .tr.off{font-size:.875rem;color:var(--muted)}
+.tot .tr.off{color:var(--claret)}
 .tot .fig{font-size:1.3rem}
+
+/* the code field. Quiet by default — a loud promo box teaches a customer to
+   leave and go looking for a code they were never given. */
+.promo{display:grid;gap:var(--s1);margin:var(--s3) 0 var(--s3)}
+.promo label{font-size:.8125rem;color:var(--muted)}
+.promo-row{display:flex;gap:var(--s1)}
+.promo input{flex:1;min-width:0;background:var(--room);border:1px solid var(--hair);
+  padding:var(--s2);min-height:2.75rem;font-family:var(--mono);font-size:.875rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.promo input:focus{outline:0;border-color:var(--ink)}
+.promo button{border:1px solid var(--ink);background:none;color:var(--ink);
+  padding:0 var(--s3);min-height:2.75rem;font-family:var(--mono);font-size:.625rem;
+  letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.promo button:hover{background:var(--ink);color:var(--room)}
+.promo button[disabled]{opacity:.45;cursor:not-allowed}
+.promo-note{font-size:.75rem;line-height:1.5}
+.promo-note:empty{display:none}
+.promo-note.bad{color:var(--claret)}
+.promo-note.good{color:#3F6B45}
 .inc{font-size:.75rem;color:var(--muted);margin:var(--s0) 0 0}
 
 /* the form. Same proportions as the bespoke one — it was measured there. */
@@ -106,13 +128,14 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786793410"></script>
-<script src="assets/catalogue.js?v=1786793410"></script>
-<script src="assets/site.js?v=1786793410"></script>
-<script src="assets/shop.js?v=1786793410"></script>
-<script src="assets/iar-house.js?v=1786793410"></script>
-<script src="assets/mark.js?v=1786793410"></script>
-<script src="assets/track.js?v=1786793410"></script>
+<script src="assets/store.js?v=1786795456"></script>
+<script src="assets/house.js?v=1786795456"></script>
+<script src="assets/catalogue.js?v=1786795456"></script>
+<script src="assets/site.js?v=1786795456"></script>
+<script src="assets/shop.js?v=1786795456"></script>
+<script src="assets/iar-house.js?v=1786795456"></script>
+<script src="assets/mark.js?v=1786795456"></script>
+<script src="assets/track.js?v=1786795456"></script>
 <script>
 (function () {
   'use strict';
@@ -123,6 +146,154 @@
       return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
     });
   }
+
+  var API = 'https://hckbqcphijihqbysibos.supabase.co/rest/v1/';
+  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhja2JxY3BoaWppaHFieXNpYm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDY1ODQsImV4cCI6MjEwMjI4MjU4NH0.wg5IdL1ArScKk4dWWTtX8xyi8s4Z-1B9gKQQJBvX9V8';
+
+  function api(path, opts) {
+    opts = opts || {};
+    return fetch(API + path, {
+      method: opts.method || 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: KEY, Authorization: 'Bearer ' + KEY,
+        Prefer: opts.prefer || 'return=minimal'
+      },
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.status === 204 ? null : r.json();
+    });
+  }
+
+  /* ---------- the code ----------
+     The page NEVER decides what a code is worth. It asks the database, shows
+     the answer, and sends the code — not the discount — with the order. The
+     database prices the order again on arrival from its own product table, so
+     an edited script cannot buy a shirt for a rupee, and the number quoted here
+     and the number charged are the same number by construction. */
+
+  var CODE = { code: '', amount: 0, label: '' };
+
+  function paintTotals() {
+    var el = document.getElementById('totals');
+    if (!el) return;
+    var sub = SHOP.total(), cut = Math.min(CODE.amount || 0, sub);
+    el.innerHTML =
+      (cut ? '<div class="tr sub"><span>Subtotal</span>' +
+               '<span>' + SHOP.rupees(sub) + '</span></div>' +
+             '<div class="tr off"><span>' + esc(CODE.code) + '</span>' +
+               '<span>&minus;' + SHOP.rupees(cut) + '</span></div>' : '') +
+      '<div class="tr"><span>Total</span>' +
+        '<b class="fig">' + SHOP.rupees(sub - cut) + '</b></div>';
+  }
+
+  function note(msg, good) {
+    var n = document.getElementById('codeNote');
+    if (!n) return;
+    n.textContent = msg || '';
+    n.className = 'promo-note' + (msg ? (good ? ' good' : ' bad') : '');
+  }
+
+  function applyCode() {
+    var input = document.getElementById('code');
+    var btn = document.getElementById('applyCode');
+    var code = (input.value || '').trim().toUpperCase();
+    if (!code) { CODE = { code:'', amount:0, label:'' }; note(''); paintTotals(); return; }
+
+    btn.disabled = true; note('Checking…', true);
+    var phoneEl = document.getElementById('ph');
+    api('rpc/discount_value', {
+      method: 'POST', prefer: 'return=representation',
+      body: { in_code: code, in_subtotal: SHOP.total(),
+              in_phone: phoneEl ? phoneEl.value.replace(/\D/g, '') : null }
+    }).then(function (rows) {
+      var r = (rows && rows[0]) || {};
+      btn.disabled = false;
+      if (!r.ok) {
+        CODE = { code:'', amount:0, label:'' };
+        note(r.reason || 'That code did not work.', false);
+      } else {
+        CODE = { code: code, amount: Number(r.amount) || 0, label: r.label || '' };
+        note(CODE.amount
+          ? r.label + ' applied.'
+          : r.label + ' applied — it comes off the delivery, not the shirts.', true);
+      }
+      paintTotals();
+    }).catch(function () {
+      btn.disabled = false;
+      CODE = { code:'', amount:0, label:'' };
+      /* the shop must never stall on this: an unreachable database means no
+         discount, not a blocked checkout */
+      note('We could not check that code just now. The order will still go ' +
+           'through, and the house will honour a valid code by hand.', false);
+      paintTotals();
+    });
+  }
+
+  /* ---------- the cart, if they walk away ----------
+     Written only once somebody has deliberately typed a way to reach them into
+     a checkout — never from browsing. The id is random and unguessable, and the
+     row can be written but never read back by the shop, so no visitor can ever
+     pull somebody else's name and number out of this table. */
+
+  var CART_ID = null;
+  function cartId() {
+    if (CART_ID) return CART_ID;
+    try { CART_ID = sessionStorage.getItem('iar.cart'); } catch (e) {}
+    if (!CART_ID) {
+      CART_ID = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+      try { sessionStorage.setItem('iar.cart', CART_ID); } catch (e) {}
+    }
+    return CART_ID;
+  }
+
+  var saved = false;
+  function keepCart() {
+    var g = function (id) {
+      var el = document.getElementById(id); return el ? el.value.trim() : '';
+    };
+    var email = g('em'), phone = g('ph').replace(/\D/g, '');
+    if (!email && phone.length < 10) return;          /* nothing to reach them by */
+    if (!SHOP.bag.length) return;
+
+    var row = {
+      cart_id: cartId(),
+      name: (g('fn') + ' ' + g('ln')).trim() || null,
+      email: email || null,
+      phone: phone || null,
+      value: SHOP.total(),
+      source: (window.IARTRACK && IARTRACK.from().utm_source) || null,
+      items: SHOP.bag.map(function (b) {
+        var p = SHOP.find(b.slug);
+        return { slug: b.slug, name: p ? p.name : b.slug, size: b.size, qty: b.qty };
+      })
+    };
+    var patch = function () {
+      return api('carts?cart_id=eq.' + encodeURIComponent(row.cart_id),
+                 { method: 'PATCH', body: row });
+    };
+    var ok = function () { saved = true; };
+    /* Reloading the tab keeps the id but forgets that the row was written, so
+       an insert would collide with itself. Falling back to a patch means a
+       customer who reloads twice still has one cart, not none. */
+    (saved ? patch() : api('carts', { method: 'POST', body: [row] })
+               .then(ok, patch))
+      .then(ok, function () {});
+  }
+
+  /* on blur, not on every keystroke: a half-typed email is not a way to reach
+     anybody, and forty rows per checkout is not a record, it is noise */
+  document.addEventListener('blur', function (e) {
+    if (!e.target.id) return;
+    if (['em','ph','fn','ln'].indexOf(e.target.id) > -1) keepCart();
+  }, true);
+
+  /* the code field sits outside the form, so Enter would otherwise do nothing
+     at all — which reads as a broken field rather than an empty one */
+  document.addEventListener('keydown', function (e) {
+    if (e.target.id === 'code' && e.key === 'Enter') { e.preventDefault(); applyCode(); }
+  });
 
   function draw() {
     if (!SHOP.bag.length) {
@@ -191,12 +362,25 @@
         '<aside class="sum">' +
           '<h2>What you are ordering</h2>' +
           lines +
-          '<div class="tot"><span>Total</span>' +
-            '<b class="fig">' + SHOP.rupees(SHOP.total()) + '</b></div>' +
+          '<div class="promo">' +
+            '<label for="code">Have a code?</label>' +
+            '<span class="promo-row">' +
+              '<input id="code" name="code" autocomplete="off" ' +
+                'placeholder="SUMMER10" value="' + esc(CODE.code) + '">' +
+              '<button type="button" id="applyCode">Apply</button>' +
+            '</span>' +
+            '<span class="promo-note" id="codeNote"></span>' +
+          '</div>' +
+          '<div class="tot" id="totals"></div>' +
           '<p class="inc">Inclusive of all taxes.' +
             '<span id="ship"></span></p>' +
         '</aside>' +
       '</div>';
+
+    paintTotals();
+    /* the basket can change under an applied code — drop below the minimum
+       spend and it must stop applying on screen, not only in the database */
+    if (CODE.code) applyCode();
 
     var S = window.IARSTORE;
     if (S) S.ready.then(function (st) {
@@ -230,6 +414,8 @@
   ];
 
   document.addEventListener('click', function (e) {
+    if (e.target.id === 'applyCode') { applyCode(); return; }
+
     var less = e.target.closest('[data-less]'), more = e.target.closest('[data-more]');
     if (!less && !more) return;
     var i = +(less || more).getAttribute(less ? 'data-less' : 'data-more');
@@ -263,15 +449,21 @@
         return '  ' + (p ? p.name : b.slug) + '  ·  neck ' + b.size +
                '  ·  x' + b.qty + '  ·  ' + (p ? p.priceText : '');
       }).join('\n') +
-      '\n\n  Total  ' + SHOP.rupees(SHOP.total()) +
+      (CODE.code && CODE.amount
+        ? '\n\n  Subtotal  ' + SHOP.rupees(SHOP.total()) +
+          '\n  ' + CODE.code + '  -' + SHOP.rupees(CODE.amount) : '') +
+      '\n\n  Total  ' + SHOP.rupees(SHOP.total() - (CODE.amount || 0)) +
       '\n\nName   ' + g('fn') + ' ' + g('ln') +
       '\nMobile ' + g('ph') +
       '\nEmail  ' + g('em') +
       '\nAddress\n' + g('ad') + '\n' + g('ct') + ' ' + g('pc') +
       '\n' + g('st') + '\n';
 
+    var from = (window.IARTRACK && window.IARTRACK.from()) || {};
+
     if (window.IARTRACK) window.IARTRACK.track('order_placed', {
-      items: SHOP.count(), value: SHOP.total()
+      items: SHOP.count(), value: SHOP.total() - (CODE.amount || 0),
+      code: CODE.code || '', source: from.utm_source || 'direct'
     });
 
     /* A reference the customer can quote on the phone, and the house can find.
@@ -291,7 +483,13 @@
       city: g('ct'),
       pincode: g('pc'),
       state: g('st'),
-      total: SHOP.total(),
+      /* sent for the record only — the database recomputes both from its own
+         prices and its own coupon rules the moment this row lands */
+      total: SHOP.total() - (CODE.amount || 0),
+      discount_code: CODE.code || null,
+      utm_source: from.utm_source || null,
+      utm_medium: from.utm_medium || null,
+      utm_campaign: from.utm_campaign || null,
       items: SHOP.bag.map(function (b) {
         var p = SHOP.find(b.slug);
         return { slug: b.slug, name: p ? p.name : b.slug, size: b.size,
@@ -311,16 +509,16 @@
     var btn = document.getElementById('payBtn');
     btn.disabled = true;
     btn.textContent = 'Placing the order…';
-    fetch('https://hckbqcphijihqbysibos.supabase.co/rest/v1/orders', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhja2JxY3BoaWppaHFieXNpYm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDY1ODQsImV4cCI6MjEwMjI4MjU4NH0.wg5IdL1ArScKk4dWWTtX8xyi8s4Z-1B9gKQQJBvX9V8',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhja2JxY3BoaWppaHFieXNpYm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDY1ODQsImV4cCI6MjEwMjI4MjU4NH0.wg5IdL1ArScKk4dWWTtX8xyi8s4Z-1B9gKQQJBvX9V8',
-        Prefer: 'return=minimal'
-      },
-      body: JSON.stringify([order])
-    }).then(go, go);
+    api('orders', { method: 'POST', body: [order] })
+      .then(function () {
+        /* the cart they left is now a sale — stamped so it stops appearing on
+           the chase list and starts counting as recovered */
+        if (CART_ID && saved) {
+          return api('carts?cart_id=eq.' + encodeURIComponent(CART_ID),
+            { method: 'PATCH', body: { recovered: ref } }).catch(function () {});
+        }
+      })
+      .then(go, go);
   });
 
   SHOP.on(draw);

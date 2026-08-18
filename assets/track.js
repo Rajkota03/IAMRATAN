@@ -74,11 +74,24 @@
   /* the public call. track('uncut_size', {cloth:'cocoa-drift', size:'41'}) */
   function track(name, detail) {
     if (off) return;
+    /* The channel rides along on every event. Without it the shop knows which
+       links its ORDERS came from and nothing at all about which links its
+       VISITS came from — so it can never answer the only question that matters
+       about an ad: did the people it sent actually buy?
+
+       It is still not a person. "instagram" is where a tab came from, joined to
+       nothing, forgotten when the tab closes. */
+    var d = detail || {}, src = from();
+    if (src.utm_source) {
+      d = { utm_source: src.utm_source, utm_medium: src.utm_medium,
+            utm_campaign: src.utm_campaign };
+      for (var k in (detail || {})) if (detail.hasOwnProperty(k)) d[k] = detail[k];
+    }
     queue.push({
       visit: visit,
       name: name,
       path: location.pathname.replace(/^\/|\.html$/g, '') || 'index',
-      detail: detail || {},
+      detail: d,
       viewport: window.innerWidth < 820 ? 'phone' : 'desktop',
       at: new Date().toISOString()
     });
@@ -167,6 +180,39 @@
     if (pct > deepest) deepest = pct;
   }, { passive: true });
 
+  /* ---------- where they came in from ----------
+     A visitor lands on the home page with ?utm_source=instagram and buys three
+     pages later, by which time the parameter is long gone. So it is kept for
+     the life of the tab and read again at the checkout.
+
+     sessionStorage, deliberately, and not a cookie: it is scoped to this one
+     tab, it dies when the tab closes, and it holds the word "instagram" and
+     nothing about a person. Everything the privacy note at the top of this file
+     promises still holds — two visits are still never joined into somebody. */
+
+  var UTM_KEY = 'iar.from';
+  var FIELDS = ['utm_source', 'utm_medium', 'utm_campaign'];
+
+  function stash() {
+    var q = new URLSearchParams(location.search), got = {}, any = false;
+    FIELDS.forEach(function (f) {
+      var v = (q.get(f) || '').trim().slice(0, 60);
+      if (v) { got[f] = v; any = true; }
+    });
+    if (!any) return;
+    try { sessionStorage.setItem(UTM_KEY, JSON.stringify(got)); } catch (e) {}
+  }
+
+  /* The last link wins over the first: somebody who arrives from a newsletter,
+     wanders off and comes back through an ad was, on that visit, brought by the
+     ad. Crediting the newsletter would flatter it. */
+  stash();
+
+  function from() {
+    try { return JSON.parse(sessionStorage.getItem(UTM_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+
   track('view', { ref: document.referrer ? new URL(document.referrer).hostname : 'direct' });
 
   addEventListener('pagehide', function () {
@@ -174,5 +220,5 @@
     flush(true);
   });
 
-  window.IARTRACK = { track: track, ready: ready };
+  window.IARTRACK = { track: track, ready: ready, from: from };
 })(window, document);

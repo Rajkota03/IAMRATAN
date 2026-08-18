@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786795456">
 <style>
 /* ---------- the drench ----------
    The garment's own colour becomes the room, exactly as it does in the shop.
@@ -28,7 +28,7 @@
 .garment{background:var(--c,#22262A);color:var(--k,#EDE9E0);
   padding:var(--clear) 0 var(--sy);
   transition:background-color .8s var(--settle),color .8s var(--settle)}
-/* Nothing on the drench is dimmed. Swept every one of the twenty-five cloths:
+/* Nothing on the drench is dimmed. Swept every cloth in the range:
    against Storm Grey (#5C6066) — the ground with the least headroom between the
    cloth and its measured ink — 68% reaches 3.02:1 and 72% reaches 3.19:1, both
    under the 4.5:1 a body numeral or sentence needs. Only full ink clears it, at
@@ -87,7 +87,7 @@
 .garment .sz.on{background:var(--k);border-color:var(--k);color:var(--c)}
 
 /* The three uncut necks are marked by FORM, never by faintness. Dimming the
-   numeral was measured across all twenty-five cloths: even at 70% opacity the
+   numeral was measured across every cloth in the range: even at 70% opacity the
    worst ground (Storm Grey #5C6066) reached only 3.11:1, under the 4.5:1 a
    numeral needs — and these chips are the entry point to the bespoke funnel,
    so a size-41 customer has to be able to read them. The dashed ring carries
@@ -311,12 +311,13 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786793410"></script>
-<script src="assets/catalogue.js?v=1786793410"></script>
-<script src="assets/shots.js?v=1786793410"></script>
-<script src="assets/site.js?v=1786793410"></script>
-<script src="assets/shop.js?v=1786793410"></script>
-<script src="assets/iar-house.js?v=1786793410"></script>
+<script src="assets/store.js?v=1786795456"></script>
+<script src="assets/house.js?v=1786795456"></script>
+<script src="assets/catalogue.js?v=1786795456"></script>
+<script src="assets/shots.js?v=1786795456"></script>
+<script src="assets/site.js?v=1786795456"></script>
+<script src="assets/shop.js?v=1786795456"></script>
+<script src="assets/iar-house.js?v=1786795456"></script>
 <script>
 (function () {
   'use strict';
@@ -338,7 +339,7 @@
       '<section class="band"><div class="wrap missing">' +
         '<p class="label muted">Not in the range</p>' +
         '<h1 class="display" style="max-width:16ch">That cloth isn\'t one of ours.</h1>' +
-        '<p class="lede">Twenty-five are, and they\'re all one click away.</p>' +
+        '<p class="lede"><span data-cloths>Twenty-seven</span> are, and they\'re all one click away.</p>' +
         '<a class="cta" href="shop.html">See the range</a>' +
       '</div></section>';
     return;
@@ -349,7 +350,61 @@
     p.name + ', ' + p.priceText + '. ' + p.body);
   document.querySelector('meta[name="theme-color"]').setAttribute('content', p.hex);
 
+  /* ---------- what Google is told this page is ----------
+     Without this a cloth is a page with some words on it. With it, it is a
+     product with a price and a currency, which is what earns the price and the
+     stock line in the result itself rather than a grey snippet.
+
+     Every value comes from the cloth. Nothing is asserted that the shop cannot
+     back: no rating, because there are no reviews, and an aggregateRating with
+     no reviews behind it is exactly the kind of thing Google issues manual
+     penalties for. Availability is corrected below once the database answers,
+     because saying InStock about a sold-out shirt is worse than saying nothing.
+
+     The URL is left relative on purpose until the domain is decided — an
+     absolute one pointing at a working link would teach Google the wrong home. */
+  function schema(availability) {
+    var old = document.getElementById('ld-product');
+    if (old) old.remove();
+    var el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = 'ld-product';
+    el.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: p.name,
+      description: p.body,
+      sku: p.slug,
+      /* only fields the cloth actually carries. An empty `material` or a
+         `color` invented from the swatch hex is worse than an absent one —
+         structured data that disagrees with the page is a penalty, not a gap. */
+      category: p.collection || undefined,
+      /* Absolute URLs, and built the same way the <img> below builds them.
+         `shot.src` is a FRAME NAME — "1-hero" — not a path; handing those to
+         Google would have published a product with two images called 1-hero.
+         Absolute because a crawler resolves this JSON against nothing. */
+      image: (SET && SET.shots && SET.shots.length)
+        ? SET.shots.slice(0, 3).map(function (s) {
+            return location.origin + '/images/set/' + p.slug + '/' + s.src + '.webp';
+          })
+        : undefined,
+      brand: { '@type': 'Brand', name: 'I Am Ratan' },
+      offers: {
+        '@type': 'Offer',
+        price: String(p.price),
+        priceCurrency: 'INR',
+        availability: 'https://schema.org/' + availability,
+        itemCondition: 'https://schema.org/NewCondition',
+        seller: { '@type': 'Organization', name: 'Artisan Apparels' }
+      }
+    });
+    document.head.appendChild(el);
+  }
+
   var SET = (window.IAR_SHOTS || {})[p.slug];
+  /* called after SET exists, or the first emission ships without photographs
+     and only the re-statement below would carry them */
+  schema('InStock');
 
   /* Indicative garment measurements per neck size, inches, flat. The columns
      come from the sizes this cloth is actually cut in, so the table never
@@ -385,14 +440,14 @@
     var base = 'images/set/' + p.slug + '/';
     return '<div class="gal">' +
       '<figure class="gal-main"><img id="galMain" src="' + base + SET.shots[0].src +
-        '.jpg" alt="' + esc(SET.shots[0].alt) + '" fetchpriority="high" decoding="async">' +
+        '.webp" alt="' + esc(SET.shots[0].alt) + '" fetchpriority="high" decoding="async">' +
       '</figure>' +
       '<div class="gal-strip" role="group" aria-label="Views of this shirt">' +
         SET.shots.map(function (sh, i) {
           return '<button type="button" data-shot="' + i + '"' +
             (i === 0 ? ' aria-current="true"' : '') +
             ' aria-label="' + esc(sh.alt) + '">' +
-            '<img src="' + base + sh.src + '-t.jpg" alt="" loading="lazy" decoding="async">' +
+            '<img src="' + base + sh.src + '-t.webp" alt="" loading="lazy" decoding="async">' +
             '</button>';
         }).join('') +
       '</div></div>';
@@ -469,7 +524,7 @@
       var b = e.target.closest('button[data-shot]');
       if (!b) return;
       var sh = SET.shots[+b.dataset.shot];
-      plate.src = 'images/set/' + p.slug + '/' + sh.src + '.jpg';
+      plate.src = 'images/set/' + p.slug + '/' + sh.src + '.webp';
       plate.alt = sh.alt;
       strip.querySelectorAll('button').forEach(function (x) {
         x.removeAttribute('aria-current');
@@ -493,7 +548,13 @@
     var np = S.priceOf(p.slug);
     if (np !== null && np !== p.price) {
       main.querySelector('.g-price').textContent = '₹' + np.toLocaleString('en-IN');
+      p.price = np;
     }
+
+    /* Re-state the structured data now the database has answered, so the price
+       and the availability Google reads are the ones a customer would be
+       charged — not the ones bundled with the page at build time. */
+    schema(S.allGone(p.slug) ? 'OutOfStock' : 'InStock');
 
     var stockLine = document.getElementById('gStock');
     var shipLine  = document.getElementById('gShip');
@@ -576,8 +637,8 @@
   });
 })();
 </script>
-<script src="assets/mark.js?v=1786793410"></script>
-<script src="assets/track.js?v=1786793410"></script>
+<script src="assets/mark.js?v=1786795456"></script>
+<script src="assets/track.js?v=1786795456"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house

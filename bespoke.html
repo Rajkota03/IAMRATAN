@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786799140">
 <style>
 /* ---------- BESPOKE ----------
    Bespoke is the umbrella. Two services sit under it — Made to Measure and
@@ -81,6 +81,55 @@
   .door img,.door:hover img{transform:none}
   .door:hover .door-go i{transform:none}
 }
+
+/* ---------- the two chapters ----------
+   The doors above are the DECISION; these are the answer to "what is it,
+   exactly", which the page never gave. The client wrote four hundred words on
+   each service and the page was carrying a one-line summary of both, so the
+   only place either was actually explained was a document nobody visiting the
+   site can read.
+
+   Two columns on a desktop so the name stays beside its own prose instead of
+   scrolling away from it, one column on a phone. No facts table under either —
+   lead time, minimum order and the Wardrobe Management price are all still
+   missing from the client, and an empty table is a worse answer than none. */
+/* The home page now links straight to #made-to-measure and #wardrobe-management,
+   and the bar is fixed — so without this the browser scrolls the section to y=0
+   and the bar sits on top of its own eyebrow. --clear, not a number: it is the
+   bar's height plus a step of air, and the bar grows with the mark. */
+.band[id]{scroll-margin-top:var(--clear)}
+.ch{display:grid;gap:var(--s4)}
+@media(min-width:900px){
+  .ch{grid-template-columns:minmax(0,22rem) minmax(0,1fr);
+    gap:var(--sy);align-items:start}
+}
+.ch-sub{margin:var(--s2) 0 0;max-width:30ch;text-wrap:balance}
+
+.ch-body>p{margin:0 0 var(--s4);max-width:62ch}
+.ch-body>p:last-child{margin-bottom:0}
+
+/* ---------- read more ----------
+   The full chapter is still every word of it — nothing was cut to make this
+   fit — but it opens on request rather than by default, so a visitor who
+   only wants the one-line answer is not made to scroll past four hundred
+   words to reach the form. Native <details>: no script, and a screen reader
+   announces "collapsed" / "expanded" on its own. */
+.ch-more{margin-top:var(--s3)}
+.ch-more summary{cursor:pointer;list-style:none;display:inline-flex;
+  align-items:center;gap:var(--s1);padding-bottom:var(--s1);
+  border-bottom:1px solid var(--hair);
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.16em;
+  text-transform:uppercase;transition:border-color .3s var(--settle)}
+.ch-more summary::-webkit-details-marker{display:none}
+.ch-more summary i{font-style:normal;transition:transform .35s var(--swing)}
+.ch-more:hover summary,.ch-more summary:focus-visible{border-color:currentColor}
+.ch-more[open] summary i{transform:rotate(90deg)}
+.ch-more .ch-body{margin-top:var(--s4)}
+/* Do not lean on the browser to hide a closed <details>: the engine in
+   the in-app preview doesn't, and a chapter that will not collapse is
+   worse than no toggle at all. Tie the body to the [open] attribute so
+   every engine agrees. */
+.ch-more:not([open]) .ch-body{display:none}
 
 /* ---------- the form ----------
    Sized, not guessed. The version before this made everything big in the name
@@ -185,7 +234,8 @@
             alt="A half-made shirt on a tailor's dress form, the paper pattern still pinned to it"
             loading="lazy" decoding="async">
           <h2 class="door-n">Made to Measure</h2>
-          <p class="door-p">One shirt, made only for you.</p>
+          <p class="door-p">Over thirty measurements, taken once. A pattern cut
+          for one person alone.</p>
           <span class="door-go">Book a consultation <i aria-hidden="true">&rarr;</i></span>
         </a>
 
@@ -194,9 +244,71 @@
             alt="A rail of finished shirts on walnut hangers, graduating in colour"
             loading="lazy" decoding="async">
           <h2 class="door-n">Wardrobe Management</h2>
-          <p class="door-p">We look after your shirts over time.</p>
+          <p class="door-p">Ten shirts to that same fit, held against the six
+          months ahead.</p>
           <span class="door-go">Book a consultation <i aria-hidden="true">&rarr;</i></span>
         </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Every word below is the client's, from the copy document. Sentences are
+       dropped, none are rewritten and none are added. -->
+  <section class="band band--under" id="made-to-measure" aria-labelledby="mtm-h">
+    <div class="wrap">
+      <div class="ch">
+        <div class="rise d1">
+          <p class="label muted">Chapter one</p>
+          <h2 class="h1" id="mtm-h" style="margin:var(--s1) 0 0">Made to Measure</h2>
+          <p class="ch-sub muted">The garment that already knows you.</p>
+        </div>
+        <details class="ch-more rise d2">
+          <summary>Read the chapter <i aria-hidden="true">&rarr;</i></summary>
+          <div class="ch-body">
+          <p>The first time we measure a client, we take over thirty individual
+          measurements. Not because thirty is an impressive number, but because
+          no two people stand, move, or carry themselves in quite the same way.</p>
+          <p>Every commission begins with conversation — how you live, how you
+          work, what has never felt quite right, and what finally should. Only
+          then do we guide you through cloth, considering not just its
+          appearance, but its weight, texture, drape, and how it will accompany
+          you through your days.</p>
+          <p>In our atelier, every pattern is cut for one individual alone.
+          There are quicker ways to make a shirt. We have simply never found one
+          that preserved the integrity of the craft.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="wardrobe-management" aria-labelledby="wm-h">
+    <div class="wrap">
+      <div class="ch">
+        <div class="rise d1">
+          <p class="label muted">Chapter two</p>
+          <h2 class="h1" id="wm-h" style="margin:var(--s1) 0 0">Wardrobe Management</h2>
+          <p class="ch-sub muted">The decision you stop having to make.</p>
+        </div>
+        <details class="ch-more rise d2">
+          <summary>Read the chapter <i aria-hidden="true">&rarr;</i></summary>
+          <div class="ch-body">
+          <p>It starts the way Made to Measure does — with your fit and your
+          fabric preferences recorded once, properly, so they never need to be
+          re-explained.</p>
+          <p>From there, we do something most bespoke houses won't: we look
+          ahead. Based on how a wardrobe like yours is actually used across a
+          season, we build ten shirts to your exact specification and hold them
+          against the six months in front of you — not guessed at, forecasted.</p>
+          <p>You commit to that cycle upfront, in full, before a single shirt is
+          cut. It's not a subscription and it isn't retail — it's a reservation
+          of our atelier's time and materials against your name, for a period,
+          so that "I need a shirt" is never a problem you have to solve on short
+          notice again. When the six months end, the next cycle is already
+          waiting on the specification we already have. No re-measuring. No
+          re-deciding.</p>
+          </div>
+        </details>
       </div>
     </div>
   </section>
@@ -313,11 +425,12 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=1786793410"></script>
-<script src="assets/store.js?v=1786793410"></script>
-<script src="assets/iar-house.js?v=1786793410"></script>
-<script src="assets/mark.js?v=1786793410"></script>
-<script src="assets/track.js?v=1786793410"></script>
+<script src="assets/site.js?v=1786799140"></script>
+<script src="assets/store.js?v=1786799140"></script>
+<script src="assets/house.js?v=1786799140"></script>
+<script src="assets/iar-house.js?v=1786799140"></script>
+<script src="assets/mark.js?v=1786799140"></script>
+<script src="assets/track.js?v=1786799140"></script>
 <script>
 (function () {
   'use strict';
@@ -422,6 +535,34 @@
     var v = values();
     var line = v.fn + ' ' + v.ln + ' · ' + v.ph + ' · ' + v.em + ' · ' + v.service;
 
+    /* ---------- the lead reaches the desk ----------
+       This form has always gone to an inbox and a WhatsApp thread and NOWHERE
+       ELSE, so the Enquiries screen and its "unanswered" count have sat at zero
+       since the day they were built, however many people asked.
+
+       A bespoke enquiry is the highest-value thing anybody does on this site —
+       it is a person asking to be measured — and an inbox is where those get
+       lost between a courier notification and a newsletter.
+
+       Fire-and-forget, deliberately: the customer's confirmation must never
+       wait on this, and must never fail because of it. The email and the
+       WhatsApp handoff below are unchanged and remain the ones that matter. */
+    (function () {
+      var K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhja2JxY3BoaWppaHFieXNpYm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDY1ODQsImV4cCI6MjEwMjI4MjU4NH0.wg5IdL1ArScKk4dWWTtX8xyi8s4Z-1B9gKQQJBvX9V8';
+      try {
+        fetch('https://hckbqcphijihqbysibos.supabase.co/rest/v1/enquiries', {
+          method: 'POST', keepalive: true,
+          headers: { 'Content-Type': 'application/json', apikey: K,
+                     Authorization: 'Bearer ' + K, Prefer: 'return=minimal' },
+          body: JSON.stringify([{
+            name: (v.fn + ' ' + v.ln).trim(),
+            phone: v.ph, email: v.em, service: v.service,
+            message: v.note || null
+          }])
+        }).catch(function () {});
+      } catch (e) {}
+    })();
+
     if (!ACCESS_KEY) {
       var s = 'Consultation request\n\n' + v.fn + ' ' + v.ln + '\n' + v.ph + '\n' +
               v.em + '\n\nInterested in: ' + v.service;
@@ -457,6 +598,19 @@
       done('That did not send — you may be offline. Please try again, or call +91 82828 26264.', false);
     });
   });
+})();
+</script>
+<script>
+/* Arriving from the home page's two doors, at #made-to-measure or
+   #wardrobe-management: open that chapter automatically. Clicking a link
+   that names the thing you want to read, and then having to find a second
+   control to actually read it, is one click too many. */
+(function () {
+  var id = location.hash.slice(1);
+  if (!id) return;
+  var section = document.getElementById(id);
+  var d = section && section.querySelector('.ch-more');
+  if (d) d.open = true;
 })();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>

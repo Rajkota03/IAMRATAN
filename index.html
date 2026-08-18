@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>I Am Ratan — a shirtmaking house</title>
-<meta name="description" content="For two decades our hands shaped luxury the world admired, crafted in India and never named. Twenty-five cloths, and made to measure.">
+<meta name="description" content="For two decades our hands shaped luxury the world admired, crafted in India and never named. Twenty-seven cloths, and made to measure.">
 <meta name="theme-color" content="#101214">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:type" content="website">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786793410">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786799140">
 <style>
 /* the cross-document crossfade now lives in iar-house.css, on every page */
 
@@ -41,14 +41,13 @@ img{display:block;max-width:100%}
 .wrap{max-width:1500px;margin-inline:auto;padding-inline:var(--gut)}
 
 /* ---------- header ---------- */
-/* a solid bar in the house ground — see iar-house.css for why it is not a scrim */
-.top{position:fixed;inset:0 0 auto 0;z-index:50;display:grid;
-  grid-template-columns:1fr max-content 1fr;align-items:center;gap:var(--s3);
-  padding:var(--s3) var(--gut);
-  background:var(--room);color:var(--ink);
-  border-bottom:1px solid var(--hair)}
-.top>:first-child{justify-self:start}
-.top>:last-child{justify-self:end}
+/* The bar lives in iar-house.css and nowhere else. There was a second copy of
+   .top here — identical when it was written, and by the time anyone looked it
+   had gone stale: the stylesheet's padding was changed to hold the contents to
+   --max on a wide screen, and this copy, being later in the cascade, quietly
+   won and kept the old full-bleed padding. Two rules for one bar is how that
+   happens. Only the mask path below needs to differ, because this page sits a
+   directory above the stylesheet. */
 .mark{width:36px;aspect-ratio:716/478;display:block;background:currentColor;
   -webkit-mask:url('assets/mark-badger.png') no-repeat center/contain;
   mask:url('assets/mark-badger.png') no-repeat center/contain}
@@ -137,7 +136,7 @@ img{display:block;max-width:100%}
 @keyframes chalk{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 @keyframes settle{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* the rail: all twenty-five, the door's own index */
+/* the rail: the whole range, the door's own index */
 .door-rail{display:flex;gap:var(--s0);height:44px;align-items:stretch;
   padding:0 var(--gut) var(--s3)}
 .door-rail button{flex:1 1 0;min-width:0;position:relative;background:var(--g);
@@ -489,12 +488,22 @@ html:not(.js) .hero-act{opacity:1}
   object-position:var(--pos,center 22%);z-index:-2;
   transform:scale(1.04);transition:transform 1.6s var(--settle)}
 /* the veil keeps the type legible; strength measured against each picture */
+/* The veil is bottom-weighted: strong through the lower ~55% where the kicker,
+   name and note sit, then clear by 78% so the top third of the photograph stays
+   bright — the whole point of these lighter frames. Stops solved against the
+   actual crops so the small mono kicker clears 4.5:1 and the name clears AA on
+   both images. The old three-stop veil (.60 at 44%) was built for near-black
+   photos and left white type at ~2.5:1 over these. */
 .dr::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background:linear-gradient(to top,rgba(9,10,12,.92) 0%,rgba(9,10,12,.60) 44%,
-    rgba(9,10,12,.24) 100%);
-  transition:opacity .7s var(--settle)}
+  background:linear-gradient(to top,
+    rgba(9,10,12,.97) 0%,  rgba(9,10,12,.95) 20%, rgba(9,10,12,.90) 35%,
+    rgba(9,10,12,.83) 47%, rgba(9,10,12,.52) 56%, rgba(9,10,12,.18) 66%,
+    rgba(9,10,12,0) 78%)}
 .dr:hover img,.dr:focus-visible img{transform:scale(1.10)}
-.dr:hover::after,.dr:focus-visible::after{opacity:.86}
+/* No hover veil-lighten. It was there to reveal a dark photo on approach; these
+   frames are already open at the top, and lightening the scrim dropped the
+   kicker under AA while the cursor was on the panel. The image zoom and the
+   filling CTA are the hover signal now. */
 .dr-kicker{font-family:var(--mono);font-size:.5625rem;letter-spacing:.22em;
   text-transform:uppercase;opacity:.74;margin:0}
 .dr-name{font-weight:200;font-size:clamp(2.5rem,5.4vw,4.2rem);line-height:.98;
@@ -533,6 +542,33 @@ html:not(.js) .hero-act{opacity:1}
   .dr-go{color:#0B0C0E;border-color:#EDE9E0;background:none}
   .dr-go::before{transform:scaleX(1)}
 }
+
+/* ---------- Ratan's Circle ----------
+   One panel, not two — this is not a decision to make, so it should not look
+   like one, or offer an arrow to press. Same veil-and-caption grammar as the
+   doors above so the page still reads as one family.
+
+   The two sentences in the caption are OURS, not the client's. Ratan's Circle
+   exists in their pitch deck only, as a single line — "invite-only inner
+   circle for our top clients: personalised access, experiences, privileges" —
+   with no price, no benefit list and no way to join published anywhere. Its
+   one hard figure is commercially confidential and is deliberately not
+   repeated here. Every noun in the caption is one they used; nothing is
+   added. See PENDING-FROM-CLIENT.md. */
+.circle-band{position:relative;isolation:isolate;overflow:hidden;
+  min-height:clamp(24rem,62svh,36rem);display:grid;align-content:end;
+  padding:var(--sy);color:#EDE9E0;background:#0B0C0E;margin:0}
+.circle-band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:var(--pos,center);z-index:-2}
+.circle-band::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(to top,rgba(8,9,11,.90) 0%,rgba(8,9,11,.52) 46%,
+    rgba(8,9,11,.16) 82%)}
+.circle-kicker{font-family:var(--mono);font-size:.5625rem;letter-spacing:.22em;
+  text-transform:uppercase;opacity:.74;margin:0}
+.circle-name{font-weight:200;font-size:clamp(2.1rem,4.6vw,3.4rem);line-height:1;
+  letter-spacing:-.032em;margin:var(--s1) 0 0}
+.circle-note{margin:var(--s2) 0 0;max-width:38ch;color:rgba(237,233,224,.84);
+  font-size:clamp(.95rem,1.15vw,1.08rem);line-height:1.6}
 
 /* ---------- the journal ----------
    A rail, not a grid. The point of a horizontal strip is that it says "there is
@@ -601,6 +637,27 @@ html:not(.js) .hero-act{opacity:1}
   .rise{opacity:1;transform:none}
 }
 </style>
+
+<!-- Who the house is, in the form a search engine reads. Only facts already
+     printed in the footer: the name, the phone, the email, the Instagram. The
+     registered address and the GSTIN are deliberately absent until the client
+     supplies them — a made-up address in structured data is a worse problem
+     than a missing one, because Google keeps it. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ClothingStore",
+  "name": "I Am Ratan",
+  "legalName": "Artisan Apparels",
+  "description": "A shirtmaking house in Hyderabad. For two decades our hands shaped luxury the world admired, crafted in India and never named.",
+  "telephone": "+91 82828 26264",
+  "email": "prashanth@iamratan.co.in",
+  "areaServed": "IN",
+  "currenciesAccepted": "INR",
+  "address": { "@type": "PostalAddress", "addressLocality": "Hyderabad", "addressRegion": "Telangana", "addressCountry": "IN" },
+  "sameAs": ["https://instagram.com/iamratanofficial"]
+}
+</script>
 </head>
 <body data-no-grounds>
 <a class="skip" href="#main">Skip to content</a>
@@ -625,7 +682,7 @@ html:not(.js) .hero-act{opacity:1}
        frame ships in two crops — 16:9 for a wide screen, 3:4 for a phone — and
        <picture> chooses, so the phone gets a portrait composition rather than a
        landscape one squeezed. -->
-  <section class="hero" data-ink="light" aria-label="Autumn winter 2025">
+  <section class="hero" data-band="hero" data-ink="light" aria-label="Autumn winter 2025">
     <div class="hero-stage">
       <figure class="hero-frame is-on">
         <picture>
@@ -671,7 +728,7 @@ html:not(.js) .hero-act{opacity:1}
         <span class="ln"><span>Shirts that</span></span>
         <span class="ln"><span>speak silence.</span></span>
       </h1>
-      <p class="hero-sub"><span>Twenty-five cloths, cut in five sizes, finished by
+      <p class="hero-sub"><span><span data-cloths>Twenty-seven</span> cloths, cut in five sizes, finished by
         hands that have made luxury for twenty years.</span></p>
       <p class="hero-act"><a class="cta" href="shop.html">See the range</a></p>
     </div>
@@ -693,31 +750,39 @@ html:not(.js) .hero-act{opacity:1}
 
        No band padding on top either: the panels butt straight up against the
        foot of the hero, so the first thing after the picture is the choice. -->
-  <section aria-label="Where to begin">
+  <section data-band="doors" aria-label="Where to begin">
     <div class="doors rise" data-ink="light">
-      <a class="dr" href="shop.html" style="--pos:center 30%">
+      <!-- The two doors are the two SERVICES, not shop-versus-bespoke. The
+           ready-to-wear path is not lost by this: the hero above already opens
+           on "See the range", and Shop sits in the nav and the footer.
+           Made to Measure leads because Wardrobe Management's own copy opens
+           "It starts the way Made to Measure does" — read the other way round,
+           that sentence has nothing to refer to. -->
+      <a class="dr" href="bespoke.html#made-to-measure" style="--pos:center 34%">
+        <!-- a bright atelier frame, not the near-black button macro that read as
+             dull against the bone page, and not the bespoke-page pattern shot:
+             the two pages must not share a photograph for the same door. -->
         <picture>
-          <source media="(min-width:820px)" srcset="images/hero/ready-wide.webp">
-          <img src="images/hero/ready-tall.webp" alt="" loading="lazy" decoding="async">
+          <source media="(min-width:820px)" srcset="images/hero/measure-wide.webp">
+          <img src="images/hero/measure-tall.webp" alt="" loading="lazy" decoding="async">
         </picture>
-        <p class="dr-kicker">Off the rack · ₹2,999–₹6,999</p>
-        <h2 class="dr-name">Wardrobe</h2>
-        <p class="dr-note">Cloths that already exist, cut in five sizes and
-        finished in the atelier. Choose one, and it ships.</p>
-        <span class="dr-go"><span>See the range</span><i aria-hidden="true">&rarr;</i></span>
+        <p class="dr-kicker">By appointment</p>
+        <h2 class="dr-name">Made to Measure</h2>
+        <p class="dr-note">Over thirty measurements, taken once, and a pattern
+        cut for one person alone. Every commission begins with a conversation.</p>
+        <span class="dr-go"><span>Book a consultation</span><i aria-hidden="true">&rarr;</i></span>
       </a>
-      <a class="dr" href="bespoke.html" style="--pos:center 42%">
-        <!-- was the full 1200x1607 product frame at 413 KB, for a panel that
-             renders 719 px wide. These are cut to the panel's own shapes. -->
+      <a class="dr" href="bespoke.html#wardrobe-management" style="--pos:center 40%">
         <picture>
-          <source media="(min-width:820px)" srcset="images/hero/bespoke-wide.jpg">
-          <img src="images/hero/bespoke-tall.jpg" alt="" loading="lazy" decoding="async">
+          <source media="(min-width:820px)" srcset="images/hero/drawer-wide.webp">
+          <img src="images/hero/drawer-tall.webp" alt="" loading="lazy" decoding="async">
         </picture>
-        <p class="dr-kicker">Made to measure · by appointment</p>
-        <h2 class="dr-name">Bespoke</h2>
-        <p class="dr-note">Begins not with a pattern but with a person. Every
-        proportion considered until it belongs to you.</p>
-        <span class="dr-go"><span>Book a fitting</span><i aria-hidden="true">&rarr;</i></span>
+        <p class="dr-kicker">Ten shirts · six months</p>
+        <h2 class="dr-name">Wardrobe Management</h2>
+        <p class="dr-note">Your fit recorded once, then ten shirts built to it
+        and held against the six months ahead — committed upfront, before one
+        is cut.</p>
+        <span class="dr-go"><span>Enquire</span><i aria-hidden="true">&rarr;</i></span>
       </a>
     </div>
   </section>
@@ -733,7 +798,7 @@ html:not(.js) .hero-act{opacity:1}
        So the homepage is three moves now — look, choose, read on — and the
        journal is the third. Sideways, because a horizontal rail says "there is
        more of this" without spending another screen of height to say it. -->
-  <section class="jrn" aria-labelledby="jrn-h">
+  <section class="jrn" data-band="journal" aria-labelledby="jrn-h">
     <div class="wrap jrn-head">
       <h2 class="h1 rise" id="jrn-h">The journal</h2>
       <a class="jrn-all rise d1" href="journal.html">All entries &rarr;</a>
@@ -771,6 +836,21 @@ html:not(.js) .hero-act{opacity:1}
         <span class="jc-name">Twenty years, no name on the box</span>
       </a></li>
     </ul>
+  </section>
+
+  <!-- RATAN'S CIRCLE — see the CSS comment above .circle-band, and
+       PENDING-FROM-CLIENT.md, before touching the caption text. -->
+  <section data-band="circle" aria-labelledby="circle-h">
+    <figure class="circle-band" style="--pos:center 38%">
+      <img src="images/cuff-monogram.webp" alt="" loading="lazy" decoding="async">
+      <figcaption>
+        <p class="circle-kicker">By invitation</p>
+        <h2 class="circle-name" id="circle-h">Ratan's Circle</h2>
+        <p class="circle-note">A small, invited group of the house's closest
+        clients, with personalised access, experiences and privileges.
+        Membership is not open — the house extends it.</p>
+      </figcaption>
+    </figure>
   </section>
 
 </main>
@@ -816,9 +896,10 @@ html:not(.js) .hero-act{opacity:1}
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786793410"></script>
-<script src="assets/catalogue.js?v=1786793410"></script>
-<script src="assets/site.js?v=1786793410"></script>
+<script src="assets/store.js?v=1786799140"></script>
+<script src="assets/house.js?v=1786799140"></script>
+<script src="assets/catalogue.js?v=1786799140"></script>
+<script src="assets/site.js?v=1786799140"></script>
 <script>
 (function(){
   'use strict';
@@ -951,8 +1032,8 @@ html:not(.js) .hero-act{opacity:1}
   document.getElementById('year').textContent=new Date().getFullYear();
 })();
 </script>
-<script src="assets/mark.js?v=1786793410"></script>
-<script src="assets/track.js?v=1786793410"></script>
+<script src="assets/mark.js?v=1786799140"></script>
+<script src="assets/track.js?v=1786799140"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house

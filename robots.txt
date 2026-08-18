@@ -1,0 +1,39 @@
+# I AM RATAN
+
+# The shop is meant to be found. Everything below is either private, a working
+# page, or a step in the middle of a purchase — none of it belongs in a search
+# result, and a customer landing on a half-finished checkout from Google is a
+# worse outcome than not being found at all.
+
+User-agent: *
+Allow: /
+
+# the desk
+Disallow: /admin.html
+
+# a step inside a purchase, not a destination
+Disallow: /checkout.html
+
+# design experiments and internal notes: deployed so they can be looked at,
+# linked from nowhere. Each one also carries its own noindex, because robots.txt
+# is a request a crawler may ignore and a meta tag is not.
+Disallow: /preview.html
+Disallow: /mockup.html
+Disallow: /directions.html
+Disallow: /loom.html
+Disallow: /range.html
+Disallow: /coming-soon.html
+Disallow: /shop-a.html
+Disallow: /shop-b.html
+Disallow: /shop-c.html
+Disallow: /shop-grid.html
+Disallow: /shop-index.html
+Disallow: /shop-wall.html
+Disallow: /variant-1-suspension.html
+Disallow: /variant-2-vestiaire.html
+Disallow: /variant-2040.html
+Disallow: /variant-2050.html
+Disallow: /variant-3-nuancier.html
+
+# Sitemap: added when the domain is decided — it must carry absolute URLs, and
+# pointing it at a working link would teach Google the wrong home.

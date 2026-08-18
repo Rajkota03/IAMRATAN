@@ -65,7 +65,14 @@
      two rems of bar padding, the mark's own height at this width, and the
      hairline. Anything that begins at the top of the page has to clear it or
      the bar sits on top of it — which is how the hero kept losing heads. */
-  --bar:calc(2rem + 1px + clamp(92px,9.5vw,128px) * 620 / 1430);
+  /* The mark's width, written once. It used to be typed twice — here and on
+     .mk — and the two drifted apart the moment either was nudged, which is how
+     the bar ended up taller than the thing it was measuring. The floor is what
+     a phone gets and is deliberately unchanged; only the ceiling came down,
+     from 128px, because past about 1350px the mark stopped growing WITH the
+     page and simply sat there being large. */
+  --mkw:clamp(92px,5.6vw,108px);
+  --bar:calc(2rem + 1px + var(--mkw) * 620 / 1430);
   /* What the first block on a page needs above it. Not a spacing choice — it is
      the bar's height plus one step of air — so it gets a name instead of a
      number. Typed as a number it was 6.5rem, which cleared the bar on a desktop
@@ -188,7 +195,13 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
    of what its neighbours are doing. */
 .top{position:fixed;inset:0 0 auto 0;z-index:50;display:grid;
   grid-template-columns:1fr max-content 1fr;align-items:center;gap:var(--s3);
-  padding:var(--s3) var(--gut);
+  /* The ground spans the window; the CONTENTS stop at --max, like every other
+     block on the site. The bar was the one thing that ignored the container, so
+     on a wide screen the mark sat hard against the left edge and Hyderabad hard
+     against the right, with 600px of nothing between each of them and the menu.
+     Extra padding, not a max-width, because the background and the hairline
+     still have to reach both edges. */
+  padding:var(--s3) max(var(--gut),(100% - var(--max)) / 2);
   background:var(--room);color:var(--ink);
   border-bottom:1px solid var(--hair)}
 .top>:first-child{justify-self:start}
@@ -206,7 +219,7 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
    that IS the logo. So the animation earns that pose rather than inventing one:
    the badger walks in with its head forward, stops, and turns to look back.
    Head and body overlap by twelve pixels so the neck never opens a seam. */
-.mk{position:relative;display:block;width:clamp(92px,9.5vw,128px);
+.mk{position:relative;display:block;width:var(--mkw);
   aspect-ratio:1430/620;color:inherit}
 /* Only the three masked layers take the fill. .mk-badger is a positioning
    wrapper — giving it currentColor with no mask painted a solid block over the

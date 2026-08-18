@@ -78,13 +78,24 @@
       grievance_officer: s.grievance_officer || '',
       grievance_email:   s.grievance_email || '',
       grievance_phone:   s.grievance_phone || '',
+      /* False while the seller details are stand-ins. See sellerHTML. */
+      facts_are_real:    bool(s.facts_are_real, false),
       show_stock_counts: bool(s.show_stock_counts, true),
       low_stock_at:      num(s.low_stock_at, 3),
       hide_sold_out:     bool(s.hide_sold_out, false),
       shop_open:         bool(s.shop_open, true),
       delivery_min_days: num(s.delivery_min_days, 3),
       delivery_max_days: num(s.delivery_max_days, 7),
-      announcement:      s.announcement || ''
+      /* the bar. Off unless the house has switched it on and written a line —
+         both, so a stale sentence left in the box cannot reappear on the shop
+         front the day somebody flicks the switch to see what it does. */
+      announcement:      s.announcement || '',
+      bar_on:            bool(s.bar_on, false),
+      bar_link:          s.bar_link || '',
+      bar_link_text:     s.bar_link_text || '',
+      bar_bg:            s.bar_bg || '#141210',
+      bar_fg:            s.bar_fg || '#F5F2EC',
+      bar_where:         s.bar_where || 'all'
     };
   }
 
@@ -183,9 +194,32 @@
   };
 
   /* The seller block every page must carry. Returns '' until there is
-     something true to say, so nothing half-finished reaches a customer. */
+     something TRUE to say, so nothing half-finished reaches a customer.
+
+     THE GUARD, AND WHY IT IS A GUARD RATHER THAN A NOTE TO MYSELF.
+     These are statutory facts. A GSTIN, a registered address and a named
+     Grievance Officer are what an Indian shopper is legally entitled to, and a
+     complaints line that nobody answers is worse than no line at all. So while
+     the values are stand-ins — `facts_are_real` false — this prints NOTHING,
+     exactly as it did when the fields were empty.
+
+     The stand-ins can still be SEEN, at ?preview=facts, which is how the block
+     gets built and checked on all twelve pages without a customer ever meeting
+     it. The preview cannot be reached by accident and is not linked from
+     anywhere.
+
+     The failure this prevents is not "I might forget". It is that forgetting
+     would be invisible: a page carrying a plausible fake GSTIN looks exactly
+     like a page carrying a real one. */
+  function previewing() {
+    try {
+      return /(^|[?&])preview=facts(&|$)/.test(location.search);
+    } catch (e) { return false; }
+  }
+
   Store.sellerHTML = function () {
     var t = Store.settings, out = [];
+    if (!t.facts_are_real && !previewing()) return '';
     if (t.legal_name)         out.push(esc(t.legal_name));
     if (t.registered_address) out.push(esc(t.registered_address));
     if (t.gstin)              out.push('GSTIN ' + esc(t.gstin));
@@ -199,7 +233,15 @@
              '">' + esc(t.grievance_phone) + '</a>';
       out.push(g);
     }
-    return out.length ? out.join(' &middot; ') : '';
+    if (!out.length) return '';
+    var line = out.join(' &middot; ');
+    /* A preview must never be mistakable for the real page — including in a
+       screenshot, which is how it would actually be mistaken. */
+    if (!t.facts_are_real) {
+      line = '<b style="color:#8C2F2F">SPECIMEN — these details are stand-ins ' +
+             'and are not shown to customers.</b><br>' + line;
+    }
+    return line;
   };
 
   function esc(v) {

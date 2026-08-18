@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The range — I Am Ratan</title>
+<title>The range · I Am Ratan</title>
 <meta name="description" content="A shirt from the I Am Ratan range.">
 <meta name="theme-color" content="#101214">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="I Am Ratan">
-<meta property="og:title" content="The range — I Am Ratan">
+<meta property="og:title" content="The range · I Am Ratan">
 <meta property="og:description" content="A shirt from the I Am Ratan range.">
 <meta property="og:image" content="https://im-ratan.vercel.app/images/cloth-stack.jpg">
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786795456">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786938000">
 <style>
 /* ---------- the drench ----------
    The garment's own colour becomes the room, exactly as it does in the shop.
@@ -93,6 +93,27 @@
    so a size-41 customer has to be able to read them. The dashed ring carries
    the meaning; the numeral keeps the ink's full measured contrast. */
 .sz.uncut{border-style:dashed}
+.sz-key{margin:var(--s2) 0 0;font-size:.8125rem;color:var(--muted);max-width:34ch}
+
+/* ---------- more from the range ----------
+   Four cloths, on one line at every width. A rail that scrolls sideways hides
+   half of what it offers behind a gesture nobody makes, so this is a plain
+   grid: two-up on a phone, four across from 760. */
+.more{padding:var(--sz) 0}
+.more>.wrap>h2{margin:0 0 var(--s4)}
+.more-rail{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s4) var(--s3)}
+@media(min-width:760px){.more-rail{grid-template-columns:repeat(4,1fr);gap:var(--s4)}}
+.more-card{display:block;text-decoration:none;color:inherit}
+.more-shot{display:block;position:relative;aspect-ratio:3/4;overflow:hidden;
+  background:var(--under);margin-bottom:var(--s2)}
+.more-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .6s var(--settle)}
+.more-card:hover .more-shot img,
+.more-card:focus-visible .more-shot img{transform:scale(1.03)}
+.more-nm{display:flex;justify-content:space-between;gap:var(--s2);
+  align-items:baseline;font-size:.9375rem}
+.more-pr{font-family:var(--mono);font-size:.75rem;color:var(--muted);white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.more-card:hover .more-shot img{transform:none}}
 .sz.uncut:hover{border-color:currentColor}
 
 /* ---------- sold out, and nearly ----------
@@ -255,7 +276,7 @@
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="top label">
-  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan, home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
   <nav class="nav">
     <a href="index.html">Home</a>
     <a href="shop.html" aria-current="page">Shop</a>
@@ -311,13 +332,13 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786795456"></script>
-<script src="assets/house.js?v=1786795456"></script>
-<script src="assets/catalogue.js?v=1786795456"></script>
-<script src="assets/shots.js?v=1786795456"></script>
-<script src="assets/site.js?v=1786795456"></script>
-<script src="assets/shop.js?v=1786795456"></script>
-<script src="assets/iar-house.js?v=1786795456"></script>
+<script src="assets/store.js?v=1786938000"></script>
+<script src="assets/house.js?v=1786938000"></script>
+<script src="assets/catalogue.js?v=1786938000"></script>
+<script src="assets/shots.js?v=1786938000"></script>
+<script src="assets/site.js?v=1786938000"></script>
+<script src="assets/shop.js?v=1786938000"></script>
+<script src="assets/iar-house.js?v=1786938000"></script>
 <script>
 (function () {
   'use strict';
@@ -345,7 +366,7 @@
     return;
   }
 
-  document.title = p.name + ' — I Am Ratan';
+  document.title = p.name + ' · I Am Ratan';
   document.querySelector('meta[name="description"]').setAttribute('content',
     p.name + ', ' + p.priceText + '. ' + p.body);
   document.querySelector('meta[name="theme-color"]').setAttribute('content', p.hex);
@@ -417,6 +438,46 @@
     '44': { chest: 46.5, shoulder: 19,   sleeve: 25.5 },
     '46': { chest: 48.5, shoulder: 19.5, sleeve: 25.5 }
   };
+  /* Nothing followed the buy button. A visitor who did not want this cloth had
+     the back button and nothing else, on a shop where the next cloth is the
+     whole proposition. Same collection first, because that is the shelf they
+     were already looking at; topped up from the rest of the range so the rail
+     is never a lonely one or two. */
+  function related(p) {
+    var same = R.filter(function (x) {
+      return x.slug !== p.slug && x.cat === p.cat;
+    });
+    var rest = R.filter(function (x) {
+      return x.slug !== p.slug && x.cat !== p.cat;
+    });
+    var pick = same.concat(rest).slice(0, 4);
+    if (!pick.length) return '';
+
+    function shot(x) {
+      var s = (window.IAR_SHOTS || {})[x.slug];
+      return s ? 'images/set/' + x.slug + '/1-hero' : '';
+    }
+    return '<section class="more"><div class="wrap">' +
+      '<h2 class="label soft">' +
+        (same.length ? 'More in ' + esc(p.cat || 'the range') : 'More from the range') +
+      '</h2>' +
+      '<div class="more-rail">' +
+        pick.map(function (x) {
+          var st = shot(x);
+          var img = st
+            ? '<img src="' + st + '.webp" srcset="' + st + '-320.webp 320w, ' +
+              st + '-512.webp 512w, ' + st + '.webp 768w" ' +
+              'sizes="(max-width:759px) 42vw, 22vw" alt="" loading="lazy" decoding="async">'
+            : '<img src="images/shirts/' + esc(x.img) + '" alt="" loading="lazy" decoding="async">';
+          return '<a class="more-card" href="product.html?p=' + encodeURIComponent(x.slug) + '">' +
+            '<span class="more-shot">' + img + '</span>' +
+            '<span class="more-nm">' + esc(x.name) +
+              '<span class="more-pr">' + x.priceText + '</span></span>' +
+          '</a>';
+        }).join('') +
+      '</div></div></section>';
+  }
+
   function sizeGuide(p) {
     var cols = p.sizes.filter(function (z) { return SPEC[z]; });
     function row(label, key) {
@@ -438,9 +499,20 @@
         '" fetchpriority="high" decoding="async"></figure>';
     }
     var base = 'images/set/' + p.slug + '/';
+    /* The plate is 340px on a phone and 585px on a desktop. At 1x that made the
+       768px file two-thirds waste; at 2x the desktop wants 1170px and 768 is
+       simply all there is, so the top tier is the ceiling rather than a choice. */
+    var MAIN_SIZES = '(max-width:759px) 92vw, 46vw';
+    function tiers(stem) {
+      var w = (window.IAR_WIDE || {})[stem];
+      return base + stem + '-320.webp 320w, ' + base + stem + '-512.webp 512w, ' +
+             base + stem + '.webp 768w' +
+             (w ? ', ' + base + stem + '-' + w + '.webp ' + w + 'w' : '');
+    }
     return '<div class="gal">' +
       '<figure class="gal-main"><img id="galMain" src="' + base + SET.shots[0].src +
-        '.webp" alt="' + esc(SET.shots[0].alt) + '" fetchpriority="high" decoding="async">' +
+        '.webp" srcset="' + tiers(SET.shots[0].src) + '" sizes="' + MAIN_SIZES +
+        '" alt="' + esc(SET.shots[0].alt) + '" fetchpriority="high" decoding="async">' +
       '</figure>' +
       '<div class="gal-strip" role="group" aria-label="Views of this shirt">' +
         SET.shots.map(function (sh, i) {
@@ -467,6 +539,15 @@
 
           '<p class="label soft" style="margin:var(--s5) 0 0">Neck size</p>' +
           '<div class="sizes">' + SHOP.sizes(p) + '</div>' +
+          /* The dashed necks say "not cut" to a screen reader and to nobody
+             else. A sighted customer sees three sizes drawn differently, is
+             told nothing, and the most likely reading of a different-looking
+             size is "unavailable" rather than "we will make it for you". That
+             turns the best lead on the page into a dead end, so the key is
+             stated once, quietly, under the row. */
+          (p.sizes.length < 8
+            ? '<p class="sz-key">Dashed necks are not cut for the rack. ' +
+              'We make those to measure.</p>' : '') +
           '<p class="g-stock" id="gStock"></p>' +
           '<p class="g-ship" id="gShip"></p>' +
 
@@ -487,14 +568,14 @@
               '<p>[100% cotton, woven for the house. Composition and weave to be ' +
               'confirmed by the house per cloth.]</p>' +
               '<p>Machine wash cold with like colours, or hand wash. Line dry in ' +
-              'shade. Warm iron while faintly damp. No bleach, no tumble dryer ' +
-              '&mdash; the cloth outlives the machine that ruins it.</p>' +
+              'shade. Warm iron while faintly damp. No bleach, no tumble dryer. ' +
+              'The cloth outlives the machine that ruins it.</p>' +
             '</div></details>' +
             '<details name="pdp"><summary>Size guide</summary><div class="fx">' +
               sizeGuide(p) +
               '<p class="fine">Measurements in inches, taken flat on the garment. ' +
               'Indicative until the house confirms its block. Between sizes, or ' +
-              'past them &mdash; <a href="bespoke.html" style="text-decoration:underline;text-underline-offset:3px">bespoke</a> ' +
+              'past them, <a href="bespoke.html" style="text-decoration:underline;text-underline-offset:3px">bespoke</a> ' +
               'is the answer.</p>' +
             '</div></details>' +
             '<details name="pdp"><summary>Delivery &amp; returns</summary><div class="fx">' +
@@ -507,7 +588,8 @@
           '</div>' +
         '</div>' +
       '</div>' +
-    '</section>';
+    '</section>' +
+    related(p);
 
   /* Two more bands used to follow — "Three necks the house does not cut", and a
      "More from the range" strip of four cloths. Both are gone: a product page is
@@ -524,7 +606,14 @@
       var b = e.target.closest('button[data-shot]');
       if (!b) return;
       var sh = SET.shots[+b.dataset.shot];
-      plate.src = 'images/set/' + p.slug + '/' + sh.src + '.webp';
+      var base = 'images/set/' + p.slug + '/';
+      /* srcset first, then src, so the swap fetches the tier it wants rather
+         than the 768 it would start on and immediately discard */
+      var wide = (window.IAR_WIDE || {})[sh.src];
+      plate.srcset = base + sh.src + '-320.webp 320w, ' +
+                     base + sh.src + '-512.webp 512w, ' + base + sh.src + '.webp 768w' +
+                     (wide ? ', ' + base + sh.src + '-' + wide + '.webp ' + wide + 'w' : '');
+      plate.src = base + sh.src + '.webp';
       plate.alt = sh.alt;
       strip.querySelectorAll('button').forEach(function (x) {
         x.removeAttribute('aria-current');
@@ -565,7 +654,7 @@
       if (!S.soldOut(p.slug, b.getAttribute('data-size'))) return;
       b.classList.add('out');
       b.disabled = true;
-      b.setAttribute('aria-label', 'Size ' + b.getAttribute('data-size') + ' — sold out');
+      b.setAttribute('aria-label', 'Size ' + b.getAttribute('data-size') + ', sold out');
     });
 
     /* the note follows the chosen size, because "only 2 left" is a fact about
@@ -579,7 +668,7 @@
     });
 
     if (S.allGone(p.slug)) {
-      stockLine.textContent = 'Sold out — write to the house';
+      stockLine.textContent = 'Sold out. Write to the house';
       var add = main.querySelector('[data-add]');
       if (add) { add.disabled = true; add.textContent = 'Sold out'; }
     } else if (!S.settings.shop_open) {
@@ -637,8 +726,8 @@
   });
 })();
 </script>
-<script src="assets/mark.js?v=1786795456"></script>
-<script src="assets/track.js?v=1786795456"></script>
+<script src="assets/mark.js?v=1786938000"></script>
+<script src="assets/track.js?v=1786938000"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -649,5 +738,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
+<script src="assets/nav.js?v=1786938000"></script>
 </body>
 </html>

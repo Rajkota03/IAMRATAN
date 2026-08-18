@@ -88,7 +88,7 @@
       var has = p.sizes.indexOf(z) > -1;
       return '<button class="sz' + (has ? '' : ' uncut') + '" type="button" ' +
         'data-size="' + z + '"' + (has ? '' : ' data-uncut="1"') +
-        ' aria-label="Size ' + z + (has ? '' : ' — not cut, made to measure') + '">' +
+        ' aria-label="Size ' + z + (has ? '' : ', not cut. Made to measure') + '">' +
         z + '</button>';
     }).join('');
   };
@@ -200,7 +200,7 @@
         var p = Shop.add(getSlug(act), size);
         if (!p) return;
         if (buying) { location.href = 'checkout.html'; return; }
-        Shop.toast(p.name + ' · size ' + size + ' — added to your cart.');
+        Shop.toast(p.name + ' · size ' + size + ' added to your cart.');
       }
     });
   };

@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bespoke — I Am Ratan</title>
+<title>Bespoke · I Am Ratan</title>
 <meta name="description" content="Made to Measure and Wardrobe Management. Book a consultation with the house in Hyderabad.">
 <meta name="theme-color" content="#EDE9E0">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="I Am Ratan">
-<meta property="og:title" content="Bespoke — I Am Ratan">
+<meta property="og:title" content="Bespoke · I Am Ratan">
 <meta property="og:description" content="Made to Measure and Wardrobe Management. Book a consultation.">
 <meta property="og:image" content="https://im-ratan.vercel.app/images/atelier.jpg">
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786799140">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786938000">
 <style>
 /* ---------- BESPOKE ----------
    Bespoke is the umbrella. Two services sit under it — Made to Measure and
@@ -37,99 +37,209 @@
 .bh h1{margin:var(--s1) 0 0}
 .bh .lede{margin-top:var(--s3)}
 
-/* ---------- the two doors ----------
-   Two boxes, side by side at every width, and the whole box is the link. No
-   reading order to obey, no scrolling from one service to the other to compare
-   them — both are on screen at once and either one takes you to the form.
+/* ---------- the two services, as spreads ----------
+   Two equal cards side by side was the problem. Nothing led, nothing was
+   bigger than anything else, and the prose sat in a column under a picture
+   with half the row empty beside it — the shape of a template, not of a
+   shirtmaking house. Card grids are what everybody's Shopify theme does.
 
-   Side by side on a phone means each is about 163px across, so the boxes are
-   TALL (3:4) rather than wide. A tall box carries a two-word name and a short
-   line comfortably at that width; a wide one would not. The type sits at the
-   foot over a veil, the way the doors on the home page do, so the picture is
-   never interrupted by a caption bar. */
-.svcs{margin:var(--sy) 0 0;display:grid;
-  grid-template-columns:1fr 1fr;gap:var(--s2)}
-.door{position:relative;display:grid;align-content:end;isolation:isolate;
-  overflow:hidden;aspect-ratio:3/4;padding:var(--s4);
-  background:#0B0C0E;color:#EDE9E0}
-/* At 1440 each door is ~735px wide, so a 4/5 portrait makes it 918px tall and
-   pushes its own name past the fold — and those two names are the entire
-   decision this page asks for. Capping with max-height does not work: paired
-   with aspect-ratio it makes the box take its WIDTH from the capped height, so
-   the doors shrink sideways and stop filling their columns. So the ratio itself
-   turns landscape once there is width to spare. */
-@media(min-width:820px){.door{aspect-ratio:4/5}}
-@media(min-width:1150px){.door{aspect-ratio:5/4}}
-.door img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  object-position:var(--pos,center);z-index:-2;transform:scale(1.03);
-  transition:transform 1.3s var(--settle)}
-.door::after{content:'';position:absolute;inset:0;z-index:-1;
+   These are spreads instead. Each service takes the full width of the page:
+   the photograph runs off the edge of the screen on one side, the words face
+   it across the fold, and the second one mirrors the first so the eye crosses
+   back. Full-bleed is the whole trick — a picture that stops at a container
+   is a card, a picture that runs off the page is a plate.
+
+   The numeral is there to say there are two of these and they are read, not
+   chosen from. It is set large and faint so it organises without shouting. */
+.svcs{margin:var(--sy) 0 0;display:grid}
+@media(max-width:759px){.svcs{padding-inline:var(--gut)}}
+
+.svc{display:grid;grid-template-columns:1fr;
+  border-top:1px solid var(--hair)}
+.svc:last-child{border-bottom:1px solid var(--hair)}
+
+/* ---------- the pair on a phone ----------
+   Both services side by side, as they are on the desktop, so the choice is one
+   look rather than two screens of scroll. Each column is about 180px, which
+   carries a plate, a name and a line — but not four hundred words.
+
+   So the chapter takes the whole width when it is opened. :has() lets the
+   COLUMN respond to the state of the toggle inside it: closed, the two sit as
+   a pair; open, that one steps out to full width and its prose gets a real
+   measure back. Nothing is hidden and nothing is cut — the page just stops
+   pretending 180px is a column of text. */
+@media(max-width:759px){
+  /* stretch, not start: the two columns must be the same height for their
+     buttons to land on one line */
+  .svcs{grid-template-columns:1fr 1fr;gap:0 var(--s2);align-items:stretch}
+  /* auto/1fr, or the two columns drift: each .svc is stretched to the tallest
+     of the pair, and with two auto rows the surplus lands in the PICTURE — so
+     the plate with the shorter caption grew and the two numerals no longer sat
+     on the same line. Pinning the plate to its own height puts every surplus
+     pixel in the body instead, where it is invisible. */
+  .svc{border-top:0;grid-template-rows:auto 1fr}
+  .svc:last-child{border-bottom:0}
+  /* The CONTAINER unstacks, not the one item. Spanning a single .svc across
+     both columns only reads correctly for the FIRST of the pair: grid cannot
+     put a full-width item beside a narrow one, so when the second was opened it
+     was pushed onto a new row and appeared to jump to the bottom, leaving the
+     first stranded half-width above it. Opening anything now turns the pair
+     into one column, so both services are full width, in their own order, and
+     the one you opened is where you left it — the same behaviour whichever you
+     press. */
+  .svcs:has(.ch-more[open]){grid-template-columns:1fr;gap:var(--sy) 0}
+}
+@media(min-width:900px){
+  .svc{grid-template-columns:1fr 1fr;align-items:stretch}
+  /* the second spread mirrors the first: picture to the right, words to the
+     left, so the page alternates instead of repeating */
+  .svc:nth-child(even) .svc-shot{grid-column:2;grid-row:1}
+  .svc:nth-child(even) .svc-body{grid-column:1;grid-row:1}
+}
+
+/* The plate. No aspect-ratio: paired with a two-column grid it takes its WIDTH
+   from the capped height and the column stops filling. A min-height in svh
+   keeps it tall without ever running past the fold. */
+.svc-shot{position:relative;overflow:hidden;margin:0;background:#0B0C0E;
+  min-height:clamp(22rem,58svh,34rem);
+  display:grid;align-content:end;padding:var(--s5);isolation:isolate}
+/* the name reads over the picture now, so the picture needs the veil the doors
+   on the home page use — measured there, not guessed */
+.svc-shot::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:linear-gradient(to top,rgba(8,9,11,.92) 0%,rgba(8,9,11,.55) 42%,
     rgba(8,9,11,.12) 78%)}
-.door:hover img,.door:focus-visible img{transform:scale(1.09)}
-.door-n{font-weight:250;font-size:clamp(1.15rem,3.6vw,1.9rem);line-height:1.1;
-  letter-spacing:-.022em;margin:0}
-.door-p{margin:var(--s1) 0 0;font-size:clamp(.85rem,2.4vw,1rem);line-height:1.45;
-  color:rgba(237,233,224,.84)}
-/* the whole box is the target, so this is a signal rather than a button */
-.door-go{display:inline-flex;align-items:center;gap:var(--s1);margin:var(--s2) 0 0;
-  font-family:var(--mono);font-size:.5625rem;letter-spacing:.18em;
-  text-transform:uppercase}
-.door-go i{font-style:normal;transition:transform .45s var(--swing)}
-.door:hover .door-go i{transform:translateX(5px)}
+.svc-cap{position:relative;color:#EDE9E0;margin:0}
+.svc-cap .svc-no{color:rgba(237,233,224,.5)}
+.svc-cap .svc-n{color:#EDE9E0}
+.svc-cap .svc-sub{color:rgba(237,233,224,.86)}
+@media(max-width:759px){.svc-shot{min-height:clamp(15rem,42svh,20rem)}}
+@media(min-width:900px){.svc-shot{min-height:clamp(30rem,78svh,46rem)}}
+.svc-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:var(--pos,center);z-index:-2;transform:scale(1.03);
+  transition:transform 1.6s var(--settle)}
+.svc:hover .svc-shot img{transform:scale(1.08)}
+
+/* The words face the plate. Padding, not a wrap, because this column already
+   sits inside the full-width grid — and the measure is capped so a wide screen
+   does not stretch the prose to forty words a line. */
+.svc-body{display:grid;align-content:center;gap:0;
+  padding:var(--sz) var(--gut)}
+
+@media(min-width:900px){.svc-body{padding:var(--sz) clamp(var(--sy),6vw,var(--sz))}}
+.svc-in{max-width:38rem}
+
+.svc-no{font-family:var(--mono);font-size:clamp(2.5rem,5vw,4rem);line-height:1;
+  font-weight:300;color:var(--hair);margin:0;letter-spacing:-.02em}
+.svc-n{font-weight:200;font-size:clamp(2.1rem,4.4vw,3.4rem);line-height:1;
+  letter-spacing:-.034em;margin:var(--s2) 0 0;text-wrap:balance}
+.svc-sub{margin:var(--s3) 0 0;color:var(--muted);
+  font-size:clamp(1.05rem,1.5vw,1.3rem);line-height:1.5;max-width:26ch;
+  text-wrap:balance}
+.svc-lede{margin:var(--s4) 0 0;max-width:46ch;
+  font-size:clamp(1.0625rem,1.25vw,1.15rem);line-height:1.65;font-weight:400}
+
 @media(prefers-reduced-motion:reduce){
-  .door img,.door:hover img{transform:none}
-  .door:hover .door-go i{transform:none}
+  .svc-shot img,.svc:hover .svc-shot img{transform:none}
 }
 
-/* ---------- the two chapters ----------
-   The doors above are the DECISION; these are the answer to "what is it,
-   exactly", which the page never gave. The client wrote four hundred words on
-   each service and the page was carrying a one-line summary of both, so the
-   only place either was actually explained was a document nobody visiting the
-   site can read.
+/* ---------- the chapter, inside its service ----------
+   Anchored from the home page's two doors, and the bar is fixed, so without
+   scroll-margin the browser puts the block top at y=0 and the bar sits on its
+   own heading. --clear, not a number: bar height plus a step of air, and the
+   bar grows with the mark. */
+[id="made-to-measure"],[id="wardrobe-management"]{scroll-margin-top:var(--clear)}
 
-   Two columns on a desktop so the name stays beside its own prose instead of
-   scrolling away from it, one column on a phone. No facts table under either —
-   lead time, minimum order and the Wardrobe Management price are all still
-   missing from the client, and an empty table is a worse answer than none. */
-/* The home page now links straight to #made-to-measure and #wardrobe-management,
-   and the bar is fixed — so without this the browser scrolls the section to y=0
-   and the bar sits on top of its own eyebrow. --clear, not a number: it is the
-   bar's height plus a step of air, and the bar grows with the mark. */
-.band[id]{scroll-margin-top:var(--clear)}
-.ch{display:grid;gap:var(--s4)}
-@media(min-width:900px){
-  .ch{grid-template-columns:minmax(0,22rem) minmax(0,1fr);
-    gap:var(--sy);align-items:start}
-}
-.ch-sub{margin:var(--s2) 0 0;max-width:30ch;text-wrap:balance}
-
-.ch-body>p{margin:0 0 var(--s4);max-width:62ch}
+/* Same correction the About us story got, and for the same reason: these are
+   four hundred words of the client's prose, not a caption. The site's body
+   default is weight 300, which is right under a photograph and too thin to
+   hold a paragraph — the contrast was never the problem, the stroke was. */
+.ch-body{padding-top:var(--s4)}
+.ch-body>p{margin:0 0 var(--s4);max-width:46ch;
+  font-size:clamp(1.0625rem,1.25vw,1.15rem);line-height:1.7;font-weight:400}
 .ch-body>p:last-child{margin-bottom:0}
 
-/* ---------- read more ----------
-   The full chapter is still every word of it — nothing was cut to make this
-   fit — but it opens on request rather than by default, so a visitor who
-   only wants the one-line answer is not made to scroll past four hundred
-   words to reach the form. Native <details>: no script, and a screen reader
-   announces "collapsed" / "expanded" on its own. */
-.ch-more{margin-top:var(--s3)}
-.ch-more summary{cursor:pointer;list-style:none;display:inline-flex;
-  align-items:center;gap:var(--s1);padding-bottom:var(--s1);
-  border-bottom:1px solid var(--hair);
-  font-family:var(--mono);font-size:.6875rem;letter-spacing:.16em;
-  text-transform:uppercase;transition:border-color .3s var(--settle)}
+/* ---------- read the chapter ----------
+   The full chapter is every word of it — nothing was cut to make it fit — but
+   it opens on request, so a visitor who only wants the one-line answer is not
+   made to scroll four hundred words to reach the button. Native <details>: no
+   script, and a screen reader announces collapsed/expanded on its own.
+
+   It reads as a line of type with a rule under it, not as a second button. The
+   page asks for one action; two buttons of equal weight is the page failing to
+   decide which. */
+/* A ROW, not a line of text. It was set as small mono type with an arrow and
+   an underline, which is the site's grammar for a LINK — so it read as a stray
+   caption sitting between the paragraph and the button rather than as the
+   control that opens the chapter. The difference is affordance: a control needs
+   an edge, a full width to be pressed across, and a mark that changes state.
+
+   Hairline top and bottom, the label at one end and a + at the other, and 3rem
+   of height so a thumb has something to hit. The + turns into a × when it is
+   open, which is the one universally read "this closes" in any language. */
+.ch-more{margin-top:var(--s4)}
+.ch-more summary{cursor:pointer;list-style:none;
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  min-height:3rem;padding-block:var(--s2);
+  border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+  color:var(--ink);
+  font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+  text-transform:uppercase;
+  transition:border-color .3s var(--settle)}
 .ch-more summary::-webkit-details-marker{display:none}
-.ch-more summary i{font-style:normal;transition:transform .35s var(--swing)}
-.ch-more:hover summary,.ch-more summary:focus-visible{border-color:currentColor}
-.ch-more[open] summary i{transform:rotate(90deg)}
-.ch-more .ch-body{margin-top:var(--s4)}
-/* Do not lean on the browser to hide a closed <details>: the engine in
-   the in-app preview doesn't, and a chapter that will not collapse is
-   worse than no toggle at all. Tie the body to the [open] attribute so
-   every engine agrees. */
+.ch-more + .ch-more,.ch-more[open] summary{border-color:var(--hair)}
+/* the mark is drawn, not typed: a font's + and × sit on different baselines
+   and at different weights, so swapping the character makes the row twitch */
+.ch-more summary i{position:relative;flex:none;width:14px;height:14px;
+  font-style:normal;transition:transform .4s var(--swing)}
+.ch-more summary i::before,.ch-more summary i::after{content:'';
+  position:absolute;inset:50% 0 auto 0;height:1px;background:currentColor}
+.ch-more summary i::after{transform:rotate(90deg)}
+.ch-more[open] summary i{transform:rotate(135deg)}
+.ch-more:hover summary,.ch-more summary:focus-visible{border-color:var(--ink)}
+/* Do not lean on the browser to hide a closed <details>: the engine in the
+   in-app preview does not, and a chapter that will not collapse is worse than
+   no toggle at all. Tie the body to [open] so every engine agrees. */
 .ch-more:not([open]) .ch-body{display:none}
+
+/* one action per spread, and it already knows which service was asked about */
+/* the pair's one button, centred under both */
+.svcs-cta{margin:var(--sy) 0 0;text-align:center}
+.svcs-cta .cta{padding:var(--s3) var(--s5)}
+
+/* the phone rules sit AFTER the base ones on purpose: a media query adds no
+   specificity, so at equal weight it is source order that decides, and this
+   block kept losing to rules written below it. */
+@media(max-width:759px){
+  /* the gutter belongs to the pair, not to each column inside it.
+     A column, so the button can be pushed to the foot of it — the two ledes
+     wrap to different line counts (four lines against three), which walked the
+     two identical buttons out of line with each other. margin-top:auto puts
+     every surplus pixel above the button instead of below it, so both land on
+     the same line whatever the text above them does. */
+  /* Under the image: the toggle, and nothing else. The lede repeated in short
+     what the chapter says in full, and with the name and its line now on the
+     photograph there is no longer a caption block for it to belong to. The two
+     toggles therefore sit directly under two equal-height plates, which is what
+     puts them on one line — no flex trickery needed for that any more. */
+  .svc-lede{display:none}
+  .svc-shot{padding:var(--s3)}
+  .svc-body{padding:0;display:flex;flex-direction:column}
+  /* the chain has to be unbroken: .svc-cta is a child of .svc-in, so a flex
+     column on .svc-body alone pushes nothing — .svc-in was the only flex item
+     and it shrank to its content. It has to stretch and be a column itself. */
+  .svc-in{display:flex;flex-direction:column;flex:1}
+  .svc-no{font-size:1.5rem}
+  .svc-n{font-size:clamp(1.15rem,4.6vw,1.5rem);letter-spacing:-.022em;
+    margin-top:var(--s1)}
+  .svc-sub{font-size:.875rem;margin-top:var(--s1);max-width:22ch;line-height:1.4}
+  .svc-lede{font-size:.9375rem;line-height:1.55;margin-top:var(--s3)}
+  .ch-more summary{font-size:.5625rem;letter-spacing:.12em}
+  .svcs-cta{grid-column:1/-1;margin-top:var(--s5)}
+  .svcs-cta .cta{display:block;padding:var(--s3) var(--s4);
+    font-size:.625rem;letter-spacing:.12em}
+  /* opened, it is full width again, so the prose can have its measure back */
+  .svcs:has(.ch-more[open]) .ch-body>p{font-size:1.0625rem;max-width:46ch}
+}
 
 /* ---------- the form ----------
    Sized, not guessed. The version before this made everything big in the name
@@ -190,12 +300,27 @@
 .said:empty{display:none}
 .said.ok{color:var(--ink)}
 .said.bad{color:var(--claret)}
-.callbox{margin:var(--s3) 0 0;padding-top:var(--s3);border-top:1px solid var(--hair);
-  display:flex;align-items:baseline;gap:var(--s1);flex-wrap:wrap;font-size:.875rem}
-.callbox span{color:var(--muted)}
-.callbox a{font-family:var(--mono);font-size:.95rem;
-  border-bottom:1px solid var(--hair);padding-bottom:var(--s0)}
-.callbox a:hover{border-color:currentColor}
+/* ---------- the other way to reach the house ----------
+   This was the number, set as text with "Would rather talk?" in front of it.
+   Printed, a number is something to read; on a phone the one thing a visitor
+   wants to do with it is press it, and a line of type is a poor target — it
+   was 14px tall and the tap area was the glyphs themselves.
+
+   A button says what pressing it does. The number is not lost: it is in the
+   footer of this page, which is where somebody on a desktop — where tel: often
+   goes nowhere — will look for something to dial by hand. */
+.callbox{margin:var(--s4) 0 0;padding-top:var(--s4);
+  border-top:1px solid var(--hair)}
+.callbtn{display:flex;align-items:center;justify-content:center;gap:var(--s2);
+  min-height:3.25rem;padding:0 var(--s4);
+  border:1px solid var(--hair);
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.16em;
+  text-transform:uppercase;
+  transition:border-color .35s var(--settle),background-color .35s var(--settle),
+             color .35s var(--settle)}
+.callbtn:hover,.callbtn:focus-visible{border-color:var(--ink);
+  background:var(--ink);color:var(--room)}
+.callbtn-ico{width:14px;height:14px;flex:none;fill:currentColor}
 
 .aside-shot{display:none;margin:0;position:relative;aspect-ratio:4/5;
   overflow:hidden;background:var(--under)}
@@ -208,7 +333,7 @@
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="top label">
-  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan, home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
   <nav class="nav">
     <a href="index.html">Home</a>
     <a href="shop.html">Shop</a>
@@ -225,91 +350,95 @@
       <h1 class="display rise d1" style="max-width:16ch">Made to fit a person,
       not a size.</h1>
       <p class="lede rise d1" style="max-width:46ch;color:var(--muted)">
-        Two ways to work with the house. Both begin the same way — with a
-        conversation, and a measure taken once.</p>
+        Two ways to work with the house. Both begin the same way, with a conversation and a measure taken once.</p>
 
-      <div class="svcs">
-        <a class="door rise d1" href="#book" data-pick="Made to Measure">
+    </div>
+
+    <!-- Every word of the two chapters below is the client's, from the copy
+         document. Sentences are dropped; none are rewritten and none added. -->
+    <div class="svcs">
+
+      <article class="svc" id="made-to-measure" aria-labelledby="mtm-h">
+        <figure class="svc-shot rise" style="--pos:center 38%">
           <img src="images/bespoke/made-to-measure.webp"
             alt="A half-made shirt on a tailor's dress form, the paper pattern still pinned to it"
             loading="lazy" decoding="async">
-          <h2 class="door-n">Made to Measure</h2>
-          <p class="door-p">Over thirty measurements, taken once. A pattern cut
-          for one person alone.</p>
-          <span class="door-go">Book a consultation <i aria-hidden="true">&rarr;</i></span>
-        </a>
+            <figcaption class="svc-cap">
+              <p class="svc-no" aria-hidden="true">I</p>
+              <h2 class="svc-n" id="mtm-h">Made to Measure</h2>
+              <p class="svc-sub">The garment that already knows you.</p>
+            </figcaption>
+          </figure>
 
-        <a class="door rise d2" href="#book" data-pick="Wardrobe Management">
+        <div class="svc-body">
+          <div class="svc-in rise d1">
+            <p class="svc-lede">Over thirty measurements, taken once. A pattern
+            cut for one person alone.</p>
+
+            <details class="ch-more">
+              <summary>Read the chapter<i aria-hidden="true"></i></summary>
+              <div class="ch-body">
+                <p>The first time we measure a client, we take over thirty
+                individual measurements. Not because thirty is an impressive
+                number, but because no two people stand, move, or carry
+                themselves in quite the same way.</p>
+                <p>Every commission begins with conversation: how you live, how
+                you work, what has never felt quite right, and what finally
+                should. Only then do we guide you through cloth, considering not
+                just its appearance, but its weight, texture, drape, and how it
+                will accompany you through your days.</p>
+                <p>In our atelier, every pattern is cut for one individual
+                alone. There are quicker ways to make a shirt. We have simply
+                never found one that preserved the integrity of the craft.</p>
+              </div>
+            </details>
+
+          </div>
+        </div>
+      </article>
+
+      <article class="svc" id="wardrobe-management" aria-labelledby="wm-h">
+        <figure class="svc-shot rise" style="--pos:center 46%">
           <img src="images/bespoke/wardrobe-management.webp"
             alt="A rail of finished shirts on walnut hangers, graduating in colour"
             loading="lazy" decoding="async">
-          <h2 class="door-n">Wardrobe Management</h2>
-          <p class="door-p">Ten shirts to that same fit, held against the six
-          months ahead.</p>
-          <span class="door-go">Book a consultation <i aria-hidden="true">&rarr;</i></span>
-        </a>
-      </div>
-    </div>
-  </section>
+            <figcaption class="svc-cap">
+              <p class="svc-no" aria-hidden="true">II</p>
+              <h2 class="svc-n" id="wm-h">Wardrobe Management</h2>
+              <p class="svc-sub">The decision you stop having to make.</p>
+            </figcaption>
+          </figure>
 
-  <!-- Every word below is the client's, from the copy document. Sentences are
-       dropped, none are rewritten and none are added. -->
-  <section class="band band--under" id="made-to-measure" aria-labelledby="mtm-h">
-    <div class="wrap">
-      <div class="ch">
-        <div class="rise d1">
-          <p class="label muted">Chapter one</p>
-          <h2 class="h1" id="mtm-h" style="margin:var(--s1) 0 0">Made to Measure</h2>
-          <p class="ch-sub muted">The garment that already knows you.</p>
-        </div>
-        <details class="ch-more rise d2">
-          <summary>Read the chapter <i aria-hidden="true">&rarr;</i></summary>
-          <div class="ch-body">
-          <p>The first time we measure a client, we take over thirty individual
-          measurements. Not because thirty is an impressive number, but because
-          no two people stand, move, or carry themselves in quite the same way.</p>
-          <p>Every commission begins with conversation — how you live, how you
-          work, what has never felt quite right, and what finally should. Only
-          then do we guide you through cloth, considering not just its
-          appearance, but its weight, texture, drape, and how it will accompany
-          you through your days.</p>
-          <p>In our atelier, every pattern is cut for one individual alone.
-          There are quicker ways to make a shirt. We have simply never found one
-          that preserved the integrity of the craft.</p>
-          </div>
-        </details>
-      </div>
-    </div>
-  </section>
+        <div class="svc-body">
+          <div class="svc-in rise d1">
+            <p class="svc-lede">The same fit, and the wardrobe built to it
+            ahead of when you need it.</p>
 
-  <section class="band" id="wardrobe-management" aria-labelledby="wm-h">
-    <div class="wrap">
-      <div class="ch">
-        <div class="rise d1">
-          <p class="label muted">Chapter two</p>
-          <h2 class="h1" id="wm-h" style="margin:var(--s1) 0 0">Wardrobe Management</h2>
-          <p class="ch-sub muted">The decision you stop having to make.</p>
-        </div>
-        <details class="ch-more rise d2">
-          <summary>Read the chapter <i aria-hidden="true">&rarr;</i></summary>
-          <div class="ch-body">
-          <p>It starts the way Made to Measure does — with your fit and your
-          fabric preferences recorded once, properly, so they never need to be
-          re-explained.</p>
-          <p>From there, we do something most bespoke houses won't: we look
-          ahead. Based on how a wardrobe like yours is actually used across a
-          season, we build ten shirts to your exact specification and hold them
-          against the six months in front of you — not guessed at, forecasted.</p>
-          <p>You commit to that cycle upfront, in full, before a single shirt is
-          cut. It's not a subscription and it isn't retail — it's a reservation
-          of our atelier's time and materials against your name, for a period,
-          so that "I need a shirt" is never a problem you have to solve on short
-          notice again. When the six months end, the next cycle is already
-          waiting on the specification we already have. No re-measuring. No
-          re-deciding.</p>
+            <details class="ch-more">
+              <summary>Read the chapter<i aria-hidden="true"></i></summary>
+              <div class="ch-body">
+                <p>It starts the way Made to Measure does, with your fit and
+                your fabric preferences recorded once, properly, so they never
+                need to be re-explained.</p>
+                <p>From there, we do something most bespoke houses won't: we
+                look ahead.</p>
+                <p>You commit to that cycle upfront, in full, before a single
+                shirt is cut. It's not a subscription and it isn't retail. It's a reservation of our atelier's time and materials against your
+                name, for a period, so that "I need a shirt" is never a problem
+                you have to solve on short notice again. No re-measuring. No
+                re-deciding.</p>
+              </div>
+            </details>
+
           </div>
-        </details>
-      </div>
+        </div>
+      </article>
+
+      <!-- One button, not two. Both opened the same form, and side by side at
+           the foot of two columns they read as a choice the page was asking the
+           visitor to make twice. The form still asks which service, so nothing
+           is lost by asking once, here. -->
+      <p class="svcs-cta"><a class="cta" href="#book">Book a consultation</a></p>
     </div>
   </section>
 
@@ -321,8 +450,7 @@
           <h2 class="h1 rise d1" style="max-width:18ch;margin:var(--s1) 0 var(--s3)">
             Leave your details and we will call you.</h2>
           <p class="rise d1" style="color:var(--muted);max-width:40ch">
-            No payment and no obligation. The consultation is a conversation
-            first — the measure comes after.</p>
+            No payment and no obligation. The consultation is a conversation first. The measure comes after.</p>
 
           <form class="form rise d2" id="bookForm" novalidate>
             <p class="which">
@@ -367,8 +495,14 @@
               <button class="cta cta--fill" type="submit">Book a consultation</button>
             </p>
             <p class="said" id="said" role="status" aria-live="polite"></p>
-            <p class="callbox"><span>Would rather talk?</span>
-              <a href="tel:+918282826264">+91 82828 26264</a></p>
+            <p class="callbox">
+              <a class="callbtn" href="tel:+918282826264">
+                <svg class="callbtn-ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <path d="M5.2 1.8 6.6 4.7a1 1 0 0 1-.24 1.18l-1 .87a9.4 9.4 0 0 0 3.9 3.9l.87-1a1 1 0 0 1 1.18-.24l2.9 1.4a1 1 0 0 1 .54 1.06l-.32 1.7a1.1 1.1 0 0 1-1.2.88C7.1 13.9 2.1 8.9 1.45 3.13a1.1 1.1 0 0 1 .88-1.2l1.7-.32a1 1 0 0 1 1.17.54Z"/>
+                </svg>
+                <span>Call the house</span>
+              </a>
+            </p>
           </form>
         </div>
 
@@ -425,12 +559,12 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=1786799140"></script>
-<script src="assets/store.js?v=1786799140"></script>
-<script src="assets/house.js?v=1786799140"></script>
-<script src="assets/iar-house.js?v=1786799140"></script>
-<script src="assets/mark.js?v=1786799140"></script>
-<script src="assets/track.js?v=1786799140"></script>
+<script src="assets/site.js?v=1786938000"></script>
+<script src="assets/store.js?v=1786938000"></script>
+<script src="assets/house.js?v=1786938000"></script>
+<script src="assets/iar-house.js?v=1786938000"></script>
+<script src="assets/mark.js?v=1786938000"></script>
+<script src="assets/track.js?v=1786938000"></script>
 <script>
 (function () {
   'use strict';
@@ -479,10 +613,10 @@
        messy number than lose a client to a rejected form. */
     { id: 'ph', label: 'mobile number',
       test: function (v) { return v.replace(/[^0-9]/g, '').length >= 10; },
-      why: 'That does not look like a full mobile number — ten digits or more.' },
+      why: 'That does not look like a full mobile number. Ten digits or more.' },
     { id: 'em', label: 'email',
       test: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); },
-      why: 'That email address is missing something — check for a typo.' }
+      why: 'That email address is missing something. Check for a typo.' }
   ];
 
   function mark(f, ok) {
@@ -567,7 +701,7 @@
       var s = 'Consultation request\n\n' + v.fn + ' ' + v.ln + '\n' + v.ph + '\n' +
               v.em + '\n\nInterested in: ' + v.service;
       window.open('https://wa.me/' + PHONE + '?text=' + encodeURIComponent(s), '_blank', 'noopener');
-      done('Thank you, ' + v.fn + '. Your details are on their way to the house — we will be in touch.', true);
+      done('Thank you, ' + v.fn + '. Your details are on their way to the house. We will be in touch.', true);
       form.reset();
       return;
     }
@@ -578,7 +712,7 @@
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         access_key: ACCESS_KEY,
-        subject: 'Consultation request — ' + v.fn + ' ' + v.ln,
+        subject: 'Consultation request: ' + v.fn + ' ' + v.ln,
         from_name: 'I Am Ratan website',
         'First name': v.fn, 'Last name': v.ln,
         Mobile: v.ph, Email: v.em, Service: v.service,
@@ -595,7 +729,7 @@
       }
     }).catch(function () {
       send.removeAttribute('aria-busy');
-      done('That did not send — you may be offline. Please try again, or call +91 82828 26264.', false);
+      done('That did not send. You may be offline. Please try again, or call +91 82828 26264.', false);
     });
   });
 })();
@@ -612,6 +746,54 @@
   var d = section && section.querySelector('.ch-more');
   if (d) d.open = true;
 })();
+
+/* Opening a chapter on a phone turns the pair from two columns into one, and
+   that reflow moves the row you just pressed — measured, the Wardrobe
+   Management toggle travelled 422px down the page, so the chapter you asked to
+   read opened below the fold and it looked as though the tap had thrown you to
+   the bottom.
+
+   Nothing is wrong with the layout; the page simply grew above the thing you
+   touched. So: note where the row sat, and once the browser has actually
+   opened it, give the difference back in scroll.
+
+   The position is taken on pointerdown and corrected on 'toggle', not both on
+   'click': a click on a <summary> fires BEFORE the element opens, so measuring
+   after it in the same tick — even across two animation frames — reads the old
+   layout and corrects by nothing. That is exactly what the first attempt did. */
+(function () {
+  var rows = document.querySelectorAll('.ch-more');
+  Array.prototype.forEach.call(rows, function (d) {
+    var summary = d.querySelector('summary');
+    if (!summary) return;
+    var before = null;
+
+    summary.addEventListener('pointerdown', function () {
+      before = summary.getBoundingClientRect().top;
+    });
+    /* keyboards and assistive tech never send pointerdown */
+    summary.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        before = summary.getBoundingClientRect().top;
+      }
+    });
+
+    d.addEventListener('toggle', function () {
+      if (before === null) return;
+      var drift = summary.getBoundingClientRect().top - before;
+      before = null;
+      if (Math.abs(drift) < 2) return;
+      /* behavior:'instant', because the stylesheet sets scroll-behavior:smooth
+         on <html> and that applies to scripted scrolling too. A smooth
+         correction is not a correction: the page animates away from under the
+         thumb and then eases back, and measured here the plain call moved
+         nothing at all while the explicit instant one moved immediately. This
+         is a restoration, so it has to happen in the same frame as the reflow
+         it is undoing. */
+      window.scrollBy({ top: drift, left: 0, behavior: 'instant' });
+    });
+  });
+})();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
@@ -623,5 +805,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
+<script src="assets/nav.js?v=1786938000"></script>
 </body>
 </html>

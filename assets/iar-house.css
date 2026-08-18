@@ -139,6 +139,13 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
   ::view-transition-old(root),::view-transition-new(root){animation:none}
 }
 
+/* Carried but not painted. For a heading a page needs in its document — for a
+   screen reader working through the outline, and for the result Google prints —
+   but which the design has no room to show. Not display:none: that removes it
+   from the accessibility tree too, which is the opposite of the point. */
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;
+  overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+
 /* The first tab stop on every page. Invisible until a keyboard asks for it,
    then it sits above the fixed bar. */
 .skip{position:fixed;top:var(--s2);left:var(--s2);z-index:99;
@@ -287,11 +294,75 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
   background:currentColor;transform:scaleX(0);transform-origin:left;
   transition:transform .38s var(--swing)}
 .nav a:hover::after,.nav a[aria-current]::after{transform:scaleX(1)}
+/* ---------- the menu on a phone ----------
+   Four links, the mark and the town were all being squeezed onto 375px by
+   shrinking the type to 9px and the gaps to 8px. That is not a menu, it is a
+   row of marks you can neither read nor reliably hit — the links were under
+   the 24px minimum a thumb needs in both directions.
+
+   So on a phone the links come out of the bar and into a panel. The bar keeps
+   the mark and a button; the panel holds full-size links with room to press.
+
+   Every rule here is behind [data-nav] on <html>, which nav.js sets once
+   it has built the button. Without JavaScript the attribute never appears, the
+   old inline row stays, and a visitor still has working navigation — a menu
+   that depends on a script to exist is a menu that can vanish. */
+/* 1024, not 760. The inline row is 10px mono at EVERY width — that is the
+   house's label bar and it is right under a mouse, but its links are 23px tall,
+   under the 24px a finger needs. Measured at 820px, which is a tablet in
+   landscape and a small laptop window: still the inline row, still 10px, still
+   23px targets. The drawer now covers every touch-sized viewport and hands the
+   row back only where there is a pointer to use it. */
+@media(max-width:1024px){
+  [data-nav] .top{grid-template-columns:1fr auto;gap:var(--s3)}
+  [data-nav] .top>span.muted{display:none}
+
+  .navbtn{display:inline-flex;flex-direction:column;justify-content:center;
+    /* the gap between the three bars is the drawn glyph's own geometry, not
+       air between elements, so it rides the type rather than the scale */
+    gap:.3125em;width:2.75rem;height:2.75rem;align-items:flex-end;
+    margin-right:calc(var(--s2) * -1);cursor:pointer}
+  .navbtn i{display:block;height:1px;width:22px;background:currentColor;
+    transition:transform .4s var(--swing),opacity .25s}
+  .navbtn i:nth-child(2){width:15px}
+  [data-nav="open"] .navbtn i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  [data-nav="open"] .navbtn i:nth-child(2){opacity:0}
+  [data-nav="open"] .navbtn i:nth-child(3){transform:translateY(-6px) rotate(-45deg);width:22px}
+
+  /* the panel. Fixed, so it is never clipped by the bar's own stacking. */
+  [data-nav] .nav{position:fixed;inset:0 0 0 auto;width:min(20rem,82vw);
+    z-index:60;display:grid;align-content:start;gap:0;
+    padding:calc(var(--bar) + var(--s5)) var(--gut) var(--sy);
+    background:var(--room);border-left:1px solid var(--hair);
+    transform:translateX(100%);transition:transform .42s var(--settle);
+    overscroll-behavior:contain}
+  [data-nav="open"] .nav{transform:none}
+
+  /* full-size links with a real target: 3.25rem is 52px, comfortably over the
+     24px minimum, and each one keeps its own hairline so the list reads as a
+     list rather than a stack of words */
+  [data-nav] .nav a{font-size:1.125rem;letter-spacing:-.01em;
+    text-transform:none;font-family:var(--sans);font-weight:300;
+    min-height:3.25rem;display:flex;align-items:center;
+    border-bottom:1px solid var(--hair);padding-block:0}
+  [data-nav] .nav a::after{display:none}
+  [data-nav] .nav a[aria-current]{font-weight:400}
+
+  /* 40, under the bar's 50. The panel is a child of the header, so its own
+     z-index:60 is capped by the header's 50 — a veil at 55 sat OVER the
+     panel and greyed the menu it was meant to set apart. Below the bar,
+     the veil dims the page and leaves both the bar and the panel crisp. */
+  .navveil{position:fixed;inset:0;z-index:40;background:rgba(9,10,12,.44);
+    opacity:0;pointer-events:none;transition:opacity .42s var(--settle)}
+  [data-nav="open"] .navveil{opacity:1;pointer-events:auto}
+}
+@media(min-width:1025px){.navbtn,.navveil{display:none}}
+@media(prefers-reduced-motion:reduce){
+  [data-nav] .nav,.navveil,.navbtn i{transition:none}
+}
+
 @media(max-width:640px){
-  .nav{gap:var(--s1)}.nav a{font-size:.5625rem}
-  /* the mark, four links and whatever sits on the right have to share 375px */
   .top{gap:var(--s1)}
-  .top>span:last-child{display:none}
 }
 
 /* ---------- bands ----------
@@ -388,17 +459,47 @@ a.shot:hover img{transform:scale(1.03)}
    prashanth@iamratan.co.in is twenty-four characters and would wrap into a mess
    beside anything. So the brand block and the contact block keep the full
    width, and the two that can share, share. */
-@media(max-width:859px){
-  .foot-grid{grid-template-columns:1fr 1fr;gap:var(--s5) var(--s4)}
-  .foot-grid>:nth-child(1),.foot-grid>:nth-child(2){grid-column:1/-1}
-  /* the monogram is a signature here, not a billboard */
-  .mark--monogram{width:min(150px,42vw);margin-bottom:var(--s3)}
-}
 @media(min-width:860px){.foot-grid{grid-template-columns:1.5fr 1fr 1fr 1fr}}
 .mark--monogram{width:min(200px,56vw);aspect-ratio:1430/620;display:block;
   background:currentColor;margin-bottom:var(--s4);
   -webkit-mask:url('mark-monogram.png') no-repeat center/contain;
   mask:url('mark-monogram.png') no-repeat center/contain}
+
+/* ---------- the footer on a phone ----------
+   All four blocks share the two columns now. The brand and contact blocks used
+   to span the full width on the stated grounds that the email was too long to
+   sit beside anything — measured, prashanth@iamratan.co.in is 173px and half a
+   column is 199px. It fits, and holding two blocks at full width for a reason
+   that was not true cost about 290px of empty right-hand side.
+
+   This rule sits AFTER the base .mark--monogram on purpose. It was written
+   before it, and since a media query adds no specificity the base width simply
+   won on source order — the monogram asked for 150px and rendered at 200px on
+   every phone. */
+@media(max-width:859px){
+  .foot-grid{grid-template-columns:1fr 1fr;gap:var(--sy) var(--s4)}
+  /* a signature, not a billboard */
+  .mark--monogram{width:min(120px,32vw);margin-bottom:var(--s3)}
+  /* The address is never broken across lines. overflow-wrap:anywhere let it
+     split mid-domain into "prashanth@iamratan.c / o.in", which reads as a
+     typo rather than as a wrap.
+
+     Half a column only fits the 173px address from about 440px up: at 375 it
+     is 158px and at 320 it is 130px. The claim above that it fits was measured
+     at a single width and generalised, which is exactly the trap. So below
+     460px the brand and contact blocks take the full width and only the two
+     short lists pair up. */
+  .foot a[href^="mailto"]{white-space:nowrap}
+}
+@media(max-width:459px){
+  /* :has() rather than nth-child so this keeps working if a block is ever
+     added or reordered: the rule follows the address, not a position. Both
+     blocks span, not just the contact one — spanning only the second would
+     leave a hole beside the brand block, since a full-width item forces a new
+     row and cannot back-fill the column above it. */
+  .foot-grid>div:first-child,
+  .foot-grid>div:has(a[href^="mailto"]){grid-column:1/-1}
+}
 .foot ul{list-style:none;margin:0;padding:0;display:grid;gap:var(--s1)}
 .foot a:hover{text-decoration:underline;text-underline-offset:5px}
 .colophon{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--hair);

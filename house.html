@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>About us — I Am Ratan</title>
+<title>About us · I Am Ratan</title>
 <meta name="description" content="For twenty years our work travelled under other names. I Am Ratan is premium Indian apparel, made with the discipline of a house that has nothing left to prove to anyone but itself.">
 <meta name="theme-color" content="#101214">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="I Am Ratan">
-<meta property="og:title" content="About us — I Am Ratan">
+<meta property="og:title" content="About us · I Am Ratan">
 <meta property="og:description" content="For years, our work spoke in someone else's name. Today, it speaks in ours.">
 <meta property="og:image" content="https://im-ratan.vercel.app/images/cuff-monogram.jpg">
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
@@ -18,12 +18,105 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786795456">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786938000">
 <style>
 /* the hero carries the mark itself, then the one line the house leads with */
-.hero{min-height:88svh;display:grid;align-content:center;
-  padding:var(--clear) 0 var(--sy)}
+/* 88svh forced the block to 713px when its content and padding come to 664, so
+   align-content:center split the surplus 49px evenly above and below — which is
+   why the top and bottom both read long.
+
+   No min-height at all now. A floor cannot help here: the content and padding
+   come to 648px, which already exceeds any floor worth setting on a short
+   window, so the property could only ever ADD space — and on a tall window it
+   did, 79px above and below at a 1440px-high viewport. Without it the hero is
+   exactly its content plus its air at every window height.
+
+   padding-top stays --clear because that is not a spacing choice, it is the
+   fixed bar's height plus one step, and it is what every other page opens on. */
+.hero{display:grid;align-content:center;
+  padding:var(--clear) 0 var(--s6)}
+/* width:100% or the hero is the only block on the site whose text does not
+   start where every other block's text starts. .wrap centres itself with an
+   auto inline margin, and an auto inline margin on a GRID ITEM turns off
+   stretch — so inside this grid the wrap collapsed to the width of its widest
+   child (819px, the h1 at its 15ch cap) and then centred that. Measured: the
+   h1 began at x=361 while every paragraph below it began at x=58. */
+.hero>.wrap{width:100%}
 .hero .mark--monogram{width:min(340px,64vw);margin-bottom:var(--sy)}
+
+/* ---------- one grid for the whole story ----------
+   Every band below now sits on the same two columns: a rail carrying the name
+   of the section, and the column carrying its prose. Before this the page was
+   a stack of blocks each set to its own max-width and left-aligned into a
+   1309px container, so 62ch of prose sat in a 550px ribbon with 760px of
+   nothing beside it and no structure to explain why. The rail is what makes
+   that right-hand space read as a margin instead of an accident.
+
+   The section names are the client's own, from the copy document's headings —
+   OPENING SCENE, THE TURN, WHAT CONTINUES, THE ETHOS, CLOSING. Nothing here
+   is invented to fill the column. */
+/* One measure for the whole story, centred. Every text band was filling the
+   site's 1500px container, so a 64ch paragraph sat against the left gutter
+   with 528px of nothing to its right and 58px to its left — and it is the
+   LOPSIDEDNESS, not the emptiness, that reads as unfinished. A long read wants
+   two equal margins. Measured after: 274px each side at 1440.
+
+   The full-bleed plates are direct children of <main>, not of a .wrap, so they
+   keep running edge to edge and the page still breathes wide between reads. */
+main .hero>.wrap,
+main .band>.wrap,
+main .beat>.wrap{max-width:62rem}
+
+.hs{display:grid;gap:var(--s3)}
+@media(min-width:1000px){
+  .hs{grid-template-columns:minmax(0,13rem) minmax(0,1fr);
+    gap:var(--sy);align-items:start}
+}
+/* The rail label was the site's .label at its default size: 10px, uppercase,
+   0.2em of tracking, at 70% ink — 5.75:1, and small enough that the tracking
+   pulled the word apart faster than the eye put it together. It is a section
+   heading on this page, not a caption, so it gets a heading's presence: 13px,
+   full ink, and the tracking eased off now that the letters are big enough to
+   hold together. Scoped to .hs-rail so every other .label on the site keeps
+   the size it was designed at. */
+.hs-rail{margin:0;font-size:.8125rem;letter-spacing:.12em;
+  color:var(--ink);font-weight:400}
+@media(min-width:1000px){
+  /* the rail label sits on the first line of the prose beside it */
+  .hs-rail{position:sticky;top:calc(var(--clear) + var(--s3))}
+}
+.hs-main{max-width:none}
+/* This is the only long-form read on the site. 1rem is a UI size — right for a
+   product card, wrong for two thousand words of the house's own story.
+
+   Weight 400, not the site's 300. The body default is a light weight, which is
+   right for a caption under a photograph and wrong for six paragraphs: at 17px
+   the strokes go thin enough that the eye works at holding the line, even
+   though the contrast measures 14:1. Readability is not only contrast — it is
+   stroke weight, size and leading together, and this page had the last two
+   without the first. 1.7 leading because a longer measure needs more air to
+   find the next line. */
+.hs-main .prose{font-size:clamp(1.0625rem,1.25vw,1.25rem);
+  line-height:1.7;font-weight:400}
+.hs-main .prose em{font-weight:400}
+/* prose beside its own picture, inside the main column — so the picture is a
+   companion to the paragraph rather than a second, competing left edge */
+.hs-pair{display:grid;gap:var(--s5)}
+@media(min-width:1000px){
+  .hs-pair{grid-template-columns:minmax(0,1fr) minmax(0,22rem);
+    gap:var(--sy);align-items:center}
+}
+.hs-pair .prose{max-width:56ch}
+/* a picture inside the prose column, held to the column's own measure so it
+   never becomes a third left edge */
+.hs-figure{position:relative;overflow:hidden;aspect-ratio:4/3;background:var(--under)}
+/* keep the figure in frame when the box turns portrait */
+@media(max-width:760px){
+  .plate--subject>img{object-position:76% center}
+}
+.hs-figure img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* a line that has to carry the full width gets the whole grid */
+.hs-wide{grid-column:1/-1;max-width:none}
 
 /* a line that has to land alone. No decoration — just air and scale. */
 .beat{padding:var(--sz) 0}
@@ -46,8 +139,15 @@
 .triad div{display:grid;gap:var(--s0) var(--s5);grid-template-columns:1fr;
   padding:var(--s4) 0;border-bottom:1px solid var(--hair)}
 @media(min-width:760px){.triad div{grid-template-columns:11rem 1fr;align-items:baseline}}
-.triad b{font-weight:300;font-size:clamp(1.15rem,2vw,1.5rem);letter-spacing:-.02em}
-.triad p{margin:0;color:var(--muted);max-width:52ch}
+/* 400, not 300: the description under each word was lifted to 400 for
+   readability, which left the heading lighter in stroke than its own
+   paragraph. Size alone was carrying the hierarchy and weight was
+   arguing against it. */
+.triad b{font-weight:400;font-size:clamp(1.15rem,2vw,1.5rem);letter-spacing:-.02em}
+/* same correction as the prose: a light weight at 70% ink reads as faint once
+   there is a sentence of it rather than a phrase */
+.triad p{margin:0;color:var(--ink);font-weight:400;max-width:52ch;
+  font-size:1.0625rem;line-height:1.65}
 
 /* the closing rhymes with the bespoke hero: the past sits back, the present
    comes forward */
@@ -59,7 +159,7 @@
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="top label">
-  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan, home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
   <nav class="nav">
     <a href="index.html">Home</a>
     <a href="shop.html">Shop</a>
@@ -83,14 +183,18 @@
     </div>
   </section>
 
-  <figure class="plate" style="margin:0">
-    <img src="images/editorial-01.webp" alt="I Am Ratan shirting" fetchpriority="high" decoding="async">
+  <!-- object-position, not a centre crop: the man stands at the far right of
+       this frame, so cover() on a portrait phone box threw him away and left a
+       picture of an empty wall. -->
+  <figure class="plate plate--subject" style="margin:0">
+    <img src="images/editorial-01.webp" alt="A man in an I Am Ratan shirt, alone in a daylit hall" fetchpriority="high" decoding="async">
   </figure>
 
   <!-- OPENING SCENE -->
   <section class="band">
-    <div class="wrap">
-      <div class="prose rise" style="max-width:62ch">
+    <div class="wrap hs">
+      <p class="label muted hs-rail rise">Opening scene</p>
+      <div class="prose hs-main rise">
         <p>They knew how a collar should stand before it's ever been worn. They knew
         the half-degree difference between a shoulder that fits and one that almost
         does. They built the garments that walked down the world's most photographed
@@ -106,10 +210,21 @@
     </div>
   </section>
 
+  <!-- the room the opening scene describes, before the page turns to the
+       decision. Full bleed: the story has been in a text column for two
+       screens and needs to breathe. -->
+  <figure class="plate" style="margin:0">
+    <img src="images/house-atelier.webp"
+      alt="The cutting table in the atelier: shirting cloth, paper patterns and shears in morning light"
+      loading="lazy" decoding="async">
+  </figure>
+
   <!-- THE TURN -->
   <section class="band">
-    <div class="wrap">
-      <div class="prose rise" style="max-width:62ch">
+    <div class="wrap hs">
+      <p class="label muted hs-rail rise">The turn</p>
+      <div class="hs-main">
+      <div class="prose rise">
         <p>That was the arrangement, and for a long time, it was enough. The craft
         travelled. The credit didn't.</p>
         <p>Then, somewhere between one collection and the next, a father and his
@@ -122,7 +237,7 @@
         <p>If we can build this for everyone else, why not for us?</p>
       </blockquote>
 
-      <div class="prose rise" style="max-width:62ch;margin-top:var(--sy)">
+      <div class="prose rise" style="margin-top:var(--sy)">
         <p>There was no clean answer. There rarely is, when the question is really
         about identity and not inventory. But there was a decision. And the decision
         had a name.</p>
@@ -130,9 +245,14 @@
 
       <p class="name rise" style="margin-top:var(--sy)">I Am Ratan.</p>
 
-      <div class="prose rise" style="max-width:62ch;margin-top:var(--sy)">
-        <p>Ratan is an old word. It means a jewel — not for its brilliance, but for
-        its rarity. Something discovered, refined, and held onto. Something too
+      <figure class="hs-figure rise" style="margin:var(--sy) 0 0">
+        <img src="images/house-hands.webp"
+          alt="A tailor's hands stitching the collar of a white shirt"
+          loading="lazy" decoding="async">
+      </figure>
+
+      <div class="prose rise" style="margin-top:var(--sy)">
+        <p>Ratan is an old word. It means a jewel, not for its brilliance, but for its rarity. Something discovered, refined, and held onto. Something too
         valuable to disappear into the ordinary.</p>
         <p><em>That is why we chose the name.</em></p>
         <p>Not because it sounds beautiful, but because it defines the standard we
@@ -143,37 +263,37 @@
         <p>Like the finest things ever built, true value does not ask to be noticed.
         It is recognised. Quietly. Over time.</p>
       </div>
+      </div>
     </div>
   </section>
 
   <!-- WHAT CONTINUES -->
   <section class="band band--under">
-    <div class="wrap split">
-      <figure class="shot shot--square" style="margin:0">
-        <img src="images/cuff-monogram.webp" alt="The I Am Ratan monogram on a finished cuff" loading="lazy" decoding="async">
-      </figure>
-      <div>
-        <p class="label muted">What continues</p>
-        <div class="prose rise" style="margin-top:var(--s3)">
+    <div class="wrap hs">
+      <p class="label muted hs-rail rise">What continues</p>
+      <div class="hs-main hs-pair" style="max-width:none">
+        <div class="prose rise">
           <p>Nothing about the hands changed. The same discipline that once went into
-          someone else's label now goes into ours — design, pattern, cut,
-          construction, all built in-house, all held to the standard we spent two
+          someone else's label now goes into ours: design, pattern, cut, construction, all built in-house, all held to the standard we spent two
           decades learning never to lower.</p>
           <p>What changed is simpler than it sounds: the name on the inside of the
           collar is finally the same as the name on the door.</p>
-          <p><em>I Am Ratan is premium Indian apparel — made with the discipline of a
+          <p><em>I Am Ratan is premium Indian apparel, made with the discipline of a
           house that has nothing left to prove to anyone but itself.</em></p>
         </div>
+        <figure class="shot shot--square rise" style="margin:0">
+          <img src="images/cuff-monogram.webp" alt="The I Am Ratan monogram on a finished cuff" loading="lazy" decoding="async">
+        </figure>
       </div>
     </div>
   </section>
 
   <!-- THE ETHOS -->
   <section class="band">
-    <div class="wrap">
-      <p class="label muted">The ethos</p>
-      <h2 class="h1 rise" style="max-width:26ch;margin-top:var(--s2)">We call it Reclaim,
-      Redefine, Resonate — not as a slogan, but because it's the actual order things
+    <div class="wrap hs">
+      <p class="label muted hs-rail rise">The ethos</p>
+      <div class="hs-main" style="max-width:none">
+      <h2 class="h1 rise" style="max-width:26ch">We call it Reclaim, Redefine, Resonate. Not as a slogan, but because it's the actual order things
       happened in.</h2>
 
       <div class="triad rise">
@@ -183,15 +303,17 @@
         <div><b>Resonate</b><p>With people who'd rather wear who they are than wear
           who they're told to be.</p></div>
       </div>
+      </div>
     </div>
   </section>
 
   <!-- CLOSING -->
   <section class="band band--under">
-    <div class="wrap">
-      <div class="prose rise" style="max-width:62ch">
-        <p>The truest expression of luxury has always been craftsmanship — not what is
-        seen first, but what remains long after the first impression fades.</p>
+    <div class="wrap hs">
+      <p class="label muted hs-rail rise">Closing</p>
+      <div class="hs-main" style="max-width:none">
+      <div class="prose rise" style="max-width:64ch">
+        <p>The truest expression of luxury has always been craftsmanship. Not what is seen first, but what remains long after the first impression fades.</p>
         <p>It is built through patience, precision, and an unwavering respect for the
         craft itself.</p>
       </div>
@@ -204,6 +326,7 @@
       <p style="margin-top:var(--sy)">
         <a class="cta cta--fill" href="bespoke.html">Explore bespoke</a>
       </p>
+      </div>
     </div>
   </section>
 
@@ -251,11 +374,11 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786795456"></script>
-<script src="assets/house.js?v=1786795456"></script>
-<script src="assets/iar-house.js?v=1786795456"></script>
-<script src="assets/mark.js?v=1786795456"></script>
-<script src="assets/track.js?v=1786795456"></script>
+<script src="assets/store.js?v=1786938000"></script>
+<script src="assets/house.js?v=1786938000"></script>
+<script src="assets/iar-house.js?v=1786938000"></script>
+<script src="assets/mark.js?v=1786938000"></script>
+<script src="assets/track.js?v=1786938000"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -266,5 +389,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
+<script src="assets/nav.js?v=1786938000"></script>
 </body>
 </html>

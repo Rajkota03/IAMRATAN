@@ -7,7 +7,7 @@ decisions table).** Where a fact is missing, the page is built
 without it rather than around a guess. Each item notes what it unblocks, so the
 cost of leaving it open is visible.
 
-Last updated 18 Aug 2026.
+Last updated 19 Aug 2026.
 
 ---
 
@@ -54,6 +54,46 @@ For each of the 25 cloths: **composition, gsm, weave, mill, care**.
 Privacy, terms, shipping, returns/exchange. **Mandatory before Shopify launch**,
 and their absence is noticeable to anyone who checks a footer at a seminar.
 
+### The shop headline — now removed entirely, and the cloth count is a question
+The copy document lists the shop page as a gap: no headline, no intro, no
+category descriptions. It read **"Twenty-seven cloths."**, bound to the live
+product table, so it rewrote itself whenever a cloth sold out or arrived. We
+replaced that with **"Start with the cloth."** — our words — and the client has
+since asked for the headline and the *"The range"* eyebrow to come off the page
+altogether, so the shop opens straight onto the filters.
+
+- **Done:** both lines are gone from the visible page. The heading is still in
+  the document as a hidden `<h1>The range</h1>`, so a screen reader and a Google
+  result still get one — a page with no h1 at all is a real SEO cost, and this
+  keeps the cost at zero without painting anything.
+- **Note:** this means the shop currently carries **no words of its own**. Any
+  headline or intro they supply can go straight back above the filters.
+- **The count survives** on the *All* filter, where a number is a count of
+  results rather than a claim about the house.
+- **Still counting elsewhere:** the home hero ("Twenty-seven cloths, cut in five
+  sizes…"), the 404 page and the product page all still print the live count.
+  Left alone, because the client's instruction was about Wardrobe Management —
+  but if the rule is "no numbers anywhere", these three are the rest of it.
+- **Needed:** a headline and a short intro for the range, in their words.
+
+### The Wardrobe Management numbers — WITHDRAWN by the client 19 Aug 2026
+Their copy document describes the service in specifics: *"we build ten shirts to
+your exact specification and hold them against the six months in front of you"*.
+The client has since said not to publish any count of shirts or any period — the
+consultation call handles it.
+
+- **Done:** every count is off the customer-facing site — the home door kicker
+  ("Ten shirts · six months" is now "By enquiry"), both summary lines, the
+  contact-page route, and inside Chapter Two the sentences carrying the numbers
+  are **dropped**, not reworded, the same way every other elision on that page
+  works.
+- **Where it leaves a hole:** Chapter Two now says the fit is recorded, that the
+  house looks ahead, and that the cycle is paid upfront — but no longer what is
+  being committed to.
+- **Needed:** replacement copy for Chapter Two that describes the service
+  without a count, or a decision that the short version is enough and the detail
+  belongs on the call.
+
 ### Contact
 Is `prashanth@iamratan.co.in` the right public address? Studio address for a
 contact page? Opening hours?
@@ -90,7 +130,7 @@ script lockup**, distinct from the badger-and-IAR monogram. Extracted from the
 supplied PDF to `assets/mark-signature.png` as an alpha mask, so it paints in
 currentColor like the others.
 
-Both details are now in the product shot set (`4-cuff`, `5-button`).
+Both details are now in the product shot set as `4-cuff` and `5-button`, for all 27 cloths, from the close-ups supplied 19 Aug 2026. Each cloth carries its own cuff and its own button, checked by hash: no two cloths share an image.
 
 ---
 

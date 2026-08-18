@@ -238,7 +238,7 @@
     /* A preview must never be mistakable for the real page — including in a
        screenshot, which is how it would actually be mistaken. */
     if (!t.facts_are_real) {
-      line = '<b style="color:#8C2F2F">SPECIMEN — these details are stand-ins ' +
+      line = '<b style="color:#8C2F2F">SPECIMEN: these details are stand-ins ' +
              'and are not shown to customers.</b><br>' + line;
     }
     return line;

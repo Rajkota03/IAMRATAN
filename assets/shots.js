@@ -23,11 +23,25 @@ var STUDIO_AUG12  = '#EDECEC';
 
 var ALT = {
   '1-hero':   ', worn',
-  '2-view':   ', worn \u2014 another view',
-  '3-view':   ', worn \u2014 another view',
+  '2-view':   ', worn. Another view',
+  '3-view':   ', worn. Another view',
   '2-back':   ' from behind, showing the yoke and the shoulder seams',
-  '3-collar': ' \u2014 the collar, open at the throat'
+  '3-collar': '. The collar, open at the throat',
+  /* The two details the house is actually known for, and the two a customer
+     cannot judge from a photograph of a whole shirt. The alt text names what is
+     engraved and what is embroidered, because that is the fact the picture is
+     carrying and a blind customer is buying the same detail. */
+  '4-cuff':   '. The cuff, with the house signature embroidered tone on tone',
+  '5-button': '. A button in close-up, I AM RATAN engraved around the rim'
 };
+
+/* Frames that also carry a 1024px file. The worn shots were delivered at 768
+   and cannot honestly go wider, but the cuff and button close-ups came in at
+   1086, and they are the two frames where a retina desktop plate (which wants
+   1178) was visibly upscaling the thing the picture exists to show. Declared
+   here rather than hardcoded in the gallery so the manifest stays the single
+   source of truth about what each frame actually has. */
+window.IAR_WIDE = { '4-cuff': 1024, '5-button': 1024 };
 
 function shoot(name, frames, room) {
   return {
@@ -37,31 +51,31 @@ function shoot(name, frames, room) {
 }
 
 window.IAR_SHOTS = {
-  'aegean-haze':        shoot('Aegean Haze', ['1-hero', '2-view', '3-view']),
-  'azure-pearls':       shoot('Azure Pearls', ['1-hero', '2-view', '3-view']),
-  'azure-thread':       shoot('Azure Thread', ['1-hero', '2-view', '3-view']),
-  'blanc-canvas':       shoot('Blanc Canvas', ['1-hero', '2-back', '3-collar'], STUDIO_AUG12),
-  'blanc-celestia-2':   shoot('Blanc Celestia', ['1-hero', '2-back', '3-collar'], STUDIO_AUG12),
-  'blanc-dewdrop':      shoot('Blanc Dewdrop', ['1-hero', '2-view', '3-view']),
-  'claret-hound':       shoot('Claret Hound', ['1-hero', '2-view', '3-view']),
-  'cobalt-charm':       shoot('Cobalt Charm', ['1-hero', '2-view']),
-  'cocoa-drift':        shoot('Cocoa Drift', ['1-hero', '2-view']),
-  'cognac-drift':       shoot('Cognac Drift', ['1-hero', '2-view', '3-view']),
-  'dune-sand':          shoot('Dune Sand', ['1-hero', '2-back', '3-collar'], STUDIO_AUG12),
-  'forest-weave':       shoot('Forest Weave', ['1-hero', '2-back', '3-collar'], STUDIO_AUG12),
-  'harbour-blue':       shoot('Harbour Blue', ['1-hero', '2-view', '3-view']),
-  'indigo-oak':         shoot('Indigo Oak', ['1-hero', '2-view', '3-view']),
-  'ivory-grid':         shoot('Ivory Grid', ['1-hero', '2-view', '3-view']),
-  'marina-stripe':      shoot('Phantom Stripe', ['1-hero', '2-view', '3-view']),
-  'marina-stripe-3':    shoot('Marina Stripe', ['1-hero', '2-view', '3-view']),
-  'midnight-navy':      shoot('Midnight Navy', ['1-hero', '2-view', '3-view']),
-  'midnight-speckle':   shoot('Midnight Speckle', ['1-hero', '2-view', '3-view']),
-  'moonlight-speckle':  shoot('Moonlight Speckle', ['1-hero', '2-back', '3-collar'], STUDIO_AUG12),
-  'obsidian':           shoot('Obsidian', ['1-hero', '2-view', '3-view']),
-  'onyx-hound':         shoot('Onyx Hound', ['1-hero', '2-view', '3-view']),
-  'pebble-mist':        shoot('Pebble Mist', ['1-hero', '2-view', '3-view']),
-  'ratans-blue':        shoot('Ratan\'s Blue', ['1-hero', '2-view', '3-view']),
-  'slate-harbour':      shoot('Slate Harbour', ['1-hero', '2-view']),
-  'storm-grey':         shoot('Storm Grey', ['1-hero', '2-view', '3-view']),
-  'warm-dune':          shoot('Warm Dune', ['1-hero', '2-view', '3-view'])
+  'aegean-haze':        shoot('Aegean Haze', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'azure-pearls':       shoot('Azure Pearls', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'azure-thread':       shoot('Azure Thread', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'blanc-canvas':       shoot('Blanc Canvas', ['1-hero', '2-back', '3-collar', '4-cuff', '5-button'], STUDIO_AUG12),
+  'blanc-celestia-2':   shoot('Blanc Celestia', ['1-hero', '2-back', '3-collar', '4-cuff', '5-button'], STUDIO_AUG12),
+  'blanc-dewdrop':      shoot('Blanc Dewdrop', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'claret-hound':       shoot('Claret Hound', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'cobalt-charm':       shoot('Cobalt Charm', ['1-hero', '2-view', '4-cuff', '5-button']),
+  'cocoa-drift':        shoot('Cocoa Drift', ['1-hero', '2-view', '4-cuff', '5-button']),
+  'cognac-drift':       shoot('Cognac Drift', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'dune-sand':          shoot('Dune Sand', ['1-hero', '2-back', '3-collar', '4-cuff', '5-button'], STUDIO_AUG12),
+  'forest-weave':       shoot('Forest Weave', ['1-hero', '2-back', '3-collar', '4-cuff', '5-button'], STUDIO_AUG12),
+  'harbour-blue':       shoot('Harbour Blue', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'indigo-oak':         shoot('Indigo Oak', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'ivory-grid':         shoot('Ivory Grid', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'marina-stripe':      shoot('Phantom Stripe', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'marina-stripe-3':    shoot('Marina Stripe', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'midnight-navy':      shoot('Midnight Navy', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'midnight-speckle':   shoot('Midnight Speckle', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'moonlight-speckle':  shoot('Moonlight Speckle', ['1-hero', '2-back', '3-collar', '4-cuff', '5-button'], STUDIO_AUG12),
+  'obsidian':           shoot('Obsidian', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'onyx-hound':         shoot('Onyx Hound', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'pebble-mist':        shoot('Pebble Mist', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'ratans-blue':        shoot('Ratan\'s Blue', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'slate-harbour':      shoot('Slate Harbour', ['1-hero', '2-view', '4-cuff', '5-button']),
+  'storm-grey':         shoot('Storm Grey', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
+  'warm-dune':          shoot('Warm Dune', ['1-hero', '2-view', '3-view', '4-cuff', '5-button'])
 };

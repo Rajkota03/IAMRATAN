@@ -23,3 +23,10 @@ tmp-src/
 # under images/. Handed to the client as a download, not part of the site.
 website-images/
 website-images.zip
+
+# The button and cuff close-up masters: 162 MB of PNGs, one per cloth plus the
+# drafts. The served frames are derived into images/set/<slug>/4-cuff.webp and
+# 5-button.webp with their tiers, so nothing here is referenced by any page.
+# Left in, they alone are larger than the entire rest of the deploy.
+IAMRATAN-all-button-closeups
+cuff-images

@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Shop — I Am Ratan</title>
+<title>Shop · I Am Ratan</title>
 <meta name="description" content="Twenty-seven cloths, cut in five sizes. Filter by collection, sort by tone.">
 <meta name="theme-color" content="#EDE9E0">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="I Am Ratan">
-<meta property="og:title" content="Shop — I Am Ratan">
+<meta property="og:title" content="Shop · I Am Ratan">
 <meta property="og:description" content="Twenty-seven cloths, cut in five sizes.">
 <meta property="og:image" content="https://im-ratan.vercel.app/images/cloth-stack.jpg">
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
@@ -18,27 +18,68 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786795456">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786938000">
 <style>
 /* THE GRID
    The shoppable one. Nine garments on the first screen, filters that actually
    filter, and a card that shows the cloth colour even before its photograph
    loads — so the range reads as colour at a glance and as product on approach. */
 .head{padding:var(--clear) 0 0}
-.tools{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s4);align-items:center;
-  justify-content:space-between;margin:var(--s5) 0 0;
-  padding-bottom:var(--s3);border-bottom:1px solid var(--hair)}
-.chips{display:flex;flex-wrap:wrap;gap:var(--s1)}
-.chip{font-family:var(--mono);font-size:.625rem;letter-spacing:.16em;
-  text-transform:uppercase;padding:var(--s1) var(--s3);border-radius:2rem;
-  border:1px solid var(--hair);background:none;cursor:pointer;color:inherit;
-  transition:background-color .3s var(--settle),border-color .3s var(--settle)}
-.chip:hover{border-color:currentColor}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--room);
-  border-color:var(--ink)}
-.sortwrap{display:flex;align-items:center;gap:var(--s1)}
-.sortwrap select{background:none;border:0;border-bottom:1px solid var(--hair);
-  padding:var(--s0) var(--s0);font-family:var(--mono);font-size:.75rem;cursor:pointer}
+/* ---------- the filter row ----------
+   With the heading gone this IS the top of the page, so it carries the weight:
+   three filters, all of them on screen at once, at every width.
+
+   Text and a rule, not pills. A bordered capsule draws a box around every
+   option including the ones you did not choose, so three filters cost three
+   boxes of chrome to say one thing. The label is the control; the chosen one
+   goes to full ink and takes an underline, the rest sit at muted. Same
+   hairline-and-mono language as the rest of the house, and it reads as
+   editorial rather than as a storefront widget. */
+.tools{display:grid;gap:var(--s2) var(--s4);align-items:center;
+  margin:0;padding-bottom:var(--s2);
+  border-bottom:1px solid var(--hair)}
+@media(min-width:1020px){
+  /* the empty first column is what actually centres the chips: with the sort
+     control alone on the right, space-between would push them off-centre by
+     exactly its width. The threshold is measured, not guessed — see the note
+     in the mobile block. */
+  .tools{grid-template-columns:1fr auto 1fr}
+  .chips{grid-column:2}
+  .sortwrap{grid-column:3;justify-self:end}
+}
+@media(min-width:760px) and (max-width:1019px){
+  /* the tablet band: give the filters the whole width so they stay on one line,
+     and drop the sort control underneath rather than stealing from them */
+  .sortwrap{justify-content:center}
+}
+.chips{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);justify-content:center}
+.chip{font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:var(--s2) 0;border:0;background:none;
+  cursor:pointer;color:var(--muted);text-align:center;
+  min-height:2.75rem;display:inline-flex;align-items:center;justify-content:center;
+  transition:color .3s var(--settle)}
+.chip:hover{color:var(--ink)}
+/* underline rather than a drawn box: it hugs the label at whatever width the
+   label happens to be, and survives the label wrapping to two lines */
+.chip[aria-pressed="true"]{color:var(--ink);text-decoration:underline;
+  text-decoration-thickness:1px;text-underline-offset:6px}
+.sortwrap{display:flex;align-items:center;gap:var(--s2)}
+.sortwrap select{background:none;border:0;padding:var(--s0) 0;color:inherit;
+  font-family:var(--mono);font-size:.75rem;cursor:pointer}
+
+@media(max-width:759px){
+  /* one line, edge to edge. Without the capsule padding the three labels fit
+     across a 320px screen on a single line each, which is where the height
+     went: the pills forced "Working hours 11" onto two lines and then held a
+     44px tap target around it. The tap target stays — it is just no longer
+     drawn. */
+  .chips{flex-wrap:nowrap;justify-content:space-between;gap:var(--s2)}
+  /* 10px, not smaller: measured at 320px the three labels come to 257px of the
+     285px available, so the height never needed the type to shrink — it needed
+     the capsules gone. */
+  .chip{font-size:.625rem;letter-spacing:.06em;white-space:nowrap}
+  .sortwrap{justify-content:space-between}
+}
 
 .grid{display:grid;gap:var(--s4);grid-template-columns:repeat(2,1fr);
   margin:var(--sy) 0 0}
@@ -124,7 +165,7 @@
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="top label">
-  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan, home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
   <nav class="nav">
     <a href="index.html">Home</a>
     <a href="shop.html" aria-current="page">Shop</a>
@@ -137,9 +178,12 @@
 <main id="main">
   <section class="head">
     <div class="wrap">
-      <p class="label muted">The range</p>
-      <h1 class="display" style="max-width:16ch;margin-top:var(--s1)"><span data-cloths>Twenty-seven</span>
-      cloths.</h1>
+      <!-- The heading is carried, not shown. "The range" and a headline above
+           the filters were two lines of chrome before the thing the page is
+           actually for, and a shop's first screen should be the shop. It stays
+           in the document for a screen reader and for a search result, which
+           read the h1 whether or not it is painted. -->
+      <h1 class="visually-hidden">The range</h1>
 
       <div class="tools">
         <div class="chips" id="chips" role="group" aria-label="Filter by collection"></div>
@@ -208,14 +252,14 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786795456"></script>
-<script src="assets/house.js?v=1786795456"></script>
-<script src="assets/catalogue.js?v=1786795456"></script>
-<script src="assets/shots.js?v=1786795456"></script>
-<script src="assets/site.js?v=1786795456"></script>
-<script src="assets/iar-house.js?v=1786795456"></script>
-<script src="assets/mark.js?v=1786795456"></script>
-<script src="assets/track.js?v=1786795456"></script>
+<script src="assets/store.js?v=1786938000"></script>
+<script src="assets/house.js?v=1786938000"></script>
+<script src="assets/catalogue.js?v=1786938000"></script>
+<script src="assets/shots.js?v=1786938000"></script>
+<script src="assets/site.js?v=1786938000"></script>
+<script src="assets/iar-house.js?v=1786938000"></script>
+<script src="assets/mark.js?v=1786938000"></script>
+<script src="assets/track.js?v=1786938000"></script>
 <script>
 (function () {
   'use strict';
@@ -254,6 +298,26 @@
     return s && s.shots[1] ? 'images/set/' + p.slug + '/' + s.shots[1].src + '.webp' : '';
   }
 
+  /* A card is 158px wide on a phone and 377px on a desktop, so the 768px
+     photograph was between two and five times more pixels than any screen
+     could use. Twenty-seven of those is 1.35 MB of grid on a phone, most of it
+     thrown away in the downscale.
+
+     Only the set frames have tiers; a cloth still on its catalogue photograph
+     falls through with a bare src, which is why this returns '' rather than
+     guessing at files that do not exist. */
+  function tiers(src) {
+    if (src.indexOf('images/set/') !== 0) return '';
+    var stem = src.replace('.webp', '');
+    return stem + '-320.webp 320w, ' + stem + '-512.webp 512w, ' + src + ' 768w';
+  }
+  /* Measured, not guessed: the card is 42.1vw while the grid is two-up,
+     ~29-30vw at three, and ~19vw once a fourth column appears past 1600.
+     42, not 43: at 375px the slot needs 316 device pixels and declaring 43vw
+     asks for 322, which pushes a 2x phone up to the 512 file for six pixels it
+     cannot show. 42vw lands on the 320 and halves the grid's weight. */
+  var CARD_SIZES = '(max-width:759px) 42vw, (max-width:1599px) 30vw, 20vw';
+
   function sorted(list) {
     var a = list.slice();
     if (order === 'light') a.sort(function (x, y) { return y.lum - x.lum; });
@@ -289,13 +353,15 @@
         '" href="product.html?p=' + encodeURIComponent(p.slug) + '" ' +
         'style="--g:' + p.hex + '">' +
         '<span class="card-shot">' +
-          '<img src="' + card(p) + '" alt="' + p.name +
-            '" loading="lazy" decoding="async">' +
+          '<img src="' + card(p) + '"' +
+            (tiers(card(p)) ? ' srcset="' + tiers(card(p)) + '" sizes="' + CARD_SIZES + '"' : '') +
+            ' alt="' + p.name + '" loading="lazy" decoding="async">' +
           /* the second frame carries no src until the card is hovered or
              touched, so a phone scrolling past twenty-seven cards downloads
              twenty-seven photographs rather than fifty-four */
-          (alt ? '<img class="card-alt" data-src="' + alt + '" alt="" ' +
-                 'aria-hidden="true" decoding="async">' +
+          (alt ? '<img class="card-alt" data-src="' + alt + '"' +
+                 (tiers(alt) ? ' data-srcset="' + tiers(alt) + '" sizes="' + CARD_SIZES + '"' : '') +
+                 ' alt="" aria-hidden="true" decoding="async">' +
                  '<span class="card-turn" aria-hidden="true"><i></i><i></i></span>' : '') +
         '</span>' +
         '<span class="card-nm">' + p.name +
@@ -324,7 +390,14 @@
      twenty-seven photographs, not fifty-four. */
   function hydrate(el) {
     var alt = el.querySelector('.card-alt[data-src]');
-    if (alt) { alt.src = alt.getAttribute('data-src'); alt.removeAttribute('data-src'); }
+    if (alt) {
+      /* srcset before src: set the other way round the browser starts fetching
+         the 768px file and then throws it away for the tier it should have
+         picked, so the turn costs two downloads instead of one */
+      var ss = alt.getAttribute('data-srcset');
+      if (ss) { alt.srcset = ss; alt.removeAttribute('data-srcset'); }
+      alt.src = alt.getAttribute('data-src'); alt.removeAttribute('data-src');
+    }
   }
   grid.addEventListener('pointerover', function (e) {
     var c = e.target.closest && e.target.closest('.card');
@@ -393,5 +466,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
+<script src="assets/nav.js?v=1786938000"></script>
 </body>
 </html>

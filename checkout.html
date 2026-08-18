@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Checkout — I Am Ratan</title>
+<title>Checkout · I Am Ratan</title>
 <meta name="description" content="Complete your order with the house.">
 <meta name="theme-color" content="#EDE9E0">
 <meta name="robots" content="noindex">
@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786795456">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786938000">
 <style>
 /* ---------- CHECKOUT ----------
    Guest by default, and there is no account to make. Forced sign-in is the
@@ -99,7 +99,7 @@
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="top label">
-  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan, home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
   <nav class="nav">
     <a href="index.html">Home</a>
     <a href="shop.html">Shop</a>
@@ -128,14 +128,14 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786795456"></script>
-<script src="assets/house.js?v=1786795456"></script>
-<script src="assets/catalogue.js?v=1786795456"></script>
-<script src="assets/site.js?v=1786795456"></script>
-<script src="assets/shop.js?v=1786795456"></script>
-<script src="assets/iar-house.js?v=1786795456"></script>
-<script src="assets/mark.js?v=1786795456"></script>
-<script src="assets/track.js?v=1786795456"></script>
+<script src="assets/store.js?v=1786938000"></script>
+<script src="assets/house.js?v=1786938000"></script>
+<script src="assets/catalogue.js?v=1786938000"></script>
+<script src="assets/site.js?v=1786938000"></script>
+<script src="assets/shop.js?v=1786938000"></script>
+<script src="assets/iar-house.js?v=1786938000"></script>
+<script src="assets/mark.js?v=1786938000"></script>
+<script src="assets/track.js?v=1786938000"></script>
 <script>
 (function () {
   'use strict';
@@ -217,7 +217,7 @@
         CODE = { code: code, amount: Number(r.amount) || 0, label: r.label || '' };
         note(CODE.amount
           ? r.label + ' applied.'
-          : r.label + ' applied — it comes off the delivery, not the shirts.', true);
+          : r.label + ' applied. It comes off the delivery, not the shirts.', true);
       }
       paintTotals();
     }).catch(function () {
@@ -395,7 +395,7 @@
        function is the only thing that changes. */
     var trust = document.getElementById('trust');
     trust.innerHTML = 'The house confirms every order before it is made. ' +
-      'Card and UPI payment is being connected — until then your order reaches ' +
+      'Card and UPI payment is being connected. Until then your order reaches ' +
       'the house directly and payment is arranged with you.';
   }
 
@@ -403,9 +403,9 @@
     ['fn', function (v) { return v.trim().length >= 2; }, 'Please give your first name.'],
     ['ln', function (v) { return v.trim().length >= 1; }, 'Please give your last name.'],
     ['ph', function (v) { return v.replace(/\D/g, '').length >= 10; },
-      'That does not look like a full mobile number — ten digits or more.'],
+      'That does not look like a full mobile number. Ten digits or more.'],
     ['em', function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); },
-      'That email address is missing something — check for a typo.'],
+      'That email address is missing something. Check for a typo.'],
     ['ad', function (v) { return v.trim().length >= 8; }, 'We need somewhere to send it.'],
     ['ct', function (v) { return v.trim().length >= 2; }, 'Which city?'],
     ['pc', function (v) { return /^\d{6}$/.test(v.replace(/\s/g, '')); },
@@ -535,5 +535,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
+<script src="assets/nav.js?v=1786938000"></script>
 </body>
 </html>

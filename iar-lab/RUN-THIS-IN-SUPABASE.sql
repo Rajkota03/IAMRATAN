@@ -205,12 +205,12 @@ order by times desc;
 -- the real counts are theirs to set on day one.
 
 insert into public.products (slug,name,price,hex,collection,body,sort_order) values
-  ('cocoa-drift','Cocoa Drift',5999,'#492F24','Working hours','A deep cocoa, woven close and finished soft. The colour reads almost black in a low room and opens to warm brown in daylight — the reason it sits as easily under a jacket at six as it does across a table at nine. Engraved buttons, and the house signature embroidered tone on tone at the cuff.',1)
+  ('cocoa-drift','Cocoa Drift',5999,'#492F24','Working hours','A deep cocoa, woven close and finished soft. The colour reads almost black in a low room and opens to warm brown in daylight, which is why it sits as easily under a jacket at six as it does across a table at nine. Engraved buttons, and the house signature embroidered tone on tone at the cuff.',1)
 on conflict (slug) do update set name=excluded.name, price=excluded.price,
   hex=excluded.hex, collection=excluded.collection, body=excluded.body,
   sort_order=excluded.sort_order;
 insert into public.products (slug,name,price,hex,collection,body,sort_order) values
-  ('slate-harbour','Slate Harbour',5999,'#4D5B6F','Working hours','A grey-blue with weather in it. Quieter than a navy and warmer than a steel, it is the shirt for the days that go long — cut in the same five sizes, finished by the same hands, with the signature embroidered at the cuff in its own colour.',2)
+  ('slate-harbour','Slate Harbour',5999,'#4D5B6F','Working hours','A grey-blue with weather in it. Quieter than a navy and warmer than a steel, it is the shirt for the days that go long. Cut in the same five sizes, finished by the same hands, with the signature embroidered at the cuff in its own colour.',2)
 on conflict (slug) do update set name=excluded.name, price=excluded.price,
   hex=excluded.hex, collection=excluded.collection, body=excluded.body,
   sort_order=excluded.sort_order;
@@ -315,7 +315,7 @@ on conflict (slug) do update set name=excluded.name, price=excluded.price,
   hex=excluded.hex, collection=excluded.collection, body=excluded.body,
   sort_order=excluded.sort_order;
 insert into public.products (slug,name,price,hex,collection,body,sort_order) values
-  ('harbour-blue','Harbour Blue',2999,'#2F3E5C','Ratan''s stripes','There’s depth in the detail. A rich navy ground is interrupted by a layered stripe — fine beige and white lines running in quiet rhythm — giving this shirt a complexity that rewards a second look. Tonal buttons and a structured spread collar lend it a formal edge without sacrificing ease. The kind of shirt that anchors a wardrobe and never overstays its welcome.',23)
+  ('harbour-blue','Harbour Blue',2999,'#2F3E5C','Ratan''s stripes','There’s depth in the detail. A rich navy ground is interrupted by a layered stripe, fine beige and white lines running in quiet rhythm, giving this shirt a complexity that rewards a second look. Tonal buttons and a structured spread collar lend it a formal edge without sacrificing ease. The kind of shirt that anchors a wardrobe and never overstays its welcome.',23)
 on conflict (slug) do update set name=excluded.name, price=excluded.price,
   hex=excluded.hex, collection=excluded.collection, body=excluded.body,
   sort_order=excluded.sort_order;

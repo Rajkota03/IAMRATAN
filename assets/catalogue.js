@@ -18,7 +18,7 @@ window.IAR_CATALOGUE = [
    "46"
   ],
   "hex": "#492F24",
-  "body": "A deep cocoa, woven close and finished soft. The colour reads almost black in a low room and opens to warm brown in daylight — the reason it sits as easily under a jacket at six as it does across a table at nine. Engraved buttons, and the house signature embroidered tone on tone at the cuff.",
+  "body": "A deep cocoa, woven close and finished soft. The colour reads almost black in a low room and opens to warm brown in daylight, which is why it sits as easily under a jacket at six as it does across a table at nine. Engraved buttons, and the house signature embroidered tone on tone at the cuff.",
   "img": "cocoa-drift.webp",
   "url": "https://iamratan.co.in/shop/"
  },
@@ -35,7 +35,7 @@ window.IAR_CATALOGUE = [
    "46"
   ],
   "hex": "#4D5B6F",
-  "body": "A grey-blue with weather in it. Quieter than a navy and warmer than a steel, it is the shirt for the days that go long — cut in the same five sizes, finished by the same hands, with the signature embroidered at the cuff in its own colour.",
+  "body": "A grey-blue with weather in it. Quieter than a navy and warmer than a steel, it is the shirt for the days that go long. Cut in the same five sizes, finished by the same hands, with the signature embroidered at the cuff in its own colour.",
   "img": "slate-harbour.webp",
   "url": "https://iamratan.co.in/shop/"
  },
@@ -392,7 +392,7 @@ window.IAR_CATALOGUE = [
    "46"
   ],
   "hex": "#2F3E5C",
-  "body": "There’s depth in the detail. A rich navy ground is interrupted by a layered stripe — fine beige and white lines running in quiet rhythm — giving this shirt a complexity that rewards a second look. Tonal buttons and a structured spread collar lend it a formal edge without sacrificing ease. The kind of shirt that anchors a wardrobe and never overstays its welcome.",
+  "body": "There’s depth in the detail. A rich navy ground is interrupted by a layered stripe, fine beige and white lines running in quiet rhythm, giving this shirt a complexity that rewards a second look. Tonal buttons and a structured spread collar lend it a formal edge without sacrificing ease. The kind of shirt that anchors a wardrobe and never overstays its welcome.",
   "img": "harbour-blue.webp",
   "url": "https://iamratan.co.in/product/harbour-blue/"
  },

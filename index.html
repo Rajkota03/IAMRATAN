@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>I Am Ratan — a shirtmaking house</title>
+<title>I Am Ratan, a shirtmaking house</title>
 <meta name="description" content="For two decades our hands shaped luxury the world admired, crafted in India and never named. Twenty-seven cloths, and made to measure.">
 <meta name="theme-color" content="#101214">
 <meta name="twitter:card" content="summary_large_image">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786799140">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786938000">
 <style>
 /* the cross-document crossfade now lives in iar-house.css, on every page */
 
@@ -181,20 +181,11 @@ img{display:block;max-width:100%}
 .movement h3{font-weight:300;font-size:1.25rem;margin:var(--s1) 0 var(--s1);letter-spacing:-.018em}
 .movement p{font-size:.9375rem;margin:0;color:var(--muted);max-width:38ch}
 
-/* ---------- footer ---------- */
-.foot{background:var(--deep);padding:var(--sz) 0 var(--s5);
-  border-top:1px solid var(--hair)}
-.foot-grid{display:grid;gap:var(--s5);grid-template-columns:1fr}
-@media(min-width:860px){.foot-grid{grid-template-columns:1.5fr 1fr 1fr 1fr}}
-.mark--monogram{width:min(200px,56vw);aspect-ratio:1430/620;display:block;
-  background:currentColor;margin-bottom:var(--s4);
-  -webkit-mask:url('assets/mark-monogram.png') no-repeat center/contain;
-  mask:url('assets/mark-monogram.png') no-repeat center/contain}
-.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:var(--s1)}
-.foot a:hover{text-decoration:underline;text-underline-offset:5px}
-.colophon{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--hair);
-  display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);justify-content:space-between;
-  color:var(--muted)}
+/* The footer lives in assets/iar-house.css. A copy of it used to sit here, and
+   because it loaded after the stylesheet it quietly won: this page never took
+   the two-up phone footer every other page has, so the home page footer stood
+   at 897px against 567px everywhere else. Same trap the duplicate .top rule
+   set. If the footer needs changing, change it in the stylesheet. */
 
 /* ---------- the campaign ----------
    These frames carry their own typography, baked in. So nothing is set over
@@ -477,8 +468,12 @@ html:not(.js) .hero-act{opacity:1}
    The hover is one idea expressed three ways at once — the picture pushes in,
    the veil lifts, the rule draws across. Each is small; together they read as
    the panel leaning toward you.                                              */
-.doors{display:grid;grid-template-columns:1fr;gap:var(--s0);background:var(--hair)}
-@media(min-width:820px){.doors{grid-template-columns:1fr 1fr}}
+/* Side by side at every width, the way the desktop shows them. They were
+   stacked below 820px, which made the two services two full screens of scroll
+   before the journal — and the pair is meant to be one decision seen at once.
+   Each column is ~186px on a 375px phone, which a two-word name and a short
+   line carry; the box turns tall to give them the room to do it. */
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:var(--s0);background:var(--hair)}
 /* Taller than a banner and shorter than a screen: enough that each reads as a
    room you could walk into, not so much that the pair needs two scrolls. */
 .dr{position:relative;isolation:isolate;overflow:hidden;display:grid;
@@ -504,12 +499,23 @@ html:not(.js) .hero-act{opacity:1}
    frames are already open at the top, and lightening the scrim dropped the
    kicker under AA while the cursor was on the panel. The image zoom and the
    filling CTA are the hover signal now. */
-.dr-kicker{font-family:var(--mono);font-size:.5625rem;letter-spacing:.22em;
-  text-transform:uppercase;opacity:.74;margin:0}
+/* .5625rem is 9px — legible as a texture, not as a phrase, and this one sits
+   in white over a photograph, the least forgiving case on the site. 11px with
+   the tracking eased back holds together at arm's length. */
+.dr-kicker{font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+  /* .94, not .74. Solved against all four crops: at .74 the kicker over the
+     PHONE crop of the wardrobe plate measured 3.97:1, under the 4.5 that
+     11px type needs — and the phone crop is a different framing of the
+     picture from the wide one, so passing on desktop proved nothing about
+     it. .88 is the first value that clears; .94 leaves headroom. */
+  text-transform:uppercase;opacity:.94;margin:0}
 .dr-name{font-weight:200;font-size:clamp(2.5rem,5.4vw,4.2rem);line-height:.98;
   letter-spacing:-.035em;margin:var(--s1) 0 0}
-.dr-note{margin:var(--s2) 0 0;max-width:34ch;color:rgba(237,233,224,.82);
-  font-size:clamp(.95rem,1.15vw,1.08rem);line-height:1.6}
+/* the clamp FLOOR is the only value a phone ever sees — 15.2px was under a
+   comfortable floor for light type over a picture. 1rem, and the ink up a
+   little with it. */
+.dr-note{margin:var(--s2) 0 0;max-width:34ch;color:rgba(237,233,224,.88);
+  font-size:clamp(1rem,1.15vw,1.08rem);line-height:1.6}
 
 /* The call to action is a real object, not a caption. It fills from the left on
    approach and the arrow travels with the fill — one gesture, two parts. On a
@@ -534,8 +540,15 @@ html:not(.js) .hero-act{opacity:1}
 .dr:hover .dr-go::before,.dr:focus-visible .dr-go::before{transform:scaleX(1)}
 .dr:hover .dr-go i,.dr:focus-visible .dr-go i{transform:translateX(5px)}
 @media(max-width:819px){
-  .dr{min-height:clamp(28rem,68svh,38rem)}
-  .dr-go{display:flex;width:100%;justify-content:space-between;min-height:3.75rem}
+  /* two narrow columns need a TALL box: the name sets on two or three lines and
+     still wants the picture to read as a room rather than a strip */
+  .dr{min-height:clamp(26rem,62svh,34rem);padding:var(--s4)}
+  .dr-name{font-size:clamp(1.35rem,5.6vw,2rem);letter-spacing:-.028em}
+  .dr-note{font-size:clamp(.8125rem,3vw,.95rem);line-height:1.5;max-width:22ch}
+  .dr-kicker{font-size:.5625rem;letter-spacing:.14em}
+  .dr-go{display:flex;width:100%;justify-content:space-between;
+    min-height:3rem;padding:0 var(--s3);font-size:.5625rem;
+    letter-spacing:.12em;gap:var(--s2);margin-top:var(--s4)}
 }
 /* a touch device never hovers, so the button is filled from the start */
 @media(hover:none){
@@ -563,12 +576,12 @@ html:not(.js) .hero-act{opacity:1}
 .circle-band::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:linear-gradient(to top,rgba(8,9,11,.90) 0%,rgba(8,9,11,.52) 46%,
     rgba(8,9,11,.16) 82%)}
-.circle-kicker{font-family:var(--mono);font-size:.5625rem;letter-spacing:.22em;
-  text-transform:uppercase;opacity:.74;margin:0}
+.circle-kicker{font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+  text-transform:uppercase;opacity:.94;margin:0}
 .circle-name{font-weight:200;font-size:clamp(2.1rem,4.6vw,3.4rem);line-height:1;
   letter-spacing:-.032em;margin:var(--s1) 0 0}
-.circle-note{margin:var(--s2) 0 0;max-width:38ch;color:rgba(237,233,224,.84);
-  font-size:clamp(.95rem,1.15vw,1.08rem);line-height:1.6}
+.circle-note{margin:var(--s2) 0 0;max-width:38ch;color:rgba(237,233,224,.88);
+  font-size:clamp(1rem,1.15vw,1.08rem);line-height:1.6}
 
 /* ---------- the journal ----------
    A rail, not a grid. The point of a horizontal strip is that it says "there is
@@ -663,7 +676,7 @@ html:not(.js) .hero-act{opacity:1}
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="top label">
-  <a class="markwrap" href="index.html" aria-label="I Am Ratan — home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan, home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
   <nav class="nav">
     <a href="index.html" aria-current="page">Home</a>
     <a href="shop.html">Shop</a>
@@ -716,7 +729,7 @@ html:not(.js) .hero-act{opacity:1}
       <figure class="hero-frame self-titled">
         <picture>
           <source media="(min-width:820px)" srcset="images/hero/campaign-wide.webp">
-          <img src="images/hero/campaign-tall.webp" alt="I Am Ratan — shirts that speak silence. A pale blue shirt, its signature embroidered at the cuff"
+          <img src="images/hero/campaign-tall.webp" alt="I Am Ratan, shirts that speak silence. A pale blue shirt, its signature embroidered at the cuff"
             loading="lazy" decoding="async">
         </picture>
       </figure>
@@ -777,11 +790,10 @@ html:not(.js) .hero-act{opacity:1}
           <source media="(min-width:820px)" srcset="images/hero/drawer-wide.webp">
           <img src="images/hero/drawer-tall.webp" alt="" loading="lazy" decoding="async">
         </picture>
-        <p class="dr-kicker">Ten shirts · six months</p>
+        <p class="dr-kicker">By enquiry</p>
         <h2 class="dr-name">Wardrobe Management</h2>
-        <p class="dr-note">Your fit recorded once, then ten shirts built to it
-        and held against the six months ahead — committed upfront, before one
-        is cut.</p>
+        <p class="dr-note">Your fit recorded once, and the wardrobe built to it
+        ahead of when you need it.</p>
         <span class="dr-go"><span>Enquire</span><i aria-hidden="true">&rarr;</i></span>
       </a>
     </div>
@@ -848,7 +860,7 @@ html:not(.js) .hero-act{opacity:1}
         <h2 class="circle-name" id="circle-h">Ratan's Circle</h2>
         <p class="circle-note">A small, invited group of the house's closest
         clients, with personalised access, experiences and privileges.
-        Membership is not open — the house extends it.</p>
+        Membership is not open. The house extends it.</p>
       </figcaption>
     </figure>
   </section>
@@ -896,10 +908,10 @@ html:not(.js) .hero-act{opacity:1}
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786799140"></script>
-<script src="assets/house.js?v=1786799140"></script>
-<script src="assets/catalogue.js?v=1786799140"></script>
-<script src="assets/site.js?v=1786799140"></script>
+<script src="assets/store.js?v=1786938000"></script>
+<script src="assets/house.js?v=1786938000"></script>
+<script src="assets/catalogue.js?v=1786938000"></script>
+<script src="assets/site.js?v=1786938000"></script>
 <script>
 (function(){
   'use strict';
@@ -1032,8 +1044,8 @@ html:not(.js) .hero-act{opacity:1}
   document.getElementById('year').textContent=new Date().getFullYear();
 })();
 </script>
-<script src="assets/mark.js?v=1786799140"></script>
-<script src="assets/track.js?v=1786799140"></script>
+<script src="assets/mark.js?v=1786938000"></script>
+<script src="assets/track.js?v=1786938000"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -1044,5 +1056,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
+<script src="assets/nav.js?v=1786938000"></script>
 </body>
 </html>

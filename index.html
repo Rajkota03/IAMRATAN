@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786966800">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786970400">
 <style>
 /* the cross-document crossfade now lives in iar-house.css, on every page */
 
@@ -623,7 +623,11 @@ html:not(.js) .hero-act{opacity:1}
 .jrn-rail>li{flex:0 0 clamp(14rem,25vw,20rem);scroll-snap-align:start}
 /* the rail is the only thing on the page allowed past the gutter, so the
    trailing card runs to the edge rather than stopping short of it */
-.jrn-rail>li:last-child{padding-right:var(--gut)}
+/* margin, not padding. The card's flex-basis is its border-box width, so
+   padding here was taken out of the card instead of added after it: the last
+   entry rendered 269px wide against 320 for the rest, and 206 against 224 on a
+   phone. The trailing gutter is space after the rail, not part of the card. */
+.jrn-rail>li:last-child{margin-right:var(--gut)}
 
 .jc{display:block}
 .jc-shot{display:block;position:relative;aspect-ratio:4/5;overflow:hidden;
@@ -927,10 +931,10 @@ html:not(.js) .hero-act{opacity:1}
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786966800"></script>
-<script src="assets/house.js?v=1786966800"></script>
-<script src="assets/catalogue.js?v=1786966800"></script>
-<script src="assets/site.js?v=1786966800"></script>
+<script src="assets/store.js?v=1786970400"></script>
+<script src="assets/house.js?v=1786970400"></script>
+<script src="assets/catalogue.js?v=1786970400"></script>
+<script src="assets/site.js?v=1786970400"></script>
 <script>
 (function(){
   'use strict';
@@ -1063,8 +1067,8 @@ html:not(.js) .hero-act{opacity:1}
   document.getElementById('year').textContent=new Date().getFullYear();
 })();
 </script>
-<script src="assets/mark.js?v=1786966800"></script>
-<script src="assets/track.js?v=1786966800"></script>
+<script src="assets/mark.js?v=1786970400"></script>
+<script src="assets/track.js?v=1786970400"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -1075,6 +1079,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1786966800"></script>
+<script src="assets/nav.js?v=1786970400"></script>
 </body>
 </html>

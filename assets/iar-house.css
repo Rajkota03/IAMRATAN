@@ -315,7 +315,6 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
    row back only where there is a pointer to use it. */
 @media(max-width:1024px){
   [data-nav] .top{grid-template-columns:1fr auto;gap:var(--s3)}
-  [data-nav] .top>span.muted{display:none}
 
   .navbtn{display:inline-flex;flex-direction:column;justify-content:center;
     /* the gap between the three bars is the drawn glyph's own geometry, not

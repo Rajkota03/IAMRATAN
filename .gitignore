@@ -30,3 +30,7 @@ website-images.zip
 # Left in, they alone are larger than the entire rest of the deploy.
 IAMRATAN-all-button-closeups
 cuff-images
+
+# The hero source PNGs (9 MB). The served crops live in images/hero/.
+new-hero
+images/hero/_bak

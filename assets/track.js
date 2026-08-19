@@ -35,7 +35,16 @@
   var timer = null;
   /* in memory only: gone when the tab closes, never written anywhere */
   var visit = Math.random().toString(36).slice(2, 11);
-  var off = !navigator.sendBeacon ||
+  /* Only the real shop is counted. Without this the table fills with our own
+     work: a local page load writes to the same production project as a
+     customer, and one afternoon of development outweighs a week of real
+     visitors. Preview deploys are excluded for the same reason, which also
+     matches vercel.json marking them noindex. An allowlist, not a blocklist,
+     so a new preview host or a file:// open is silent by default. */
+  var LIVE = { 'www.iamratan.co.in': 1, 'iamratan.co.in': 1 };
+  var offsite = !LIVE[location.hostname];
+
+  var off = offsite || !navigator.sendBeacon ||
             navigator.doNotTrack === '1' || window.doNotTrack === '1';
 
   function ready() { return !!(URL_BASE && ANON_KEY) && !off; }

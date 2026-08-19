@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>I Am Ratan, a shirtmaking house</title>
+<link rel="canonical" href="https://www.iamratan.co.in/">
 <meta name="description" content="For two decades our hands shaped luxury the world admired, crafted in India and never named. Twenty-seven cloths, and made to measure.">
 <meta name="theme-color" content="#101214">
 <meta name="twitter:card" content="summary_large_image">
@@ -11,14 +12,17 @@
 <meta property="og:site_name" content="I Am Ratan">
 <meta property="og:title" content="I Am Ratan">
 <meta property="og:description" content="Made by Indians, for the World.">
-<meta property="og:image" content="https://im-ratan.vercel.app/images/cloth-stack.jpg">
+<meta property="og:image" content="https://www.iamratan.co.in/images/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://www.iamratan.co.in/images/og-card.jpg">
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
 <link rel="icon" href="assets/favicon-16.png" sizes="16x16">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786941600">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786945200">
 <style>
 /* the cross-document crossfade now lives in iar-house.css, on every page */
 
@@ -770,36 +774,41 @@ html:not(.js) .hero-act{opacity:1}
        foot of the hero, so the first thing after the picture is the choice. -->
   <section data-band="doors" aria-label="Where to begin">
     <div class="doors rise" data-ink="light">
-      <!-- The two doors are the two SERVICES, not shop-versus-bespoke. The
-           ready-to-wear path is not lost by this: the hero above already opens
-           on "See the range", and Shop sits in the nav and the footer.
-           Made to Measure leads because Wardrobe Management's own copy opens
-           "It starts the way Made to Measure does" — read the other way round,
-           that sentence has nothing to refer to. -->
-      <a class="dr" href="bespoke.html#made-to-measure" style="--pos:center 34%">
-        <!-- a bright atelier frame, not the near-black button macro that read as
-             dull against the bone page, and not the bespoke-page pattern shot:
-             the two pages must not share a photograph for the same door. -->
+      <!-- The two doors are the two WAYS TO BUY, not the two services. A first
+           visitor's question is "can I just buy a shirt, or is this all made to
+           order?", and the doors now answer exactly that: one goes to the shop,
+           one to the commission. Made to Measure and Wardrobe Management are
+           both still on the bespoke page, which is where the detail belongs.
+
+           Ready to wear leads, because it is the one a stranger can act on
+           today, and because the bespoke door reads as the step up when it
+           follows rather than precedes it.
+
+           IMAGES ARE PLACEHOLDERS. The drawer archive and the cutting table are
+           standing in until the client's own two frames arrive: the drawers are
+           finished shirts on a shelf, which is ready to wear, and the pattern
+           being cut is a commission. Swap the files, keep the markup. -->
+      <a class="dr" href="shop.html" style="--pos:center 40%">
+        <picture>
+          <source media="(min-width:820px)" srcset="images/hero/drawer-wide.webp">
+          <img src="images/hero/drawer-tall.webp" alt="" loading="lazy" decoding="async">
+        </picture>
+        <p class="dr-kicker">Ready to order</p>
+        <h2 class="dr-name">Ready to Wear</h2>
+        <p class="dr-note">The house's own cloths, cut in five sizes and finished
+        by the same hands. Choose one and it ships.</p>
+        <span class="dr-go"><span>See the range</span><i aria-hidden="true">&rarr;</i></span>
+      </a>
+      <a class="dr" href="bespoke.html" style="--pos:center 34%">
         <picture>
           <source media="(min-width:820px)" srcset="images/hero/measure-wide.webp">
           <img src="images/hero/measure-tall.webp" alt="" loading="lazy" decoding="async">
         </picture>
         <p class="dr-kicker">By appointment</p>
-        <h2 class="dr-name">Made to Measure</h2>
-        <p class="dr-note">Over thirty measurements, taken once, and a pattern
-        cut for one person alone. Every commission begins with a conversation.</p>
-        <span class="dr-go"><span>Book a consultation</span><i aria-hidden="true">&rarr;</i></span>
-      </a>
-      <a class="dr" href="bespoke.html#wardrobe-management" style="--pos:center 40%">
-        <picture>
-          <source media="(min-width:820px)" srcset="images/hero/drawer-wide.webp">
-          <img src="images/hero/drawer-tall.webp" alt="" loading="lazy" decoding="async">
-        </picture>
-        <p class="dr-kicker">By enquiry</p>
-        <h2 class="dr-name">Wardrobe Management</h2>
-        <p class="dr-note">Your fit recorded once, and the wardrobe built to it
-        ahead of when you need it.</p>
-        <span class="dr-go"><span>Enquire</span><i aria-hidden="true">&rarr;</i></span>
+        <h2 class="dr-name">Bespoke</h2>
+        <p class="dr-note">A pattern cut for one person alone, from a fit taken
+        once. Every commission begins with a conversation.</p>
+        <span class="dr-go"><span>Explore bespoke</span><i aria-hidden="true">&rarr;</i></span>
       </a>
     </div>
   </section>
@@ -918,10 +927,10 @@ html:not(.js) .hero-act{opacity:1}
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786941600"></script>
-<script src="assets/house.js?v=1786941600"></script>
-<script src="assets/catalogue.js?v=1786941600"></script>
-<script src="assets/site.js?v=1786941600"></script>
+<script src="assets/store.js?v=1786945200"></script>
+<script src="assets/house.js?v=1786945200"></script>
+<script src="assets/catalogue.js?v=1786945200"></script>
+<script src="assets/site.js?v=1786945200"></script>
 <script>
 (function(){
   'use strict';
@@ -1054,8 +1063,8 @@ html:not(.js) .hero-act{opacity:1}
   document.getElementById('year').textContent=new Date().getFullYear();
 })();
 </script>
-<script src="assets/mark.js?v=1786941600"></script>
-<script src="assets/track.js?v=1786941600"></script>
+<script src="assets/mark.js?v=1786945200"></script>
+<script src="assets/track.js?v=1786945200"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -1066,6 +1075,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1786941600"></script>
+<script src="assets/nav.js?v=1786945200"></script>
 </body>
 </html>

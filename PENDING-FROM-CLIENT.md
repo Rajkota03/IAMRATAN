@@ -156,3 +156,16 @@ These were made to avoid stalling. Each is a small edit to reverse.
 | Home page copy assembled from **their About Us and Bespoke pages** | no home copy was supplied | swap in new copy when written |
 | Hero scrim strengthened on [index.html](index.html) | measured 1.27:1 — below AA. Now 8.47:1 | revert one CSS block |
 | **Ratan's Circle on the home page — with copy we wrote** | the client asked for it explicitly. But it appears nowhere in their website copy: only a single pitch-deck line — *"invite-only inner circle for our top clients: personalised access, experiences, privileges"*. The two sentences on the home-page panel are OURS, built from that line, using only nouns they used. This is the one place on the whole site carrying words we wrote. Its one hard number (a waitlist figure) is confidential and is kept off the site entirely. | needs their sign-off on the actual wording, and — if it is to do more than state that it exists — what a member gets and how one is invited |
+
+### The two home-page doors are now Ready to Wear and Bespoke
+They were Made to Measure and Wardrobe Management, which are the two *services*.
+The client corrected this on 19 Aug 2026: the doors are the two ways to buy, so
+one goes to the shop and one to the bespoke page. Both services still live on
+the bespoke page, which is where their detail belongs.
+
+- **Ours:** the Ready to Wear caption ("The house's own cloths, cut in five
+  sizes and finished by the same hands. Choose one and it ships.") is our
+  wording. Every noun is theirs; nothing is invented. Needs their sign-off.
+- **Placeholder images:** the drawer archive stands in for Ready to Wear and the
+  cutting table for Bespoke until the client's own two frames arrive. Swap the
+  files in images/hero/, keep the markup.

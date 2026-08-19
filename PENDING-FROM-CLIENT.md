@@ -169,3 +169,18 @@ the bespoke page, which is where their detail belongs.
 - **Placeholder images:** the drawer archive stands in for Ready to Wear and the
   cutting table for Bespoke until the client's own two frames arrive. Swap the
   files in images/hero/, keep the markup.
+
+### The journal is live, and one line in it contradicts an earlier instruction
+Four essays were supplied 19 Aug 2026 and are published verbatim, one page each.
+Nothing was reworded; only the paragraph breaks and the pull-quotes are ours,
+and each pull-quote is a sentence lifted from the essay itself.
+
+- **NEEDS A DECISION:** essay 04 contains *"Our six-month Wardrobe Management
+  programme"*. On 19 Aug the client told us to publish **no count of shirts and
+  no period** for Wardrobe Management, and we stripped exactly that from the
+  bespoke page and the home doors. Their own new copy puts the six months back.
+  It is published as written, because it is their wording and it is newer than
+  the instruction, but the two cannot both be right. Either the essay drops the
+  period, or the bespoke page can have its detail back.
+- **Note:** the essays also use "RATAN" and "I AM RATAN" in running text where
+  the rest of the site sets the name as "I Am Ratan". Left as written.

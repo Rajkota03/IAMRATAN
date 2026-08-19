@@ -465,6 +465,62 @@ a.shot:hover img{transform:scale(1.03)}
   -webkit-mask:url('mark-monogram.png') no-repeat center/contain;
   mask:url('mark-monogram.png') no-repeat center/contain}
 
+/* ---------- the journal, one essay ----------
+   These are essays, not product pages, so the whole layout serves one job:
+   uninterrupted reading. A single column, a measure that stays near 62
+   characters, and nothing in the margins to look at instead.
+
+   The client's writing has a deliberate rhythm: many one-sentence paragraphs,
+   used as beats. That is why the paragraph spacing is generous and the
+   line-height is tall. Cramming those lines together would flatten the voice
+   the writing is built on. */
+.essay-hero{margin:0;position:relative;aspect-ratio:16/9;overflow:hidden;
+  background:var(--under)}
+.essay-hero img{width:100%;height:100%;object-fit:cover;object-position:var(--pos,center);
+  display:block}
+@media(max-width:759px){.essay-hero{aspect-ratio:4/3}}
+
+.essay-head{max-width:38rem;margin-inline:auto;padding-top:var(--sy);
+  text-align:center}
+.essay-kick{margin:0}
+.essay-name{font-weight:200;font-size:clamp(2rem,4.4vw,3.2rem);line-height:1.06;
+  letter-spacing:-.03em;margin:var(--s2) 0 0;text-wrap:balance}
+.essay-lede{font-weight:250;font-size:clamp(1.0625rem,1.5vw,1.25rem);line-height:1.55;
+  color:var(--muted);margin:var(--s4) 0 0}
+
+/* 36rem, not the 46 this was drawn at. Measured on the rendered page rather
+   than judged by eye: 46rem at this size came to 94 characters a line, where
+   60 to 75 is the readable band and anything past about 80 makes the eye lose
+   its place on the return sweep. 36rem lands near 66. */
+.essay-body{max-width:36rem;margin-inline:auto;padding-top:var(--sy);
+  padding-bottom:var(--sz)}
+.essay-body p{margin:0 0 1.15em;font-size:clamp(1.0625rem,1.15vw,1.1875rem);
+  line-height:1.75;max-width:none}
+.essay-body p:last-child{margin-bottom:0}
+/* a beat between movements, not a decorative flourish */
+.essay-body hr{border:0;height:1px;background:var(--hair);
+  margin:var(--s6) auto;width:min(6rem,30%)}
+/* One line lifted out of the argument, in the house's own voice. Set as a
+   quotation rather than a heading, because that is what it is. */
+.essay-body blockquote{margin:var(--s6) 0;padding:0 0 0 var(--s4);
+  border-left:1px solid var(--ink);font-weight:250;
+  font-size:clamp(1.25rem,2.1vw,1.6rem);line-height:1.35;letter-spacing:-.02em}
+.essay-body blockquote p{font-size:inherit;line-height:inherit;margin:0}
+
+/* what to read next, so an essay is never a dead end */
+.essay-next{border-top:1px solid var(--hair);padding:var(--sy) 0 var(--sz)}
+.essay-next .wrap{display:grid;gap:var(--s4)}
+@media(min-width:760px){.essay-next .wrap{grid-template-columns:1fr 1fr}}
+.enx{display:block;text-decoration:none;color:inherit}
+.enx-shot{display:block;position:relative;aspect-ratio:3/2;overflow:hidden;
+  background:var(--under);margin-bottom:var(--s3)}
+.enx-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .6s var(--settle)}
+.enx:hover .enx-shot img,.enx:focus-visible .enx-shot img{transform:scale(1.03)}
+.enx-name{font-weight:250;font-size:clamp(1.125rem,1.6vw,1.35rem);line-height:1.2;
+  letter-spacing:-.02em;margin:var(--s1) 0 0}
+@media(prefers-reduced-motion:reduce){.enx:hover .enx-shot img{transform:none}}
+
 /* ---------- the footer on a phone ----------
    All four blocks share the two columns now. The brand and contact blocks used
    to span the full width on the stated grounds that the email was too long to

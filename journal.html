@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786945200">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786948800">
 <style>
 /* THE JOURNAL
    The homepage carries five of these as a sideways rail. Here they are a
@@ -55,14 +55,25 @@
    and their headings; what they do not have yet is the writing. Saying so on
    the page is better than five paragraphs of filler that read like an article
    and are not one. */
-.pending{border:1px solid var(--hair);padding:var(--s4);
-  margin:0 0 var(--sy);max-width:60ch}
-/* the wrapper is a .label so the "For the house" line reads as a tag; the note
-   itself has to climb back out of it, or five lines of mono capitals is what
-   the house gets asked to read */
-.pending p{margin:var(--s1) 0 0;color:var(--muted);
-  font-family:inherit;font-size:.9375rem;letter-spacing:normal;
-  text-transform:none;line-height:1.6}
+/* Each entry is now a link, so the whole card is the target rather than a word
+   at the end of it. The <a> wraps the figure and the body but keeps the grid
+   the article already had, which is why it is display:contents rather than a
+   block: an extra box here would break the alternating two-column rhythm. */
+.entry-link{display:contents;color:inherit;text-decoration:none}
+.entry-shot{overflow:hidden}
+.entry-shot img{transition:transform .7s var(--settle)}
+.entry:hover .entry-shot img,
+.entry:focus-within .entry-shot img{transform:scale(1.03)}
+.entry-go{display:inline-block;margin-top:var(--s3);color:var(--muted);
+  border-bottom:1px solid var(--hair);padding-bottom:var(--s0);
+  transition:color .3s var(--settle),border-color .3s var(--settle)}
+.entry:hover .entry-go,.entry:focus-within .entry-go{color:var(--ink);
+  border-color:var(--ink)}
+.entry-link:focus-visible{outline:none}
+.entry:focus-within{outline:2px solid var(--ink);outline-offset:var(--s3)}
+@media(prefers-reduced-motion:reduce){
+  .entry:hover .entry-shot img,.entry:focus-within .entry-shot img{transform:none}
+}
 </style>
 </head>
 <body data-no-grounds>
@@ -88,76 +99,61 @@
       <p class="lede rise" style="margin-top:var(--s3);max-width:46ch;color:var(--muted)">
         On cloth, on colour, and on the details that only show at arm's length.</p>
 
-      <div class="pending label" style="margin-top:var(--sy)">
-        <span>For the house</span>
-        <p>Five entries are laid out below with their photography and their
-        headings. The writing is still to come. Send the copy and each one becomes a page of its own.</p>
-      </div>
-
       <div class="jrn-list">
-        <article class="entry" id="road">
-          <figure class="entry-shot rise">
-            <img src="images/journal/road.webp" alt="A stone shirt on the road, sleeves turned back"
-              loading="lazy" decoding="async">
-          </figure>
-          <div class="entry-body">
-            <p class="entry-kick rise">On wearing it</p>
-            <h2 class="entry-name rise d1">The long way round</h2>
-            <p class="entry-note rise d2">A shirt that only works behind a desk is
-            a uniform. This is about the other six days.</p>
-          </div>
+        <article class="entry">
+          <a class="entry-link" href="journal-twenty-years.html">
+            <figure class="entry-shot rise">
+              <img src="images/journal/lobby.webp" alt="An olive shirt, photographed in a lobby" loading="lazy" decoding="async">
+            </figure>
+            <div class="entry-body">
+              <p class="entry-kick rise"><span class="fig">01</span> &nbsp;·&nbsp; On the house</p>
+              <h2 class="entry-name rise d1">Twenty years, no name on the box</h2>
+              <p class="entry-note rise d2">For twenty years our work carried other people&#x27;s labels. The making was ours.</p>
+              <span class="entry-go label">Read the essay</span>
+            </div>
+          </a>
         </article>
 
-        <article class="entry" id="night">
-          <figure class="entry-shot rise">
-            <img src="images/journal/night.webp" alt="A black shirt against a car in low evening sun"
-              loading="lazy" decoding="async">
-          </figure>
-          <div class="entry-body">
-            <p class="entry-kick rise">On colour</p>
-            <h2 class="entry-name rise d1">Black is not one colour</h2>
-            <p class="entry-note rise d2">Why the darkest cloths in the range are
-            the hardest to weave, and the easiest to wear.</p>
-          </div>
+        <article class="entry">
+          <a class="entry-link" href="journal-a-shirt-should-disappear.html">
+            <figure class="entry-shot rise">
+              <img src="images/journal/road.webp" alt="A stone shirt on the road, sleeves turned back" loading="lazy" decoding="async">
+            </figure>
+            <div class="entry-body">
+              <p class="entry-kick rise"><span class="fig">02</span> &nbsp;·&nbsp; On wearing it</p>
+              <h2 class="entry-name rise d1">A shirt should disappear</h2>
+              <p class="entry-note rise d2">Fashion asks a garment to be noticed. We ask a shirt to belong.</p>
+              <span class="entry-go label">Read the essay</span>
+            </div>
+          </a>
         </article>
 
-        <article class="entry" id="button">
-          <figure class="entry-shot rise">
-            <img src="images/journal/button.jpg" alt="A button with I AM RATAN engraved around the rim"
-              loading="lazy" decoding="async">
-          </figure>
-          <div class="entry-body">
-            <p class="entry-kick rise">On detail</p>
-            <h2 class="entry-name rise d1">What a button is for</h2>
-            <p class="entry-note rise d2">It fastens a shirt. It also tells you
-            how much of the maker's attention the rest of it got.</p>
-          </div>
+        <article class="entry">
+          <a class="entry-link" href="journal-what-a-button-is-for.html">
+            <figure class="entry-shot rise">
+              <img src="images/journal/button.jpg" alt="A button with I AM RATAN engraved around the rim" loading="lazy" decoding="async">
+            </figure>
+            <div class="entry-body">
+              <p class="entry-kick rise"><span class="fig">03</span> &nbsp;·&nbsp; On detail</p>
+              <h2 class="entry-name rise d1">What a button is for</h2>
+              <p class="entry-note rise d2">Craft is often invisible when it is done well. Nothing on a garment is an accident.</p>
+              <span class="entry-go label">Read the essay</span>
+            </div>
+          </a>
         </article>
 
-        <article class="entry" id="cuff">
-          <figure class="entry-shot rise">
-            <img src="images/journal/cuff.jpg" alt="The signature embroidered tone on tone at the cuff"
-              loading="lazy" decoding="async">
-          </figure>
-          <div class="entry-body">
-            <p class="entry-kick rise">On making</p>
-            <h2 class="entry-name rise d1">The signature at the cuff</h2>
-            <p class="entry-note rise d2">Embroidered in the cloth's own colour,
-            where only the wearer and the person shaking his hand will find it.</p>
-          </div>
-        </article>
-
-        <article class="entry" id="lobby">
-          <figure class="entry-shot rise">
-            <img src="images/journal/lobby.webp" alt="An olive shirt, photographed in a lobby"
-              loading="lazy" decoding="async">
-          </figure>
-          <div class="entry-body">
-            <p class="entry-kick rise">On the house</p>
-            <h2 class="entry-name rise d1">Twenty years, no name on the box</h2>
-            <p class="entry-note rise d2">The room in India that made luxury the
-            world admired, and never got to sign it.</p>
-          </div>
+        <article class="entry">
+          <a class="entry-link" href="journal-the-wardrobe-that-remembers.html">
+            <figure class="entry-shot rise">
+              <img src="images/journal/wardrobe-card.webp" alt="Folded shirts in a drawer archive, one colour to a tray" loading="lazy" decoding="async">
+            </figure>
+            <div class="entry-body">
+              <p class="entry-kick rise"><span class="fig">04</span> &nbsp;·&nbsp; On the future of menswear</p>
+              <h2 class="entry-name rise d1">The wardrobe that remembers</h2>
+              <p class="entry-note rise d2">Most wardrobes have a memory. The brands do not.</p>
+              <span class="entry-go label">Read the essay</span>
+            </div>
+          </a>
         </article>
       </div>
     </div>
@@ -206,13 +202,13 @@
   </div>
 </footer>
 
-<script src="assets/catalogue.js?v=1786945200"></script>
-<script src="assets/site.js?v=1786945200"></script>
-<script src="assets/store.js?v=1786945200"></script>
-<script src="assets/house.js?v=1786945200"></script>
-<script src="assets/iar-house.js?v=1786945200"></script>
-<script src="assets/mark.js?v=1786945200"></script>
-<script src="assets/track.js?v=1786945200"></script>
+<script src="assets/catalogue.js?v=1786948800"></script>
+<script src="assets/site.js?v=1786948800"></script>
+<script src="assets/store.js?v=1786948800"></script>
+<script src="assets/house.js?v=1786948800"></script>
+<script src="assets/iar-house.js?v=1786948800"></script>
+<script src="assets/mark.js?v=1786948800"></script>
+<script src="assets/track.js?v=1786948800"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -223,6 +219,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1786945200"></script>
+<script src="assets/nav.js?v=1786948800"></script>
 </body>
 </html>

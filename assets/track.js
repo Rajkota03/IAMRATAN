@@ -80,6 +80,12 @@
     send(rows, beacon);
   }
 
+  /* '/checkout.html' is 'checkout', '/' is 'index'. Written once because two
+     copies of the same tidy-up drift apart the first time a page is renamed. */
+  function page() {
+    return location.pathname.replace(/^\/|\.html$/g, '') || 'index';
+  }
+
   /* the public call. track('uncut_size', {cloth:'cocoa-drift', size:'41'}) */
   function track(name, detail) {
     if (off) return;
@@ -99,7 +105,7 @@
     queue.push({
       visit: visit,
       name: name,
-      path: location.pathname.replace(/^\/|\.html$/g, '') || 'index',
+      path: page(),
       detail: d,
       viewport: window.innerWidth < 820 ? 'phone' : 'desktop',
       at: new Date().toISOString()
@@ -136,17 +142,44 @@
       return;
     }
 
-    if (t.closest('[data-add]')) {
+    /* BUY NOW IS AN ADD TO CART. shop.js puts the same shirt in the same bag
+       for both buttons and differs only in where it lands you — Add stays on
+       the page, Buy goes to the checkout (assets/shop.js:189-204). Watching
+       [data-add] alone therefore reported every buy-now sale as a visitor who
+       ordered without ever having a cart, and the cart step of the funnel was
+       missing exactly the people who were surest about buying. */
+    var act = t.closest('[data-add],[data-buy]');
+    if (act) {
+      /* A click with no size chosen is refused with a toast and nothing goes
+         into the bag. Counting it would inflate the one step in the funnel that
+         is supposed to mean intent, and make the drop to checkout look worse
+         than it is. The test mirrors shop.js: the chosen neck is written onto
+         the [data-sizes] host, and where there is no host we cannot tell, so we
+         count it rather than guess it away. */
+      var host = act.closest('[data-sizes]');
+      var size = host ? host.getAttribute('data-size') : '';
+      if (host && !size) return;
       track('add_to_customize', {
-        cloth: new URLSearchParams(location.search).get('p') || ''
+        cloth: new URLSearchParams(location.search).get('p') || '',
+        size: size || '',
+        /* one funnel step, two doors — the house can still tell them apart */
+        how: act.hasAttribute('data-buy') ? 'buy_now' : 'add'
       });
       return;
     }
 
-    var card = t.closest('.card[href]');
+    /* The related rail at the foot of a product page draws .more-card, not
+       .card (the related() rail in product.html), so every tap from one cloth
+       to the next was
+       invisible and the rail looked like it did nothing. It is the only route
+       from a shirt somebody did not want to one they might. */
+    var card = t.closest('.card[href],.more-card[href]');
     if (card) {
-      var m = card.getAttribute('href').match(/p=([^&]+)/);
-      track('cloth_opened', { cloth: m ? decodeURIComponent(m[1]) : '' });
+      var m = card.getAttribute('href').match(/[?&]p=([^&]+)/);
+      track('cloth_opened', {
+        cloth: card.getAttribute('data-cloth') || (m ? decodeURIComponent(m[1]) : ''),
+        from: card.className.indexOf('more-card') > -1 ? 'rail' : 'grid'
+      });
       return;
     }
 
@@ -223,6 +256,38 @@
   }
 
   track('view', { ref: document.referrer ? new URL(document.referrer).hostname : 'direct' });
+
+  /* ---------- the step nobody was counting ----------
+     There has never been a checkout_started event, so the funnel went straight
+     from a cart to an order with nothing in between — and the gap between those
+     two is the largest single loss on the site. A number that big cannot be
+     managed while it is reported as one drop with no middle.
+
+     It is fired from here, keyed off the page, rather than from checkout.html:
+     the checkout has one job and this file has the other, and a page that has
+     to remember to call the tracker is a page that will one day forget.
+
+     The bag is READ, never written. It is the shop's own basket (shop.js keeps
+     it under 'iar-bag'), it holds cloth, neck and quantity, and it is not an
+     identity — nothing here is stored against a person and no two visits are
+     joined. Everything the note at the top of this file promises still holds. */
+  function bag() {
+    if (window.SHOP && SHOP.bag) return SHOP.bag;
+    try { return JSON.parse(localStorage.getItem('iar-bag') || '[]'); }
+    catch (e) { return []; }
+  }
+
+  if (page() === 'checkout') {
+    var basket = bag();
+    /* An empty checkout is somebody who has already paid and reloaded, or who
+       wandered in from a link. Neither of them started a checkout. */
+    if (basket.length) {
+      track('checkout_started', {
+        lines: basket.length,
+        units: basket.reduce(function (n, x) { return n + (Number(x.qty) || 1); }, 0)
+      });
+    }
+  }
 
   addEventListener('pagehide', function () {
     if (deepest) track('depth', { percent: Math.round(deepest / 10) * 10 });

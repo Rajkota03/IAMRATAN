@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your orders · I Am Ratan</title>
+<meta name="description" content="Sign in with a code to see your orders with the house.">
+<meta name="theme-color" content="#101214">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786941600">
+<style>
+.hero{min-height:34svh;display:grid;align-content:center;padding:var(--clear) 0 var(--sy)}
+.panel{max-width:30rem}
+.field{display:grid;gap:var(--s1);margin-bottom:var(--s4)}
+.field label{font-family:var(--mono);font-size:.625rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted)}
+.field input{font:inherit;font-size:1.05rem;padding:var(--s3);background:var(--room);
+  border:1px solid var(--hair);color:inherit;width:100%;border-radius:2px}
+.field input:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.two{display:grid;gap:var(--s3);grid-template-columns:1fr 1fr}
+.act{font:inherit;font-size:1rem;padding:var(--s3) var(--s5);background:currentColor;
+  border:0;cursor:pointer;width:100%;border-radius:2px}
+.act span{color:var(--room)}
+.act[disabled]{opacity:.5;cursor:default}
+.ghost{font:inherit;background:none;border:0;color:var(--muted);cursor:pointer;
+  padding:var(--s2) 0;text-decoration:underline;text-underline-offset:4px}
+.note{color:var(--muted);font-size:.9rem;line-height:1.6;margin:var(--s3) 0 0}
+.bad{color:#c0392b;font-size:.9rem;line-height:1.6;margin:var(--s3) 0 0}
+.hide{display:none}
+/* One order, read the way a customer reads it: what it was, where it is. */
+.ord{border-top:1px solid var(--hair);padding:var(--s4) 0}
+.ord .top{display:flex;gap:var(--s3);align-items:baseline;flex-wrap:wrap}
+.ord .ref{font-family:var(--mono);font-size:.75rem;letter-spacing:.14em}
+.ord .when{color:var(--muted);font-size:.8rem;margin-left:auto}
+.stage{font-family:var(--mono);font-size:.625rem;letter-spacing:.18em;
+  text-transform:uppercase;padding:3px 9px;border:1px solid var(--hair);border-radius:99px}
+.stage.made{background:var(--under)}
+.ord ul{list-style:none;margin:var(--s3) 0 0;padding:0;color:var(--muted)}
+.ord li{padding:2px 0}
+.ord .tot{margin-top:var(--s3);font-size:1.05rem}
+</style>
+</head>
+<body data-no-grounds>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan, home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="bespoke.html">Bespoke</a>
+    <a href="house.html">About us</a>
+  </nav>
+  <span class="muted">Hyderabad</span>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap">
+      <p class="label muted">Your orders</p>
+      <h1 class="display" style="max-width:16ch;margin-top:var(--s2)" id="head">Sign in with a code.</h1>
+      <div class="rule snap" style="max-width:26rem;margin:var(--s5) 0"></div>
+      <p class="lede" id="lede" style="max-width:44ch">There is no password to
+      remember. Give us the mobile number or email you ordered with and we will
+      send a six-digit code.</p>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom:var(--sy)">
+
+    <!-- 1 · who are you -->
+    <div class="panel" id="step-ask">
+      <div class="field">
+        <label for="who">Mobile number or email</label>
+        <input id="who" type="text" inputmode="email" autocomplete="username"
+               autocapitalize="off" spellcheck="false" placeholder="98765 43210">
+      </div>
+      <button class="act" id="send"><span>Send me a code</span></button>
+      <p class="note">If you have ordered from the house before, everything you
+      bought is already waiting on the other side of that code.</p>
+      <p class="bad hide" id="ask-err"></p>
+    </div>
+
+    <!-- 2 · the code -->
+    <div class="panel hide" id="step-code">
+      <div class="field">
+        <label for="code">The six digits we just sent</label>
+        <input id="code" type="text" inputmode="numeric" autocomplete="one-time-code"
+               maxlength="6" placeholder="······">
+      </div>
+      <button class="act" id="verify"><span>Sign in</span></button>
+      <p class="note" id="sent-to"></p>
+      <button class="ghost" id="again">Send it again</button>
+      <button class="ghost" id="back">Use a different number</button>
+      <p class="bad hide" id="code-err"></p>
+    </div>
+
+    <!-- 3 · your name, asked once and only if no order ever told us -->
+    <div class="panel hide" id="step-name">
+      <p class="note" style="margin-top:0">One thing before you go in.</p>
+      <div class="two">
+        <div class="field">
+          <label for="fn">First name</label>
+          <input id="fn" type="text" autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="ln">Last name</label>
+          <input id="ln" type="text" autocomplete="family-name">
+        </div>
+      </div>
+      <button class="act" id="saveName"><span>Continue</span></button>
+      <p class="bad hide" id="name-err"></p>
+    </div>
+
+    <!-- 4 · what they bought -->
+    <div class="panel hide" id="step-in" style="max-width:44rem">
+      <div id="orders"></div>
+      <p class="note" id="empty-note"></p>
+      <button class="ghost" id="out" style="margin-top:var(--s5)">Sign out</button>
+    </div>
+
+  </section>
+</main>
+
+<script src="assets/mark.js?v=1786941600"></script>
+<script src="assets/iar-house.js?v=1786941600"></script>
+<script src="assets/account.js?v=1786941600"></script>
+<script>
+(function () {
+  'use strict';
+  var A = window.IARACCOUNT;
+  var $ = function (id) { return document.getElementById(id); };
+  var show = function (id) {
+    ['step-ask', 'step-code', 'step-name', 'step-in'].forEach(function (s) {
+      $(s).classList.toggle('hide', s !== id);
+    });
+  };
+  var err = function (id, msg) {
+    var el = $(id);
+    el.textContent = msg || '';
+    el.classList.toggle('hide', !msg);
+  };
+  var busy = function (btn, on, word) {
+    btn.disabled = on;
+    btn.querySelector('span').textContent = on ? word : btn.dataset.word;
+  };
+  ['send', 'verify', 'saveName'].forEach(function (id) {
+    $(id).dataset.word = $(id).querySelector('span').textContent;
+  });
+
+  var ID = null;   /* what they typed, once we understand it */
+
+  /* ---- 1 · ask for the code ---- */
+  function sendCode(btn) {
+    err('ask-err', ''); err('code-err', '');
+    var id = A.readIdentity($('who').value);
+    if (!id) return err('ask-err', 'That does not look like a mobile number or an email address.');
+    busy(btn, true, 'Sending…');
+    A.sendCode($('who').value).then(function (got) {
+      ID = got;
+      $('sent-to').textContent = got.kind === 'phone'
+        ? 'Sent by text to ' + got.value.replace('+91', '+91 ') + '.'
+        : 'Sent to ' + got.value + '. It can take a minute, and it sometimes lands in spam.';
+      show('step-code');
+      $('code').focus();
+    }).catch(function (e) {
+      /* The one failure worth naming precisely: SMS is not switched on for this
+         project yet, and "unsupported phone provider" would tell a customer
+         nothing. */
+      var m = String(e.message || '');
+      if (/provider|sms|phone/i.test(m) && /disabled|unsupported|not enabled|configur/i.test(m)) {
+        err('ask-err', 'Codes by text are not switched on yet. Please use your email address for now.');
+      } else if (/rate|too many|seconds/i.test(m)) {
+        err('ask-err', 'That was a moment ago. Wait a minute and try again.');
+      } else {
+        err('ask-err', m || 'We could not send that code. Try again in a moment.');
+      }
+    }).then(function () { busy(btn, false); });
+  }
+  $('send').onclick = function () { sendCode(this); };
+  $('who').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); sendCode($('send')); }
+  });
+
+  /* ---- 2 · the code ---- */
+  function verify(btn) {
+    err('code-err', '');
+    var code = $('code').value.replace(/\D/g, '');
+    if (code.length < 6) return err('code-err', 'The code is six digits.');
+    busy(btn, true, 'Checking…');
+    A.verify(ID, code).then(function () {
+      return A.me();
+    }).then(function (p) {
+      if (!p || !p.first_name) { show('step-name'); $('fn').focus(); return; }
+      return goIn();
+    }).catch(function (e) {
+      var m = String(e.message || '');
+      err('code-err', /expired|invalid|token/i.test(m)
+        ? 'That code is wrong or has expired. Ask for another.'
+        : (m || 'That did not work.'));
+    }).then(function () { busy(btn, false); });
+  }
+  $('verify').onclick = function () { verify(this); };
+  $('code').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); verify($('verify')); }
+  });
+  $('again').onclick = function () { sendCode($('send')); };
+  $('back').onclick = function () { show('step-ask'); $('who').focus(); };
+
+  /* ---- 3 · their name ---- */
+  $('saveName').onclick = function () {
+    var btn = this;
+    err('name-err', '');
+    var f = $('fn').value.trim(), l = $('ln').value.trim();
+    if (f.length < 2) return err('name-err', 'Please give us your first name.');
+    busy(btn, true, 'Saving…');
+    A.setName(f, l).then(goIn).catch(function (e) {
+      err('name-err', e.message || 'We could not save that.');
+    }).then(function () { busy(btn, false); });
+  };
+
+  /* ---- 4 · in ---- */
+  var STAGE = {
+    'new': 'Received', making: 'Being made', shipped: 'On its way',
+    delivered: 'Delivered', cancelled: 'Cancelled'
+  };
+  var money = function (n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); };
+  var when = function (s) {
+    try {
+      return new Date(s).toLocaleDateString('en-IN',
+        { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch (e) { return ''; }
+  };
+  var esc = function (s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  };
+
+  function goIn() {
+    show('step-in');
+    var p = A.profile;
+    $('head').textContent = p && p.first_name ? 'Hello, ' + p.first_name + '.' : 'Your orders.';
+    $('lede').textContent = 'Everything you have bought from the house.';
+    return A.orders().then(function (list) {
+      if (!list || !list.length) {
+        $('orders').innerHTML = '';
+        $('empty-note').textContent =
+          'Nothing here yet. When you place an order it will appear on this page, '
+          + 'and you will not have to sign in again on this device.';
+        return;
+      }
+      $('empty-note').textContent = '';
+      $('orders').innerHTML = list.map(function (o) {
+        var items = (o.items || []).map(function (i) {
+          return '<li>' + esc(i.name || i.slug) + ' · neck ' + esc(i.size)
+               + (i.qty > 1 ? ' · ' + i.qty : '') + '</li>';
+        }).join('');
+        return '<div class="ord">'
+          + '<div class="top">'
+          +   '<span class="ref">' + esc(o.ref) + '</span>'
+          +   '<span class="stage ' + (o.status === 'delivered' ? 'made' : '') + '">'
+          +     esc(STAGE[o.status] || o.status) + '</span>'
+          +   '<span class="when">' + when(o.placed_at) + '</span>'
+          + '</div>'
+          + '<ul>' + items + '</ul>'
+          + (o.tracking
+              ? '<p class="note" style="margin-top:var(--s2)">'
+                + esc(o.courier || 'Courier') + ' · ' + esc(o.tracking) + '</p>'
+              : '')
+          + '<p class="tot">' + money(o.total) + '</p>'
+          + '</div>';
+      }).join('');
+    });
+  }
+
+  $('out').onclick = function () {
+    A.signOut();
+    $('head').textContent = 'Sign in with a code.';
+    $('lede').textContent = 'There is no password to remember. Give us the mobile '
+      + 'number or email you ordered with and we will send a six-digit code.';
+    $('who').value = ''; $('code').value = '';
+    show('step-ask');
+  };
+
+  /* Already signed in on this device? Then this page is just their orders. */
+  if (A.signedIn()) {
+    show('step-in');
+    A.me().then(function (p) {
+      if (!p) { show('step-ask'); return; }
+      if (!p.first_name) { show('step-name'); return; }
+      return goIn();
+    });
+  }
+})();
+</script>
+</body>
+</html>

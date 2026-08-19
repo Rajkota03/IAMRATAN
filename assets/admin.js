@@ -21,11 +21,22 @@
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhja2JxY3BoaWppaHFieXNpYm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDY1ODQsImV4cCI6MjEwMjI4MjU4NH0.wg5IdL1ArScKk4dWWTtX8xyi8s4Z-1B9gKQQJBvX9V8';
   var SESSION = 'iar.admin.session';
 
-  var A = { token: null, email: null };
+  var A = { token: null, refresh: null, expires: 0, email: null, onLost: null };
 
   /* ---------- talking to the database ---------- */
 
-  function api(path, opts) {
+  /* Every failure carries WHY on the error itself. The desk used to be handed a
+     bare message and had to guess, so an expired sign-in and a missing table
+     read identically — and the house was told to run SQL files at four in the
+     afternoon because its hour was up. */
+  function fault(status, j) {
+    var e = new Error((j && (j.message || j.hint)) || ('HTTP ' + status));
+    e.status = status;
+    e.code = j && j.code;
+    return e;
+  }
+
+  function send(path, opts) {
     opts = opts || {};
     var h = {
       apikey: ANON_KEY,
@@ -40,10 +51,22 @@
     }).then(function (r) {
       if (r.status === 204) return null;
       return r.json().then(function (j) {
-        if (!r.ok) throw new Error(j.message || j.hint || ('HTTP ' + r.status));
+        if (!r.ok) throw fault(r.status, j);
         return j;
       });
     });
+  }
+
+  function api(path, opts) {
+    return fresh().then(function () { return send(path, opts); })
+      .catch(function (e) {
+        /* A 401 the clock did not see coming — a token pulled at the other end,
+           or a session left over from before the desk kept expiry times. Spend
+           the refresh token once and try again; only then is it honestly over. */
+        if (e.expired || e.status !== 401) throw e;
+        if (!A.refresh) throw lost();
+        return fresh(true).then(function () { return send(path, opts); });
+      });
   }
 
   function auth(path, body) {
@@ -59,22 +82,77 @@
     });
   }
 
-  /* ---------- who is at the desk ---------- */
+  /* ---------- who is at the desk ----------
 
-  function remember(tok, email) {
-    A.token = tok; A.email = email;
-    try { sessionStorage.setItem(SESSION, JSON.stringify({ t: tok, e: email })); } catch (e) {}
+     A Supabase access token is good for about an hour. Only the access token
+     used to be kept, and nothing ever renewed it, so the desk quietly stopped
+     working an hour into the day and every screen blamed a missing table. The
+     refresh token is kept beside it now and spent BEFORE the hour is up, so
+     the house never sees the moment it happens. */
+
+  var SKEW = 60;          /* seconds of headroom, because clocks disagree */
+  var renewing = null;    /* the one refresh in flight, if there is one */
+
+  function nowSec() { return Math.floor(Date.now() / 1000); }
+
+  function remember(j, email) {
+    A.token = j.access_token;
+    A.refresh = j.refresh_token || null;
+    A.expires = nowSec() + (Number(j.expires_in) || 3600);
+    A.email = email;
+    try {
+      sessionStorage.setItem(SESSION, JSON.stringify(
+        { t: A.token, r: A.refresh, x: A.expires, e: email }));
+    } catch (e) {}
   }
   function forget() {
-    A.token = A.email = null;
+    A.token = A.refresh = A.email = null; A.expires = 0; renewing = null;
     try { sessionStorage.removeItem(SESSION); } catch (e) {}
   }
   function restore() {
     try {
       var s = JSON.parse(sessionStorage.getItem(SESSION) || 'null');
-      if (s && s.t) { A.token = s.t; A.email = s.e; return true; }
+      if (s && s.t) {
+        A.token = s.t; A.refresh = s.r || null; A.expires = s.x || 0;
+        A.email = s.e; return true;
+      }
     } catch (e) {}
     return false;
+  }
+
+  /* When the sign-in cannot be saved there is nothing clever left to do, so it
+     is ended properly and said out loud. The desk hears this and shows the
+     gate — an honest "sign in again" rather than the SQL notice, which sent
+     the house looking for a database fault that was never there. */
+  function lost() {
+    forget();
+    var e = new Error('Your sign-in has run out. Please sign in again.');
+    e.expired = true;
+    if (typeof A.onLost === 'function') { try { A.onLost(e); } catch (x) {} }
+    return e;
+  }
+
+  /* One renewal at a time. Eight panels on the dashboard all ask at once, and
+     GoTrue rotates the refresh token on use — seven of those eight would come
+     back invalid and sign a perfectly good desk out.
+
+     An expiry of nothing means a session saved before the desk kept the time,
+     so it is left alone until a 401 proves it stale. */
+  function fresh(force) {
+    if (!A.token) return Promise.resolve();
+    if (!force && (!A.refresh || !A.expires || nowSec() < A.expires - SKEW))
+      return Promise.resolve();
+    if (!A.refresh) return Promise.reject(lost());
+    if (renewing) return renewing;
+    var email = A.email;
+    renewing = auth('token?grant_type=refresh_token', { refresh_token: A.refresh })
+      .then(function (j) {
+        if (!j.access_token) throw new Error('no token returned');
+        remember(j, email);
+        renewing = null;
+      })
+      .catch(function () { renewing = null; throw lost(); });
+    return renewing;
   }
 
   /* Being signed in is not the same as being allowed. The allowlist is checked
@@ -88,7 +166,7 @@
 
   A.signIn = function (email, password) {
     return auth('token?grant_type=password', { email: email, password: password })
-      .then(function (j) { remember(j.access_token, email); return isAdmin(); });
+      .then(function (j) { remember(j, email); return isAdmin(); });
   };
 
   /* First-time setup: an allowlisted person who has no Supabase account yet.
@@ -96,7 +174,7 @@
   A.signUp = function (email, password) {
     return auth('signup', { email: email, password: password })
       .then(function (j) {
-        if (j.access_token) { remember(j.access_token, email); return isAdmin(); }
+        if (j.access_token) { remember(j, email); return isAdmin(); }
         /* the project asks for email confirmation */
         return 'confirm';
       });
@@ -110,7 +188,9 @@
 
   A.dashboard  = function () { return api('dashboard?select=*').then(one); };
   A.products   = function () {
-    return api('products?select=id,slug,name,price,hex,collection,visible,sort_order' +
+    /* sku is asked for because the range table has a column for it — without it
+       every row showed an em dash and the house thought the codes had gone */
+    return api('products?select=id,slug,name,sku,price,hex,collection,visible,sort_order' +
                '&order=sort_order.asc');
   };
   A.stock      = function () {
@@ -149,20 +229,35 @@
     var q = 'orders?select=*&order=placed_at.desc';
     if (opts.status && opts.status !== 'all') q += '&status=eq.' + opts.status;
     if (opts.find) {
-      var f = encodeURIComponent('%' + opts.find + '%');
+      /* Inside or=(...) PostgREST reads , . ( ) : as grammar, and
+         encodeURIComponent leaves every one of them alone — so searching for
+         "R. Rao" or anything with a comma came back 400 and the house was told
+         to run SQL files. Double quotes make the term a plain value; the
+         backslashes are for quotes and backslashes inside it. A * still counts
+         as a wildcard, which is harmless and arguably what was meant. */
+      var term = String(opts.find).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      var f = encodeURIComponent('"%' + term + '%"');
       q += '&or=(ref.ilike.' + f + ',name.ilike.' + f + ',phone.ilike.' + f + ')';
     }
     var from = (opts.page || 0) * (opts.size || 10);
-    return fetch(URL_BASE + '/rest/v1/' + q, {
-      headers: {
-        apikey: ANON_KEY, Authorization: 'Bearer ' + (A.token || ANON_KEY),
-        Range: from + '-' + (from + (opts.size || 10) - 1),
-        Prefer: 'count=exact'
-      }
-    }).then(function (r) {
-      var cr = r.headers.get('content-range') || '';
-      var total = Number(String(cr).split('/')[1]) || 0;
-      return r.json().then(function (rows) { return { rows: rows, total: total }; });
+    return fresh().then(function () {
+      return fetch(URL_BASE + '/rest/v1/' + q, {
+        headers: {
+          apikey: ANON_KEY, Authorization: 'Bearer ' + (A.token || ANON_KEY),
+          Range: from + '-' + (from + (opts.size || 10) - 1),
+          Prefer: 'count=exact'
+        }
+      }).then(function (r) {
+        var cr = r.headers.get('content-range') || '';
+        var total = Number(String(cr).split('/')[1]) || 0;
+        /* This used to hand the error body back as if it were rows, so the
+           screen died on rows.map and blamed the database. It throws like
+           everything else now. */
+        return r.json().then(function (rows) {
+          if (!r.ok) throw fault(r.status, rows);
+          return { rows: rows, total: total };
+        });
+      });
     });
   };
   A.series     = function (period) {
@@ -347,15 +442,19 @@
     var path = (folder || 'uncategorised').toLowerCase().replace(/[^a-z0-9]+/g, '-') +
                '/' + Date.now().toString(36) + '-' + clean;
 
-    return fetch(URL_BASE + '/storage/v1/object/house/' + encodeURI(path), {
-      method: 'POST',
-      headers: {
-        apikey: ANON_KEY,
-        Authorization: 'Bearer ' + (A.token || ANON_KEY),
-        'Content-Type': file.type || 'application/octet-stream',
-        'x-upsert': 'false'
-      },
-      body: file
+    /* Storage does not go through api(), so it asks for a fresh token itself —
+       otherwise a long afternoon's first upload is the thing that fails. */
+    return fresh().then(function () {
+      return fetch(URL_BASE + '/storage/v1/object/house/' + encodeURI(path), {
+        method: 'POST',
+        headers: {
+          apikey: ANON_KEY,
+          Authorization: 'Bearer ' + (A.token || ANON_KEY),
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'false'
+        },
+        body: file
+      });
     }).then(function (r) {
       if (!r.ok) {
         return r.text().then(function (t) {
@@ -379,9 +478,11 @@
   A.delMedia = function (row) {
     /* the file goes first: a catalogue row pointing at nothing is recoverable,
        an orphaned file nobody can see or delete is not */
-    return fetch(URL_BASE + '/storage/v1/object/house/' + encodeURI(row.path), {
-      method: 'DELETE',
-      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + (A.token || ANON_KEY) }
+    return fresh().then(function () {
+      return fetch(URL_BASE + '/storage/v1/object/house/' + encodeURI(row.path), {
+        method: 'DELETE',
+        headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + (A.token || ANON_KEY) }
+      });
     }).then(function () {
       return api('media?id=eq.' + row.id, { method: 'DELETE', prefer: 'return=minimal' });
     });

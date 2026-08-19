@@ -136,6 +136,7 @@
 <script src="assets/iar-house.js?v=1786941600"></script>
 <script src="assets/mark.js?v=1786941600"></script>
 <script src="assets/track.js?v=1786941600"></script>
+<script src="assets/account.js?v=1786941600"></script>
 <script>
 (function () {
   'use strict';
@@ -397,6 +398,41 @@
     trust.innerHTML = 'The house confirms every order before it is made. ' +
       'Card and UPI payment is being connected. Until then your order reaches ' +
       'the house directly and payment is arranged with you.';
+
+    knowYou();
+  }
+
+  /* A man who has bought here before should not type his address again.
+     Nothing is forced: he was never asked to sign in, and if he is not signed
+     in this does nothing at all and he checks out as a guest exactly as before.
+     Only empty boxes are filled, so this can never overwrite something he is in
+     the middle of typing. */
+  function knowYou() {
+    var ACC = window.IARACCOUNT;
+    if (!ACC) return;
+
+    var put = function (id, v) {
+      var el = document.getElementById(id);
+      if (el && v && !el.value.trim()) el.value = v;
+    };
+
+    var paint = function (p) {
+      if (!p) return;
+      put('fn', p.first_name);
+      put('ln', p.last_name);
+      put('em', p.email);
+      put('ph', p.phone);
+
+      var t = document.getElementById('trust');
+      if (t && ACC.signedIn()) {
+        t.innerHTML = t.innerHTML +
+          '<br><br>Signed in' + (p.first_name ? ' as ' + p.first_name : '') +
+          '. <a href="account.html">Your orders</a>.';
+      }
+    };
+
+    if (ACC.profile) paint(ACC.profile);
+    else if (ACC.signedIn()) ACC.me().then(paint);
   }
 
   var RULES = [
@@ -511,6 +547,13 @@
     btn.textContent = 'Placing the order…';
     api('orders', { method: 'POST', body: [order] })
       .then(function () {
+        /* Only clear the bag once the order is actually recorded. It was never
+           cleared at all before, so a man who bought two shirts and came back to
+           the site found them still sitting in his basket, and the honest reading
+           of that is that his order did not go through. */
+        try { localStorage.removeItem('iar-bag'); } catch (e) {}
+        if (SHOP && SHOP.bag) SHOP.bag.length = 0;
+
         /* the cart they left is now a sale — stamped so it stops appearing on
            the chase list and starts counting as recovered */
         if (CART_ID && saved) {

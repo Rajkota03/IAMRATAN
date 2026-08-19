@@ -469,7 +469,13 @@
               st + '-512.webp 512w, ' + st + '.webp 768w" ' +
               'sizes="(max-width:759px) 42vw, 22vw" alt="" loading="lazy" decoding="async">'
             : '<img src="images/shirts/' + esc(x.img) + '" alt="" loading="lazy" decoding="async">';
-          return '<a class="more-card" href="product.html?p=' + encodeURIComponent(x.slug) + '">' +
+          /* data-cloth says which shirt this is, plainly. The tracker used to
+             have to pick the slug back out of the href with a regular
+             expression, which works right up until a query string gains a
+             second parameter — and a rail that reports the wrong cloth is
+             worse than one that reports nothing. */
+          return '<a class="more-card" data-cloth="' + esc(x.slug) + '" ' +
+            'href="product.html?p=' + encodeURIComponent(x.slug) + '">' +
             '<span class="more-shot">' + img + '</span>' +
             '<span class="more-nm">' + esc(x.name) +
               '<span class="more-pr">' + x.priceText + '</span></span>' +

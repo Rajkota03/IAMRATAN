@@ -203,6 +203,22 @@ input.cell{width:5.5rem;background:var(--room);border:1px solid var(--hair);
   border-radius:.3rem}
 input.cell:focus{outline:0;border-color:var(--ink)}
 input.cell.saved{border-color:var(--ink);background:var(--under)}
+/* A field that did not save must not sit there looking like one that did. It
+   keeps the mark until somebody edits it again — a flash would be gone before
+   the person who caused it looked up. */
+.unsaved,input.cell.unsaved,select.cell.unsaved{
+  border:1px solid var(--claret)!important;outline:1px solid var(--claret);
+  outline-offset:1px;color:var(--claret)}
+.note-bar{position:fixed;left:50%;bottom:var(--s4);transform:translate(-50%,1rem);
+  max-width:min(44rem,calc(100vw - 2rem));z-index:60;
+  background:var(--ink);color:var(--room);border-radius:.4rem;
+  padding:var(--s3) var(--s5);font-size:.8125rem;line-height:1.5;
+  box-shadow:0 .5rem 2rem rgba(0,0,0,.22);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s var(--settle),transform .3s var(--settle)}
+.note-bar.on{opacity:1;transform:translate(-50%,0)}
+.note-bar.good{background:var(--under);color:var(--ink)}
+@media print{.note-bar{display:none!important}}
 .wide{width:100%;max-width:22rem}
 /* In a table cell, width:100% resolves against a column that is sizing itself
    from its content — so the field collapses to the width of its placeholder.
@@ -646,6 +662,13 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     document.getElementById('first').addEventListener('click', function () { go(A.signUp); });
   }
 
+  /* When the sign-in cannot be renewed there is nothing on this screen worth
+     looking at, so it goes back to the gate saying what actually happened —
+     rather than leaving the house reading a notice about missing tables. */
+  A.onLost = function () {
+    gate('Your sign-in ran out. Sign in again — nothing has been lost.', false);
+  };
+
   /* ---------- navigation ---------- */
 
   /* One path each, drawn on a 24x24 grid — a handful of inline strokes rather
@@ -720,8 +743,13 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         }).join('');
       }).join('') +
       '<div class="whoami"><b>' + esc(A.email || '') + '</b>' +
-        '<a href="#" id="out">Sign out</a></div>';
-    var o = document.getElementById('out');
+        '<a href="#" id="out-side">Sign out</a></div>';
+    /* Both sign-outs answered to id="out", and the header's comes first in the
+       document — so this handler was hung on the header link, again on every
+       navigation, while the sidebar link did nothing at all. Two names now,
+       and this one is asked for inside the sidebar it was just written into,
+       which is fresh every time and cannot collect listeners. */
+    var o = side.querySelector('#out-side');
     if (o) o.addEventListener('click', function (e) {
       e.preventDefault(); A.signOut(); gate('Signed out.');
     });
@@ -791,10 +819,34 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   }
   function body(html) { document.getElementById('body').innerHTML = html; }
   function waiting() { return '<p class="empty">Reading\u2026</p>'; }
+  /* One message for every failure was the wrong kindness. An hour-old sign-in
+     and a train going into a tunnel both told the house its database was
+     missing tables, which is untrue, unfixable by the person reading it, and
+     alarming in a way that ends in a phone call. So the failure is read before
+     it is described: PostgREST names a missing table 42P01, an expired session
+     comes back 401, and a fetch that never reached anybody rejects without a
+     status at all. Anything left over says so plainly rather than guessing. */
   function needsSQL(e) {
-    return '<p class="empty">This screen needs a table that does not exist yet. ' +
-      'Run the SQL files in <code>iar-lab/</code> in order, then reload.<br><br>' +
-      '<span class="muted">' + esc(e && e.message) + '</span></p>';
+    var msg = (e && e.message) || '';
+    var tail = msg ? '<br><br><span class="muted">' + esc(msg) + '</span>' : '';
+
+    if (e && (e.expired || e.status === 401 || e.status === 403))
+      return '<p class="empty">Your sign-in has run out. Sign out and back in, ' +
+        'and this screen fills itself. Nothing has been lost.' + tail + '</p>';
+
+    if (e && (e.code === '42P01' ||
+              /does not exist|schema cache|Could not find the table/i.test(msg)))
+      return '<p class="empty">This screen needs a table that does not exist yet. ' +
+        'Run the SQL files in <code>iar-lab/</code> in order, then reload.' +
+        tail + '</p>';
+
+    if (!e || (!e.status && (e.name === 'TypeError' || !navigator.onLine)))
+      return '<p class="empty">The shop could not be reached. This is the line ' +
+        'between here and the database, not the shop itself — check the ' +
+        'connection and try again.' + tail + '</p>';
+
+    return '<p class="empty">Something went wrong reading this screen. The ' +
+      'database answered, but not with what was asked for.' + tail + '</p>';
   }
 
   function render() {
@@ -1031,8 +1083,20 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   function stageTag(st) {
     return '<span class="tag ' + esc(st) + '">' + esc(st) + '</span>';
   }
+  /* This slug arrives inside orders.items, and the order policy lets anybody at
+     all write that — a stranger can post an order whose slug is a quote and an
+     onerror. It landed in a src= attribute untouched, in the one browser that
+     is holding the house's own sign-in.
+
+     Two guards, not one. The shape test says what a slug IS, so nothing that
+     is not a slug ever reaches the page; the escaping says that even a
+     harmless-looking one cannot close the attribute it sits in. Either alone
+     is one mistake away from being no guard at all. The name and the neck
+     beside it were escaped from the start, so this was an oversight rather
+     than a decision, and it is worth saying so. */
   function thumbFor(slug) {
-    return slug ? 'images/set/' + slug + '/1-hero-t.jpg' : '';
+    if (!slug || !/^[a-z0-9][a-z0-9-]*$/.test(String(slug))) return '';
+    return esc('images/set/' + slug + '/1-hero-t.jpg');
   }
 
   function orders() {
@@ -1053,15 +1117,21 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       }).join('');
 
       var pages = Math.max(1, Math.ceil(total / OSIZE));
+      /* Six buttons that follow the house rather than six that always say one
+         to six — on a shop with four hundred pages, page seven onwards could
+         only be reached by tapping the arrow over and over. */
+      var span = Math.min(pages, 6);
+      var start = Math.min(Math.max(0, opage - Math.floor(span / 2)), pages - span);
       var pager = '<div class="pager"><span class="n">' +
         (total ? 'Showing ' + (opage * OSIZE + 1) + ' to ' +
           Math.min((opage + 1) * OSIZE, total) + ' of ' + total : 'None') +
         '</span><span class="pages">' +
         '<button data-page="' + (opage - 1) + '"' + (opage === 0 ? ' disabled' : '') +
           '>&lsaquo;</button>' +
-        Array.apply(null, { length: Math.min(pages, 6) }).map(function (_, i) {
-          return '<button data-page="' + i + '" aria-current="' + (i === opage) +
-            '">' + (i + 1) + '</button>';
+        Array.apply(null, { length: span }).map(function (_, i) {
+          var n = start + i;
+          return '<button data-page="' + n + '" aria-current="' + (n === opage) +
+            '">' + (n + 1) + '</button>';
         }).join('') +
         '<button data-page="' + (opage + 1) + '"' +
           (opage >= pages - 1 ? ' disabled' : '') + '>&rsaquo;</button>' +
@@ -1080,14 +1150,16 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
             rows.map(function (o) {
               var items = o.items || [];
               var first = items[0] || {};
+              /* an empty src is not "no picture" to a browser, it is a second
+                 request for this very page, so the tag goes rather than empties */
+              var th = thumbFor(first.slug);
               return '<tr>' +
                 '<td class="num">' + esc(o.ref) + '</td>' +
                 '<td>' + esc(o.name) + '<br><span class="muted">' +
                   esc(o.phone) + '</span></td>' +
                 '<td><div style="display:flex;gap:var(--s2);align-items:center">' +
-                  (first.slug
-                    ? '<img class="thumb" src="' + thumbFor(first.slug) +
-                      '" alt="" loading="lazy">' : '') +
+                  (th ? '<img class="thumb" src="' + th +
+                        '" alt="" loading="lazy">' : '') +
                   '<span>' + items.map(function (i) {
                     return esc(i.name || i.slug) + ' &times;' + (i.qty || 1) +
                       '<br><span class="muted">neck ' + esc(i.size) + '</span>';
@@ -1141,9 +1213,10 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       .then(function (r) {
         var o = r[0], t = r[1] || {}, tl = r[2] || [];
         var items = (o.items || []).map(function (i) {
+          var th = thumbFor(i.slug);
           return '<div class="line">' +
-            (i.slug ? '<img class="thumb" src="' + thumbFor(i.slug) + '" alt="">'
-                    : '<span></span>') +
+            (th ? '<img class="thumb" src="' + th + '" alt="">'
+                : '<span></span>') +
             '<span><b style="font-weight:400">' + esc(i.name || i.slug) + '</b>' +
               '<br><span class="muted">Neck ' + esc(i.size) + ' &middot; qty ' +
               (i.qty || 1) + '</span></span>' +
@@ -1313,7 +1386,14 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 
       var st = document.getElementById('stamp');
       if (st) st.addEventListener('click', function () {
-        A.invoiceNo(o.id).then(function () { openOrder(o.id); });
+        /* This opened the order panel afterwards, so the invoice underneath
+           still read "not numbered yet" and the house pressed the button
+           again. The invoice is what changed, so the invoice is what redraws. */
+        st.disabled = true;
+        A.invoiceNo(o.id).then(function () { invoicePage(o.id); }, function (err) {
+          st.disabled = false;
+          tell('The invoice could not be numbered. ' + ((err && err.message) || ''));
+        });
       });
     }).catch(function (e) { body(needsSQL(e)); });
   }
@@ -1424,17 +1504,20 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 
         body('<div class="strip">' + figs + '</div>' +
           '<p class="hint">Price is in whole rupees, inclusive of tax. Untick a ' +
-          'cloth to take it off the shop without deleting anything.</p>' +
+          'cloth to take it off the shop without deleting anything. Open a ' +
+          'cloth for its fabric, collar, cuff and photographs.</p>' +
           '<div class="card"><div class="scroll"><table><thead><tr><th></th>' +
           '<th>Cloth</th><th>SKU</th><th>Price</th><th>Necks</th><th>Stock</th>' +
-          '<th>Collection</th><th>On the shop</th></tr></thead><tbody>' +
+          '<th>Collection</th><th>On the shop</th><th></th></tr></thead><tbody>' +
           PRODUCTS.map(function (p) {
             var s2 = STOCK[p.id] || {};
             var tot = NECKS.reduce(function (a, z) { return a + (+s2[z] || 0); }, 0);
             var gone = NECKS.filter(function (z) { return (+s2[z] || 0) === 0; }).length;
+            var th = thumbFor(p.slug);
             return '<tr>' +
-              '<td><img class="thumb" src="' + thumbFor(p.slug) + '" alt="" ' +
-                'loading="lazy" onerror="this.style.visibility=\'hidden\'"></td>' +
+              '<td>' + (th ? '<img class="thumb" src="' + th + '" alt="" ' +
+                'loading="lazy" onerror="this.style.visibility=\'hidden\'">' : '') +
+              '</td>' +
               '<td>' + esc(p.name) + '</td>' +
               '<td class="num muted">' + esc(p.sku || '—') + '</td>' +
               '<td><input class="cell" inputmode="numeric" value="' + p.price +
@@ -1445,6 +1528,11 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
               '<td>' + esc(p.collection || '—') + '</td>' +
               '<td><label class="tick"><input type="checkbox" data-visible="' +
                 p.id + '"' + (p.visible ? ' checked' : '') + '> shown</label></td>' +
+              /* the cloth screen — fabric, collar, cuff, the photographs and
+                 their order — had been written and finished but nothing on the
+                 desk ever pointed at it, so nobody could reach any of it */
+              '<td><button class="btn small" data-cloth-open="' + p.id +
+                '">Open</button></td>' +
             '</tr>';
           }).join('') + '</tbody></table></div></div>');
       }).catch(function (e) { body(needsSQL(e)); });
@@ -3211,9 +3299,20 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       }).catch(repFail);
   }
 
+  /* This asked for A.customers(), which has never existed. That is not a
+     rejected promise, it is a TypeError thrown while the array of promises is
+     still being built — so the .catch below never ran and the screen sat on
+     "Reading…" for as long as anyone was willing to wait. It is A.people2(),
+     the same customer_list view the Customers screen reads, and it carries
+     every column this page shows: city, lifetime, usual_neck, orders.
+
+     Building the array inside a promise means that even the next missing
+     helper is caught and shown rather than hanging the screen. */
   function repCustomers() {
-    Promise.all([A.customers(), A.insights().catch(function () { return {}; }),
-                 A.locations().catch(nil)])
+    Promise.resolve().then(function () {
+      return Promise.all([A.people2(), A.insights().catch(function () { return {}; }),
+                          A.locations().catch(nil)]);
+    })
       .then(function (r) {
         var people = r[0] || [], ins = r[1] || {}, locs = r[2] || [];
         EXPORTS.customers = function () {
@@ -3374,7 +3473,9 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         A.addImage({
           product_id: Number(id), url: f.elements.url.value.trim(),
           kind: f.elements.kind.value, sort_order: imgs.length
-        }).then(function () { openCloth(id); });
+        }).then(function () { openCloth(id); }, function (err) {
+          tell('That photograph was not added. ' + ((err && err.message) || ''));
+        });
       });
 
       dragShots(id);
@@ -3408,17 +3509,96 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       var order = [].slice.call(box.querySelectorAll('.shot'));
       Promise.all(order.map(function (s, i) {
         return A.setImage(s.getAttribute('data-img'), { sort_order: i });
-      })).then(function () { openCloth(productId); });
+      })).then(function () { openCloth(productId); }, function (err) {
+        /* redrawn from the database either way, so what is on screen is never
+           an order the shop is not actually going to use */
+        tell('The photographs were not reordered. ' + ((err && err.message) || ''));
+        openCloth(productId);
+      });
     });
   }
 
   /* ---------- saving ----------
      Every edit saves on change and the field flashes. No Save button anywhere:
-     a Save button is a thing to forget, and the failure it causes is silent. */
+     a Save button is a thing to forget, and the failure it causes is silent.
+
+     That was only half true, and the wrong half. The flash was here from the
+     start; nothing was watching for the other answer. Eighteen writes on this
+     screen could all fail and the field would go on showing the new number, so
+     the house could believe it had restocked twelve shirts it had not. Every
+     write goes through write() now, and a failure puts the field back to what
+     the database still holds, marks it, and says so out loud. */
+
+  /* The browser keeps what a field was RENDERED with, separately from what has
+     been typed into it — and rendered means straight out of the database. So a
+     failed write already has something honest to put back, without this screen
+     keeping a second copy of everything. On a save it is moved forward,
+     otherwise the afternoon's second failure would revert to the morning. */
+  function held(el) {
+    var i;
+    if (el.type === 'checkbox') return el.defaultChecked;
+    if (el.tagName === 'SELECT') {
+      for (i = 0; i < el.options.length; i++)
+        if (el.options[i].defaultSelected) return el.options[i].value;
+      return el.value;
+    }
+    return el.defaultValue;
+  }
+  function keep(el) {
+    var i;
+    if (el.type === 'checkbox') { el.defaultChecked = el.checked; return; }
+    if (el.tagName === 'SELECT') {
+      for (i = 0; i < el.options.length; i++)
+        el.options[i].defaultSelected = el.options[i].value === el.value;
+      return;
+    }
+    el.defaultValue = el.value;
+  }
+
+  /* One line along the bottom, gone by itself. Not an alert(): a write that
+     failed halfway down a stock sheet must be impossible to miss and must not
+     stop the sheet, and an alert does the second thing badly. */
+  var tellTimer;
+  function tell(msg, good) {
+    var n = document.getElementById('note-bar');
+    if (!n) {
+      n = document.createElement('div');
+      n.id = 'note-bar'; n.className = 'note-bar';
+      n.setAttribute('role', 'status');
+      document.body.appendChild(n);
+    }
+    n.className = 'note-bar on' + (good ? ' good' : '');
+    n.textContent = msg;
+    clearTimeout(tellTimer);
+    tellTimer = setTimeout(function () { n.className = 'note-bar'; }, 7000);
+  }
 
   function flash(el) {
+    keep(el);
+    el.classList.remove('unsaved');
     el.classList.add('saved');
     setTimeout(function () { el.classList.remove('saved'); }, 900);
+  }
+
+  /* The one door every write goes through. Resolves true when it saved, false
+     when it did not — so the things that follow a save, like refreshing the
+     figures or redrawing a table, do not run on a change that never happened. */
+  function write(p, el, what) {
+    var before = el ? held(el) : null;
+    return p.then(function () {
+      if (el) flash(el);
+      return true;
+    }, function (e) {
+      if (el) {
+        if (el.type === 'checkbox') el.checked = !!before;
+        else el.value = before;
+        el.classList.remove('saved');
+        el.classList.add('unsaved');
+      }
+      tell((what || 'That change') + ' did not save, and has been put back. ' +
+           ((e && e.message) || 'The shop could not be reached.'));
+      return false;
+    });
   }
 
   document.addEventListener('click', function (e) {
@@ -3444,6 +3624,11 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       stg.disabled = true;
       A.setOrder(bits[0], { status: bits[1] }).then(function () {
         openOrder(bits[0]); orders(); refreshKpis();
+      }, function (err) {
+        /* the button used to stay disabled for ever on a failure, which reads
+           as "done" and is the opposite of what happened */
+        stg.disabled = false;
+        tell('The order did not move. ' + ((err && err.message) || ''));
       });
     }
 
@@ -3458,6 +3643,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       var fig = di.closest('.shot');
       A.delImage(di.getAttribute('data-delimg')).then(function () {
         if (fig) fig.remove();
+      }, function (err) {
+        tell('That photograph is still there. ' + ((err && err.message) || ''));
       });
     }
 
@@ -3465,6 +3652,12 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 
     var ar = e.target.closest('[data-arange]');
     if (ar) { A_RANGE = ar.getAttribute('data-arange'); analytics(); }
+
+    /* The dashboard drew these four buttons from the first day and nothing ever
+       listened for them, so the revenue line was welded to today and the shop
+       had no way to look at a month. Same shape as the analytics one above. */
+    var dr = e.target.closest('[data-range]');
+    if (dr) { CHART_RANGE = dr.getAttribute('data-range'); dashboard(); }
 
     var rt = e.target.closest('[data-rtab]');
     if (rt) { R_TAB = rt.getAttribute('data-rtab'); reports(); }
@@ -3533,6 +3726,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       A.markSent(sd.getAttribute('data-send')).then(function () {
         if (row) row.classList.add('done');
         sd.outerHTML = '<span class="tag delivered">sent</span>';
+      }, function (err) {
+        tell('That one is not marked sent. ' + ((err && err.message) || ''));
       });
     }
   });
@@ -3547,36 +3742,61 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       var why = (document.getElementById('why') || {}).value || 'correction';
       t.classList.toggle('zero', q === 0);
       t.classList.toggle('low', q > 0 && q <= 3);
-      A.moveStock(t.getAttribute('data-stock'), t.getAttribute('data-size'),
-                  was, q, why)
-        .then(function () { t.setAttribute('data-was', q); flash(t); refreshKpis(); });
+      write(A.moveStock(t.getAttribute('data-stock'), t.getAttribute('data-size'),
+                        was, q, why), t, 'That stock count')
+        .then(function (ok) {
+          /* data-was is what the next edit measures its movement against, so it
+             only moves when the database agreed to move */
+          if (ok) { t.setAttribute('data-was', q); refreshKpis(); }
+          else {
+            t.classList.toggle('zero', was === 0);
+            t.classList.toggle('low', was > 0 && was <= 3);
+          }
+        });
     }
     if (has('data-price')) {
       var p = parseInt(t.value, 10);
-      if (!isNaN(p) && p >= 0) A.setProduct(t.getAttribute('data-price'), { price: p })
-        .then(function () { flash(t); });
+      if (isNaN(p) || p < 0) {
+        t.value = held(t);
+        tell('A price has to be a whole number of rupees. It has been put back.');
+      } else {
+        write(A.setProduct(t.getAttribute('data-price'), { price: p }), t, 'That price');
+      }
     }
     if (has('data-visible'))
-      A.setProduct(t.getAttribute('data-visible'), { visible: t.checked });
+      write(A.setProduct(t.getAttribute('data-visible'), { visible: t.checked }),
+            t, 'Showing that cloth on the shop');
     if (has('data-order'))
-      A.setOrder(t.getAttribute('data-order'), { status: t.value }).then(refreshKpis);
+      write(A.setOrder(t.getAttribute('data-order'), { status: t.value }),
+            t, 'That order stage')
+        .then(function (ok) { if (ok) refreshKpis(); });
     if (has('data-return'))
-      A.setReturn(t.getAttribute('data-return'), { stage: t.value }).then(refreshKpis);
+      write(A.setReturn(t.getAttribute('data-return'), { stage: t.value }),
+            t, 'That return stage')
+        .then(function (ok) { if (ok) refreshKpis(); });
     if (has('data-handled'))
-      A.setEnquiry(t.getAttribute('data-handled'), { handled: t.checked }).then(refreshKpis);
+      write(A.setEnquiry(t.getAttribute('data-handled'), { handled: t.checked }),
+            t, 'Marking that enquiry handled')
+        .then(function (ok) { if (ok) refreshKpis(); });
     if (has('data-set')) {
       var v = t.type === 'checkbox' ? String(t.checked) : t.value;
-      A.setSetting(t.getAttribute('data-set'), v)
-        .then(function () { if (t.classList.contains('cell')) flash(t); });
+      write(A.setSetting(t.getAttribute('data-set'), v), t, 'That setting')
+        .then(function (ok) {
+          /* The invoice reads these out of a cache that was filled once and
+             never emptied, so editing the GSTIN and printing straight
+             afterwards printed the old one — on the single document that
+             causes real trouble if it leaves the building. */
+          if (ok) { SET.__loaded = false; }
+        });
     }
     if (has('data-slot'))
-      A.setContent(t.getAttribute('data-slot'), t.value)
-        .then(function () { flash(t); });
+      write(A.setContent(t.getAttribute('data-slot'), t.value), t, 'That wording');
     /* an offer switched off stops at the very next checkout — the database is
        asked again on every order, never the page */
     if (has('data-live'))
-      A.setDiscount(t.getAttribute('data-live'), { live: t.checked })
-        .then(function () { discounts(); });
+      write(A.setDiscount(t.getAttribute('data-live'), { live: t.checked }),
+            t, 'Switching that offer')
+        .then(function (ok) { if (ok) discounts(); });
 
     /* ---- the shop windows ---- */
 
@@ -3584,45 +3804,49 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       var bf = t.getAttribute('data-bfield');
       var bp = {};
       bp[bf] = bf === 'sort_order' ? (parseInt(t.value, 10) || 1) : (t.value.trim() || null);
-      A.setBand(t.getAttribute('data-band'), bp).then(function () { flash(t); });
+      write(A.setBand(t.getAttribute('data-band'), bp), t, 'That band');
     }
     if (has('data-bandlive'))
-      A.setBand(t.getAttribute('data-bandlive'), { live: t.checked });
+      write(A.setBand(t.getAttribute('data-bandlive'), { live: t.checked }),
+            t, 'Showing that band');
 
     if (has('data-nav')) {
       var nf = t.getAttribute('data-nfield');
       var np = {};
       np[nf] = nf === 'sort_order' ? (parseInt(t.value, 10) || 1) : t.value.trim();
-      A.setNav(t.getAttribute('data-nav'), np).then(function () { flash(t); });
+      write(A.setNav(t.getAttribute('data-nav'), np), t, 'That menu link');
     }
     if (has('data-navlive'))
-      A.setNav(t.getAttribute('data-navlive'), { live: t.checked });
+      write(A.setNav(t.getAttribute('data-navlive'), { live: t.checked }),
+            t, 'Showing that menu link');
 
     if (has('data-alt'))
-      A.setMedia(t.getAttribute('data-alt'), { alt: t.value.trim() || null })
-        .then(function () { flash(t); });
+      write(A.setMedia(t.getAttribute('data-alt'), { alt: t.value.trim() || null }),
+            t, 'That description');
 
     if (has('data-pagefoot'))
-      A.setPage(t.getAttribute('data-pagefoot'), { in_footer: t.checked });
+      write(A.setPage(t.getAttribute('data-pagefoot'), { in_footer: t.checked }),
+            t, 'That page in the footer');
     if (has('data-col')) {
       var fld = t.getAttribute('data-field');
       var val = fld === 'sort_order' ? (parseInt(t.value, 10) || 0) : t.value;
       var patch = {}; patch[fld] = val;
-      A.setCollection(t.getAttribute('data-col'), patch)
-        .then(function () { flash(t); });
+      write(A.setCollection(t.getAttribute('data-col'), patch), t, 'That collection');
     }
     if (has('data-colvis'))
-      A.setCollection(t.getAttribute('data-colvis'), { visible: t.checked });
+      write(A.setCollection(t.getAttribute('data-colvis'), { visible: t.checked }),
+            t, 'Showing that collection');
     if (has('data-code'))
-      A.setDiscount(t.getAttribute('data-code'), { live: t.checked });
+      write(A.setDiscount(t.getAttribute('data-code'), { live: t.checked }),
+            t, 'Switching that offer');
     if (has('data-imgkind'))
-      A.setImage(t.getAttribute('data-imgkind'), { kind: t.value });
+      write(A.setImage(t.getAttribute('data-imgkind'), { kind: t.value }),
+            t, 'What that photograph shows');
     if (has('data-cloth')) {
       var cf = t.getAttribute('data-field');
       var cv = cf === 'mrp' ? (parseInt(t.value, 10) || null) : t.value;
       var cp = {}; cp[cf] = cv;
-      A.setProduct(t.getAttribute('data-cloth'), cp)
-        .then(function () { flash(t); });
+      write(A.setProduct(t.getAttribute('data-cloth'), cp), t, 'That field');
     }
   });
 
@@ -3637,8 +3861,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   /* ---------- start ---------- */
 
   function boot() {
-    who.innerHTML = esc(A.email) + ' &middot; <a href="#" id="out">sign out</a>';
-    document.getElementById('out').addEventListener('click', function (e) {
+    who.innerHTML = esc(A.email) + ' &middot; <a href="#" id="out-top">sign out</a>';
+    who.querySelector('#out-top').addEventListener('click', function (e) {
       e.preventDefault(); A.signOut(); gate('Signed out.');
     });
     refreshKpis(); drawNav(); render();

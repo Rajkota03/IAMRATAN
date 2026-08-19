@@ -35,7 +35,12 @@
 .hide{display:none}
 /* One order, read the way a customer reads it: what it was, where it is. */
 .ord{border-top:1px solid var(--hair);padding:var(--s4) 0}
-.ord .top{display:flex;gap:var(--s3);align-items:baseline;flex-wrap:wrap}
+/* Not `.top`. The house stylesheet already owns that name for the fixed site
+   header, so every order's reference line inherited position:fixed and stacked
+   itself at the top of the screen on top of the real header. Nothing in this
+   file was wrong to read — the collision only exists when the two stylesheets
+   are in the same room. */
+.ord .ordhead{display:flex;gap:var(--s3);align-items:baseline;flex-wrap:wrap}
 .ord .ref{font-family:var(--mono);font-size:.75rem;letter-spacing:.14em}
 .ord .when{color:var(--muted);font-size:.8rem;margin-left:auto}
 .stage{font-family:var(--mono);font-size:.625rem;letter-spacing:.18em;
@@ -263,7 +268,7 @@
                + (i.qty > 1 ? ' · ' + i.qty : '') + '</li>';
         }).join('');
         return '<div class="ord">'
-          + '<div class="top">'
+          + '<div class="ordhead">'
           +   '<span class="ref">' + esc(o.ref) + '</span>'
           +   '<span class="stage ' + (o.status === 'delivered' ? 'made' : '') + '">'
           +     esc(STAGE[o.status] || o.status) + '</span>'

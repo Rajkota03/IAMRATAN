@@ -143,15 +143,26 @@ customer relies on them.
 
 ## 5 · Stops the shop looking trustworthy
 
-### 5.1 Nineteen product photographs show another brand's label
-Nineteen of the twenty-five shirt photographs have a different brand's name
-inside the collar. A customer paying ₹6,999 who sees a stranger's brand in the
-neck reasonably concludes it is counterfeit.
+### 5.1 The other brand's collar label — CHECKED 18 Aug 2026, not an issue on this site
+`PENDING-FROM-CLIENT.md` and `ASSET-BRIEF.md` both warn that nineteen of the
+twenty-five shirt photographs show a neck label reading `LEGACY` rather than I Am
+Ratan, and describe it as the most commercially dangerous thing on the site. That
+warning was written about the **existing WooCommerce store's photography**, and it
+was repeated into this document without being checked against what this site
+actually serves. That was wrong, and it is worth recording why rather than
+quietly deleting it.
 
-- **Cost of leaving it:** refunds, reviews, and a reputation that is expensive to
-  get back. This is the most commercially dangerous item on this list.
-- **Options, cheapest first:** retouch the label out of 19 images · reshoot those
-  19 · reshoot all 25. Six are already clean.
+Every product photograph in this repository was examined — all 27 cloths, and
+every shot type they have between them: `1-hero`, `2-view`, `2-back`, `3-view`,
+`3-collar`, `4-cuff`, `5-button`. **Every one is worn on a model.** There is no
+flat-lay and no folded shot anywhere in the set, so the inside of a collar is
+never in frame, and no label of any brand is legible in any image on this site.
+
+- **Nothing to fix here, and no reshoot to commission for this site.**
+- **Still worth confirming with the client:** whether the old store's photographs
+  are being retired with it, and whether any of them will be reused in a
+  campaign or on a marketplace listing — the risk is real wherever those images
+  are still published, it simply is not published here.
 
 ### 5.2 Twenty-five product descriptions
 All 25 shirts share one boilerplate sentence with the name swapped. Click two

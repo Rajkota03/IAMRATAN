@@ -70,7 +70,10 @@ def main():
     im = Image.open(src).convert('RGB')
     print('source  %s  %sx%s' % (src, *im.size))
     cut(im, 1600, 900).save(HERO, 'WEBP', quality=82, method=6)
-    cut(im, 1200, 800).save(CARD, 'WEBP', quality=82, method=6)
+    # 4/5, matching every journal card. The rail was briefly 3:2 and it cut
+    # the subject out of portrait frames; this one is landscape, so the card
+    # crops in tight on the box rather than the cloth around it.
+    cut(im, 880, 1100).save(CARD, 'WEBP', quality=82, method=6)
     for f in (HERO, CARD):
         print('  wrote %-34s %s  %.0f KB'
               % (f, Image.open(f).size, os.path.getsize(f) / 1024))

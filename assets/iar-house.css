@@ -509,10 +509,17 @@ a.shot:hover img{transform:scale(1.03)}
 
 /* what to read next, so an essay is never a dead end */
 .essay-next{border-top:1px solid var(--hair);padding:var(--sy) 0 var(--sz)}
-.essay-next .wrap{display:grid;gap:var(--s4)}
-@media(min-width:760px){.essay-next .wrap{grid-template-columns:1fr 1fr}}
+/* Held to the same measure as the essay above it. Left full width, two cards
+   came to 581px each against a 576px reading column, so the footnote outweighed
+   the piece it follows. */
+.essay-next .wrap{display:grid;gap:var(--s4) var(--s3);
+  grid-template-columns:1fr 1fr;max-width:36rem}
 .enx{display:block;text-decoration:none;color:inherit}
-.enx-shot{display:block;position:relative;aspect-ratio:3/2;overflow:hidden;
+/* 4/5, matching every other journal card on the site and, more to the point,
+   the shape the photographs actually are. At 3/2 the cover crop took a wide
+   strip out of a portrait frame and cut the rider's head off: a composed
+   portrait rendered as a headless torso. The card follows the picture. */
+.enx-shot{display:block;position:relative;aspect-ratio:4/5;overflow:hidden;
   background:var(--under);margin-bottom:var(--s3)}
 .enx-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   transition:transform .6s var(--settle)}

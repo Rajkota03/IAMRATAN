@@ -18,12 +18,34 @@ ESSAY, INDEX = 'journal-twenty-years.html', 'journal.html'
 ALT = ('The house box in navy, RECLAIM foiled across it and the I Am Ratan '
        'signature below, on blue cloth')
 
+SEARCH = ('new-hero/*', os.path.expanduser('~/Downloads/*'))
+
 def find():
-    for p in sorted(glob.glob('new-hero/*')):
-        stem = os.path.basename(p).lower()
-        if stem.endswith(('.png', '.jpg', '.jpeg', '.webp', '.heic')) \
-           and any(c in stem for c in CANDIDATES):
-            return p
+    """Look in the project folder first, then Downloads.
+
+    Downloads is behind macOS privacy protection and is unreadable until the
+    app running this is granted Full Disk Access, so a file sitting there is
+    invisible rather than missing. The difference matters when it looks like
+    nothing happened, hence the explicit note below."""
+    blocked = False
+    for pattern in SEARCH:
+        try:
+            found = sorted(glob.glob(pattern))
+        except OSError:
+            blocked = True
+            continue
+        if pattern.startswith(os.path.expanduser('~/Downloads')) and not found:
+            if not os.access(os.path.expanduser('~/Downloads'), os.R_OK):
+                blocked = True
+        for p in found:
+            stem = os.path.basename(p).lower()
+            if stem.endswith(('.png', '.jpg', '.jpeg', '.webp', '.heic')) \
+               and any(c in stem for c in CANDIDATES):
+                return p
+    if blocked:
+        print('Note: ~/Downloads could not be read. macOS privacy protection '
+              'blocks it until\n      the app is given Full Disk Access in '
+              'System Settings, Privacy & Security.')
     return None
 
 def cut(im, tw, th, ybias=0.5):

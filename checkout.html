@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786970400">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786988400">
 <style>
 /* ---------- CHECKOUT ----------
    Guest by default, and there is no account to make. Forced sign-in is the
@@ -106,6 +106,8 @@
     <a href="shop.html">Shop</a>
     <a href="bespoke.html">Bespoke</a>
     <a href="house.html">About us</a>
+    <a href="account.html" class="nav-acc">Sign in</a>
+    <a href="account.html?register" class="nav-reg">Register</a>
   </nav>
 </header>
 
@@ -128,14 +130,14 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786970400"></script>
-<script src="assets/house.js?v=1786970400"></script>
-<script src="assets/catalogue.js?v=1786970400"></script>
-<script src="assets/site.js?v=1786970400"></script>
-<script src="assets/shop.js?v=1786970400"></script>
-<script src="assets/iar-house.js?v=1786970400"></script>
-<script src="assets/mark.js?v=1786970400"></script>
-<script src="assets/track.js?v=1786970400"></script>
+<script src="assets/store.js?v=1786988400"></script>
+<script src="assets/house.js?v=1786988400"></script>
+<script src="assets/catalogue.js?v=1786988400"></script>
+<script src="assets/site.js?v=1786988400"></script>
+<script src="assets/shop.js?v=1786988400"></script>
+<script src="assets/iar-house.js?v=1786988400"></script>
+<script src="assets/mark.js?v=1786988400"></script>
+<script src="assets/track.js?v=1786988400"></script>
 <script>
 (function () {
   'use strict';
@@ -201,7 +203,9 @@
     var code = (input.value || '').trim().toUpperCase();
     if (!code) { CODE = { code:'', amount:0, label:'' }; note(''); paintTotals(); return; }
 
-    btn.disabled = true; note('Checking…', true);
+    /* the turning button goes on the control we own. note() prints server text
+       with textContent and must stay that way: r.reason is echoed through it. */
+    btn.disabled = true; btn.innerHTML = '<span class="wait"></span>'; note('');
     var phoneEl = document.getElementById('ph');
     api('rpc/discount_value', {
       method: 'POST', prefer: 'return=representation',
@@ -209,7 +213,7 @@
               in_phone: phoneEl ? phoneEl.value.replace(/\D/g, '') : null }
     }).then(function (rows) {
       var r = (rows && rows[0]) || {};
-      btn.disabled = false;
+      btn.disabled = false; btn.textContent = 'Apply';
       if (!r.ok) {
         CODE = { code:'', amount:0, label:'' };
         note(r.reason || 'That code did not work.', false);
@@ -225,6 +229,7 @@
       CODE = { code:'', amount:0, label:'' };
       /* the shop must never stall on this: an unreachable database means no
          discount, not a blocked checkout */
+      btn.disabled = false; btn.textContent = 'Apply';
       note('We could not check that code just now. The order will still go ' +
            'through, and the house will honour a valid code by hand.', false);
       paintTotals();
@@ -508,7 +513,7 @@
        the house gets the order either way, and only the tidy copy is missing. */
     var btn = document.getElementById('payBtn');
     btn.disabled = true;
-    btn.textContent = 'Placing the order…';
+    btn.innerHTML = '<span class="wait">Placing the order</span>';
     api('orders', { method: 'POST', body: [order] })
       .then(function () {
         /* the cart they left is now a sale — stamped so it stops appearing on
@@ -535,6 +540,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1786970400"></script>
+<script src="assets/nav.js?v=1786988400"></script>
 </body>
 </html>

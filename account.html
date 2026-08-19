@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your account · I Am Ratan</title>
+<link rel="canonical" href="https://www.iamratan.co.in/account.html">
+<meta name="description" content="Sign in to see your orders with the house.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#EDE9E0">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1786988400">
+<style>
+/* ---------- the account ----------
+   One column, held narrow. This is a form, not a page to look at, and a form
+   set across a wide screen makes a person's eyes travel for no reason. */
+.acc{max-width:26rem;margin-inline:auto;padding:var(--clear) 0 var(--sz)}
+.acc-tabs{display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border-bottom:1px solid var(--hair);margin:var(--s5) 0 var(--s5)}
+.acc-tab{appearance:none;background:none;border:0;cursor:pointer;color:var(--muted);
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.16em;
+  text-transform:uppercase;padding:var(--s3) 0;min-height:2.75rem;
+  transition:color .3s var(--settle),box-shadow .3s var(--settle)}
+/* an inset line rather than a border pulled up by a negative margin: it lands
+   on the row's own hairline without moving the tab off the grid */
+.acc-tab[aria-selected="true"]{color:var(--ink);box-shadow:inset 0 -1px 0 var(--ink)}
+.f{display:grid;gap:var(--s1);margin:0 0 var(--s4)}
+.f label{font-family:var(--mono);font-size:.625rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted)}
+.f input{font:inherit;font-size:1rem;padding:var(--s2) 0;background:none;
+  border:0;border-bottom:1px solid var(--hair);color:inherit;min-height:2.75rem}
+.f input:focus{outline:none;border-bottom-color:var(--ink)}
+.acc .cta{display:block;width:100%;text-align:center;margin-top:var(--s2)}
+.acc-alt{margin:var(--s4) 0 0;color:var(--muted);font-size:.9375rem;line-height:1.6}
+.acc-alt button{appearance:none;background:none;border:0;padding:0;cursor:pointer;
+  color:inherit;font:inherit;text-decoration:underline;text-underline-offset:3px}
+.acc-msg{margin:var(--s3) 0 0;font-size:.9375rem;line-height:1.6;min-height:1.2em}
+.acc-msg.bad{color:#8C2F2F}
+.acc-msg.good{color:var(--ink)}
+/* the orders a signed-in customer can see */
+.ord{border-top:1px solid var(--hair);padding:var(--s4) 0;display:grid;
+  grid-template-columns:1fr auto;gap:var(--s1) var(--s3);align-items:baseline}
+.ord-ref{font-family:var(--mono);font-size:.75rem;letter-spacing:.1em}
+.ord-when{grid-column:1/-1;color:var(--muted);font-size:.8125rem}
+.ord-status{font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+</style>
+</head>
+<body data-no-grounds>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top label">
+  <a class="markwrap" href="index.html" aria-label="I Am Ratan, home"><span class="mk" aria-hidden="true"><span class="mk-letters"></span><span class="mk-badger"><i class="mk-body"></i><i class="mk-head"></i></span></span></a>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="bespoke.html">Bespoke</a>
+    <a href="house.html">About us</a>
+    <a href="account.html" class="nav-acc" aria-current="page">Sign in</a>
+    <a href="account.html?register" class="nav-reg">Register</a>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="wrap">
+    <section class="acc" id="acc"></section>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <span class="mark mark--monogram" aria-hidden="true"></span>
+        <p class="lede" style="max-width:22ch">A brand made by Indians, for the world.</p>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">The house</p>
+        <ul>
+          <li><a href="tel:+918282826264" class="fig">+91 82828 26264</a></li>
+          <li><a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a></li>
+          <li><a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Explore</p>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="bespoke.html">Bespoke</a></li>
+          <li><a href="house.html">About us</a></li>
+          <li><a href="journal.html">Journal</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="label muted" style="margin-bottom:var(--s2)">Visit</p>
+        <ul>
+          <li>Artisan Apparels</li>
+          <li>Hyderabad, India</li>
+          <li><a href="https://iamratan.co.in" rel="noopener">iamratan.co.in</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="colophon label">
+      <span>© <span id="year">2026</span> I Am Ratan · Artisan Apparels</span>
+      <span><a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="shipping.html">Shipping &amp; returns</a></span>
+      <span>Reclaim · Redefine · Resonate</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/catalogue.js?v=1786988400"></script>
+<script src="assets/site.js?v=1786988400"></script>
+<script src="assets/store.js?v=1786988400"></script>
+<script src="assets/house.js?v=1786988400"></script>
+<script src="assets/iar-house.js?v=1786988400"></script>
+<script src="assets/mark.js?v=1786988400"></script>
+<script src="assets/track.js?v=1786988400"></script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+/* the seller details the e-commerce rules require, printed only once the house
+   has actually given them — see Store.sellerHTML */
+(function(){var f=document.querySelector('.colophon');if(!f||!window.IARSTORE)return;
+window.IARSTORE.ready.then(function(S){var h=S.sellerHTML&&S.sellerHTML();if(!h)return;
+var p=document.createElement('p');p.className='label muted';
+p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
+p.innerHTML=h;f.appendChild(p);});})();
+</script>
+<script src="assets/nav.js?v=1786988400"></script>
+
+<script src="assets/account.js?v=1786988400"></script>
+<script>
+(function () {
+  'use strict';
+  var A = window.IARACCOUNT, root = document.getElementById('acc');
+  /* ?register opens on the second tab, so the menu's Register link lands where
+     it says it will rather than on a sign-in form with a tab to find. */
+  var mode = /(^|[?&])register\b/.test(location.search) ? 'up' : 'in';
+
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+  function money(p) { return '\u20B9' + Number(p || 0).toLocaleString('en-IN'); }
+  function when(t) {
+    if (!t) return '';
+    var d = new Date(t);
+    return d.toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+  }
+
+  function say(msg, good) {
+    var n = document.getElementById('accMsg');
+    if (!n) return;
+    n.textContent = msg || '';                 /* text, never html: this carries server words */
+    n.className = 'acc-msg' + (msg ? (good ? ' good' : ' bad') : '');
+  }
+
+  /* ---- signed out: sign in, or register ------------------------------- */
+  function gate() {
+    root.innerHTML =
+      '<p class="label muted">Your account</p>' +
+      '<h1 class="essay-name" style="font-size:clamp(1.8rem,4vw,2.4rem)">' +
+        (mode === 'in' ? 'Welcome back.' : 'Open an account.') + '</h1>' +
+      '<div class="acc-tabs" role="tablist">' +
+        '<button class="acc-tab" role="tab" id="tabIn" aria-selected="' + (mode === 'in') + '">Sign in</button>' +
+        '<button class="acc-tab" role="tab" id="tabUp" aria-selected="' + (mode !== 'in') + '">Register</button>' +
+      '</div>' +
+      '<form id="accForm" novalidate>' +
+        (mode === 'in' ? '' :
+          '<p class="f"><label for="nm">Your name</label>' +
+          '<input id="nm" type="text" autocomplete="name" required></p>') +
+        '<p class="f"><label for="em">Email</label>' +
+        '<input id="em" type="email" autocomplete="email" required></p>' +
+        '<p class="f"><label for="pw">Password</label>' +
+        '<input id="pw" type="password" autocomplete="' +
+          (mode === 'in' ? 'current-password' : 'new-password') + '" required></p>' +
+        '<button class="cta cta--fill" type="submit" id="go">' +
+          (mode === 'in' ? 'Sign in' : 'Create my account') + '</button>' +
+      '</form>' +
+      '<p class="acc-msg" id="accMsg"></p>' +
+      (mode === 'in'
+        ? '<p class="acc-alt">Forgotten your password? ' +
+          '<button type="button" id="reset">Send me a reset link</button></p>'
+        : '<p class="acc-alt">An account lets you see the orders you have ' +
+          'placed with the house. It is not needed to buy.</p>');
+
+    document.getElementById('tabIn').onclick = function () { mode = 'in'; gate(); };
+    document.getElementById('tabUp').onclick = function () { mode = 'up'; gate(); };
+
+    var form = document.getElementById('accForm'), go = document.getElementById('go');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var em = (document.getElementById('em').value || '').trim();
+      var pw = document.getElementById('pw').value || '';
+      var nm = mode === 'in' ? '' : (document.getElementById('nm').value || '').trim();
+      if (mode !== 'in' && !nm) return say('Your name, so the house knows who it is making for.');
+      if (!em || em.indexOf('@') < 1) return say('That email address is missing something.');
+      if (pw.length < 6) return say('Use at least six characters for the password.');
+
+      var label = go.textContent;
+      go.disabled = true;
+      go.innerHTML = '<span class="wait">' + (mode === 'in' ? 'Signing in' : 'Creating') + '</span>';
+      say('');
+
+      var work = mode === 'in' ? A.signIn(em, pw) : A.register(em, pw, nm);
+      work.then(function (r) {
+        if (r === 'confirm') {
+          go.disabled = false; go.textContent = label;
+          return say('Account made. Confirm it from the email we just sent, then sign in.', true);
+        }
+        signedIn();
+      }).catch(function (err) {
+        go.disabled = false; go.textContent = label;
+        say(err.message);
+      });
+    });
+
+    var rs = document.getElementById('reset');
+    if (rs) rs.onclick = function () {
+      var em = (document.getElementById('em').value || '').trim();
+      if (!em) return say('Your email address first, then press this again.');
+      rs.disabled = true;
+      A.reset(em).then(function () {
+        say('If that address has an account, a reset link is on its way.', true);
+      }).catch(function () {
+        say('We could not send that just now. Please try again.');
+      });
+    };
+  }
+
+  /* ---- signed in: who you are, and what you have ordered -------------- */
+  function signedIn() {
+    root.innerHTML =
+      '<p class="label muted">Your account</p>' +
+      '<h1 class="essay-name" style="font-size:clamp(1.8rem,4vw,2.4rem)">' +
+        (A.name ? esc(A.name) + '.' : 'Welcome.') + '</h1>' +
+      '<p class="acc-alt" style="margin-top:var(--s2)">' + esc(A.email) +
+        ' &nbsp;·&nbsp; <button type="button" id="out">Sign out</button></p>' +
+      '<h2 class="label muted" style="margin:var(--sy) 0 0">Your orders</h2>' +
+      '<div id="orders"><p class="waitbox">Looking for your orders</p></div>';
+
+    document.getElementById('out').onclick = function () { A.signOut(); mode = 'in'; gate(); };
+
+    A.orders().then(function (rows) {
+      var box = document.getElementById('orders');
+      if (!rows.length) {
+        box.innerHTML = '<p class="acc-alt">No orders against this address yet. ' +
+          'When you place one it will appear here, with where it has reached.</p>';
+        return;
+      }
+      box.innerHTML = rows.map(function (o) {
+        var n = (o.items || []).length;
+        return '<div class="ord">' +
+          '<span class="ord-ref">' + esc(o.ref) + '</span>' +
+          '<span>' + money(o.total) + '</span>' +
+          '<span class="ord-when">' + esc(when(o.placed_at)) +
+            (n ? ' &nbsp;·&nbsp; ' + n + (n === 1 ? ' shirt' : ' shirts') : '') + '</span>' +
+          '<span class="ord-status">' + esc(o.status || '') + '</span>' +
+        '</div>';
+      }).join('');
+    });
+  }
+
+  if (A.restore()) signedIn(); else gate();
+}());
+</script>
+</body>
+</html>

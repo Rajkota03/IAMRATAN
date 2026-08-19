@@ -31,6 +31,24 @@
   var veil = document.createElement('div');
   veil.className = 'navveil';
 
+  /* The panel had four links and then two thirds of a phone screen of nothing.
+     Empty is not the same as quiet: it reads as unfinished, and it wastes the
+     one moment a visitor has deliberately opened something and is looking at
+     it. The tail puts the house's own details there, which is what a person
+     opening a menu on a phone is often actually after.
+
+     Built here rather than written into twenty files, and only ever inside the
+     panel: the desktop row is untouched, and with no JavaScript none of this
+     appears, exactly like the button and the veil. */
+  var tail = document.createElement('div');
+  tail.className = 'nav-tail';
+  tail.innerHTML =
+    '<a href="tel:+918282826264" class="fig">+91 82828 26264</a>' +
+    '<a href="mailto:prashanth@iamratan.co.in">prashanth@iamratan.co.in</a>' +
+    '<a href="https://instagram.com/iamratanofficial" rel="noopener">@iamratanofficial</a>' +
+    '<p class="nav-ethos">Reclaim &middot; Redefine &middot; Resonate</p>';
+  nav.appendChild(tail);
+
   head.appendChild(btn);
   /* The veil goes on <body>, not in the header. As a header child it was a grid
      item, and the grid laid it out despite position:fixed — measured 0px wide,

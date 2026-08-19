@@ -464,6 +464,78 @@ a.shot:hover img{transform:scale(1.03)}
   -webkit-mask:url('mark-monogram.png') no-repeat center/contain;
   mask:url('mark-monogram.png') no-repeat center/contain}
 
+/* Sign in sits apart from the four navigation words: it is an action, not a
+   place on the site, and lining it up with Home and Shop invites a visitor to
+   read it as a fifth section. Set in the mono like the rest of the bar so it
+   stays quiet until wanted. */
+.nav-acc{margin-left:var(--s3);padding-left:var(--s3);
+  border-left:1px solid var(--hair);color:var(--muted)}
+.nav-reg{margin-left:var(--s3);color:var(--muted)}
+.nav-acc:hover,.nav-reg:hover{color:var(--ink)}
+@media(max-width:1024px){
+  /* In the panel it stops being a link among links and becomes the action it
+     is: a visitor who wants an account should not have to notice a word set in
+     the same weight as Home. Drawn, not merely listed. */
+  [data-nav] .nav .nav-acc{margin:var(--s4) 0 0;padding:var(--s3) var(--s4);
+    border:1px solid var(--ink);border-left:1px solid var(--ink);
+    color:var(--ink);text-align:center;font-family:var(--mono);
+    font-size:.6875rem;letter-spacing:.18em;text-transform:uppercase;
+    min-height:2.75rem;display:flex;align-items:center;justify-content:center}
+  [data-nav] .nav .nav-acc:hover{background:var(--ink);color:var(--room)}
+
+  /* Register sits under it, drawn but not filled: two identical buttons make a
+     visitor choose before they know the difference, and the one most people
+     want is the one they already have. */
+  [data-nav] .nav .nav-reg{margin:var(--s2) 0 0;padding:var(--s3) var(--s4);
+    border:1px solid var(--hair);color:var(--muted);text-align:center;
+    font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+    text-transform:uppercase;min-height:2.75rem;display:flex;
+    align-items:center;justify-content:center}
+  [data-nav] .nav .nav-reg:hover{border-color:var(--ink);color:var(--ink)}
+
+  /* the house's details, at the foot of the panel */
+  .nav-tail{margin-top:auto;padding-top:var(--s5);display:grid;gap:var(--s2);
+    border-top:1px solid var(--hair)}
+  .nav-tail a{font-size:.9375rem;color:var(--muted);min-height:0;
+    padding:0;border:0}
+  .nav-tail a:hover{color:var(--ink)}
+  .nav-ethos{margin:var(--s2) 0 0;font-family:var(--mono);font-size:.5625rem;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  /* the panel is a column so the tail can sit at its foot */
+  [data-nav] .nav{display:flex;flex-direction:column}
+}
+@media(min-width:1025px){.nav-tail{display:none}}
+
+/* ---------- waiting ----------
+   The house's own button, turning. Every shirt carries I AM RATAN engraved
+   around the rim, so the one thing a customer is asked to look at while the
+   site works is the detail the house is known for.
+
+   A photograph rather than a drawn ring: a drawn spinner is the same spinner
+   every site has. It turns slowly, 2.4s, because a button being examined is
+   not a progress bar being raced.
+
+   Reduced motion gets a still button and a fading opacity instead: the wait is
+   still signalled, nothing rotates. */
+.wait{display:inline-flex;align-items:center;gap:var(--s2);vertical-align:middle}
+.wait::before{content:'';width:1.125em;height:1.125em;flex:0 0 auto;
+  background:url('loader-button-128.png') center/contain no-repeat;
+  animation:iarturn 2.4s linear infinite}
+.wait--lg::before{width:2.75rem;height:2.75rem}
+@keyframes iarturn{to{transform:rotate(360deg)}}
+
+/* a full-panel wait, for a page that has nothing to show yet */
+.waitbox{display:grid;justify-items:center;gap:var(--s3);padding:var(--sz) 0;
+  color:var(--muted);text-align:center}
+.waitbox::before{content:'';width:3.25rem;height:3.25rem;
+  background:url('loader-button-128.png') center/contain no-repeat;
+  animation:iarturn 2.4s linear infinite}
+
+@media(prefers-reduced-motion:reduce){
+  .wait::before,.waitbox::before{animation:iarpulse 1.6s ease-in-out infinite}
+}
+@keyframes iarpulse{0%,100%{opacity:1}50%{opacity:.45}}
+
 /* ---------- the journal, one essay ----------
    These are essays, not product pages, so the whole layout serves one job:
    uninterrupted reading. A single column, a measure that stays near 62

@@ -547,6 +547,44 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   border-color:var(--ink)}
 .pager button[disabled]{opacity:.4;cursor:not-allowed}
 
+/* ---------- one customer ----------
+   The list was a report you could only read. A row that opens has to LOOK like
+   a row that opens, which is the whole of the two rules below — everything
+   else here is labels, and labels are drawn quietly so the page still reads as
+   a person rather than a control panel. */
+tr[data-person]{cursor:pointer}
+tr[data-person]:hover{background:var(--under)}
+.who-head{margin:0 0 var(--s2)}
+.who-head h2{margin:0;font-weight:300;font-size:1.4rem;letter-spacing:-.02em}
+.who-head .sub{margin:var(--s0) 0 var(--s2)}
+.lines{display:flex;flex-wrap:wrap;gap:var(--s1);align-items:center;margin:0}
+/* A chip carries a cross; a .tag never does. Keeping them apart stops the
+   stage label from looking like something the desk can take away. */
+.chip{display:inline-flex;align-items:center;gap:var(--s0);
+  font-family:var(--mono);font-size:.5625rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:2px var(--s1);border-radius:.25rem;
+  border:1px solid var(--hair);background:var(--room);white-space:nowrap}
+.chip button{border:0;background:none;cursor:pointer;font:inherit;line-height:1;
+  color:var(--muted);padding:0 0 0 3px}
+.chip button:hover{color:var(--claret)}
+.tag.st-lead{background:#EDEAE4}
+.tag.st-measured{background:#E7EBF2;color:#3A4A6B}
+.tag.st-first{background:#F6EEDC;color:#8A6A18}
+.tag.st-repeat{background:#E6EDE4;color:#3F6B45}
+.tag.st-lapsed{background:#F3E3E3;color:#8C2F2F}
+.notes{display:grid;gap:var(--s3);margin-top:var(--s3)}
+.notes div{display:grid;gap:var(--s0);padding-bottom:var(--s3);
+  border-bottom:1px solid var(--hair)}
+.notes div:last-child{border-bottom:0;padding-bottom:0}
+/* pre-wrap, because a note is written the way it is spoken and the line breaks
+   somebody put in are part of what they meant */
+.notes p{margin:0;font-size:.9375rem;line-height:1.6;white-space:pre-wrap}
+.notes span{font-family:var(--mono);font-size:.625rem;color:var(--muted)}
+.note-box{width:100%;background:var(--room);border:1px solid var(--hair);
+  border-radius:.4rem;padding:var(--s2);font-family:inherit;font-size:.9375rem;
+  color:var(--ink);min-height:4.5rem;resize:vertical}
+.note-box:focus{outline:0;border-color:var(--ink)}
+
 .missing-fact{border:1px solid var(--claret);color:var(--claret);
   padding:var(--s2) var(--s3);margin:0 0 var(--s3);font-size:.8125rem;
   line-height:1.5;border-radius:.4rem}
@@ -776,7 +814,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 
   var TITLES = {
     dashboard:'Today.', orders:'Orders.', order:'The order.', returns:'Returns & exchanges.',
-    customers:'Customers.', products:'The range.', inventory:'Inventory.',
+    customers:'Customers.', person:'The customer.',
+    products:'The range.', inventory:'Inventory.',
     analytics:'Analytics.', demand:'Bespoke demand.', enquiries:'Enquiries.',
     settings:'Settings.', book:'The measurement book.', sheet:'The sheet.',
     collections:'Collections.', discounts:'Offers.', website:'The shop windows.',
@@ -791,7 +830,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     dashboard:'Here\u2019s what is happening with the shop today.',
     orders:'Every order, and where it has got to.',
     returns:'Exchanges and refunds, and why they came back.',
-    customers:'Built from the orders themselves.',
+    customers:'Everyone the house has, and where each of them has got to.',
+    person:'One man, and everything the house has of him in one place.',
     products:'Price, visibility and what is left.',
     inventory:'Every cloth against every neck the house cuts.',
     analytics:'Where the shop is winning and losing people.',
@@ -852,6 +892,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   function render() {
     shell(waiting());
     ({ dashboard:dashboard, orders:orders, returns:returns, customers:customers,
+       person:person,
        products:products, inventory:inventory, analytics:analytics,
        demand:demand, enquiries:enquiries, settings:settings,
        book:book, collections:collections, discounts:discounts,
@@ -1446,33 +1487,592 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
-  /* ---------- customers ---------- */
+  /* ---------- customers ----------
+
+     This was a report. Three hundred rows, no search, no paging, and not one
+     attribute on any cell that could be clicked — so customer three hundred
+     and one did not exist as far as the desk was concerned, and the screen
+     never said so. It reads customer_lifecycle now, a page at a time, with the
+     same shape as Orders down to the pager and the debounce, because the house
+     already knows how that screen behaves and should not have to learn a
+     second set of habits.
+
+     The usual neck has gone from this table, and that is a real loss worth
+     naming: it came out of customer_list, which is keyed on the phone number
+     and therefore has no account id to open. It is worked out from his own
+     orders on his own page instead, where it is more use anyway. */
+
+  var cstage = 'all', cfind = '', cpage = 0, CSIZE = 12;
+  var STAGE_ORDER = ['lead','measured','first order','repeat','lapsed'];
+
+  function personName(p) {
+    var n = ((p.first_name || '') + ' ' + (p.last_name || ''))
+      .replace(/\s+/g, ' ').trim();
+    return n || p.phone || p.email || 'Somebody';
+  }
+  /* The stage is a phrase — "first order" — and a class cannot carry a space,
+     so the word the stylesheet knows is the first one. */
+  function stageClass(s) { return 'st-' + String(s || '').split(' ')[0]; }
+  /* The stage is written by a CASE in the view and can only ever be one of
+     five words, so nothing a customer typed can reach here. It is escaped
+     anyway: the day somebody widens that CASE is not the day to discover that
+     this one attribute was the exception. */
+  function stageTagFor(s) {
+    return '<span class="tag ' + esc(stageClass(s)) + '">' +
+      esc(s || 'unknown') + '</span>';
+  }
+  function chip(t) { return '<span class="chip">' + esc(t) + '</span>'; }
 
   function customers() {
-    A.people2().then(function (rows) {
-      body(rows.length
-        ? '<p class="hint">Built from the orders themselves, grouped by mobile — ' +
-          'nobody keys a customer in. The usual neck is what makes the next sale ' +
-          'a conversation instead of a form. “Quiet” means nothing bought in six ' +
-          'months, which for a shirt is not long enough to write anyone off.</p>' +
-          '<div class="card"><div class="scroll"><table><thead><tr><th>Who</th>' +
-          '<th>Contact</th><th>Orders</th><th>Lifetime</th><th>Average</th>' +
-          '<th>Usual neck</th><th>Last order</th><th></th></tr></thead><tbody>' +
-          rows.map(function (c) {
-            return '<tr><td>' + esc(c.name) + '</td>' +
-              '<td class="muted">' + esc(c.phone) +
-                (c.email ? '<br>' + esc(c.email) : '') + '</td>' +
-              '<td class="num">' + c.orders + '</td>' +
-              '<td class="num">' + rupees(c.lifetime) + '</td>' +
-              '<td class="num">' + rupees(c.aov) + '</td>' +
-              '<td class="num">' + esc(c.usual_neck || '—') + '</td>' +
-              '<td class="num">' + day(c.last_order) + '</td>' +
-              '<td><span class="tag ' + (c.state === 'active' ? 'shipped' : '') +
-                '">' + esc(c.state) + '</span></td></tr>';
-          }).join('') + '</tbody></table></div></div>'
-        : '<p class="empty">No customers yet. This fills itself from orders — ' +
-          'lifetime spend, average order and the neck they always take.</p>');
+    Promise.all([
+      A.accountsPage({ stage: cstage, find: cfind, page: cpage, size: CSIZE }),
+      A.stages().catch(nil)
+    ]).then(function (r) {
+      var rows = r[0].rows || [], total = r[0].total || 0, buckets = r[1] || [];
+      /* One request for every tag on this page, never one per row. Tags are
+         worth nothing if reading them costs a screen its speed. */
+      return A.tagsForPage(rows.map(function (c) { return c.profile_id; }))
+        .catch(nil)
+        .then(function (tags) { drawCustomers(rows, total, buckets, tags); });
     }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function drawCustomers(rows, total, buckets, tags) {
+    var carried = {};
+    (tags || []).forEach(function (t) {
+      (carried[t.profile_id] = carried[t.profile_id] || []).push(t.tag);
+    });
+
+    var counted = {}, everyone = 0;
+    (buckets || []).forEach(function (b) {
+      counted[b.stage] = b.people;
+      everyone += Number(b.people || 0);
+    });
+    var tabs = [['all','Everyone',everyone]].concat(STAGE_ORDER.map(function (s) {
+      return [s, s, counted[s] || 0];
+    })).map(function (t) {
+      return '<button class="tab" data-cstage="' + esc(t[0]) + '" aria-selected="' +
+        (cstage === t[0]) + '">' + esc(t[1]) + ' <b>' + t[2] + '</b></button>';
+    }).join('');
+
+    var pages = Math.max(1, Math.ceil(total / CSIZE));
+    var span = Math.min(pages, 6);
+    var start = Math.min(Math.max(0, cpage - Math.floor(span / 2)), pages - span);
+    var pager = '<div class="pager"><span class="n">' +
+      (total ? 'Showing ' + (cpage * CSIZE + 1) + ' to ' +
+        Math.min((cpage + 1) * CSIZE, total) + ' of ' + total : 'None') +
+      '</span><span class="pages">' +
+      '<button data-cpage="' + (cpage - 1) + '"' + (cpage === 0 ? ' disabled' : '') +
+        '>&lsaquo;</button>' +
+      Array.apply(null, { length: span }).map(function (_, i) {
+        var n = start + i;
+        return '<button data-cpage="' + n + '" aria-current="' + (n === cpage) +
+          '">' + (n + 1) + '</button>';
+      }).join('') +
+      '<button data-cpage="' + (cpage + 1) + '"' +
+        (cpage >= pages - 1 ? ' disabled' : '') + '>&rsaquo;</button>' +
+      '</span></div>';
+
+    body(
+      '<div class="tabs">' + tabs + '</div>' +
+      '<div class="toolbar"><span class="search">' +
+        '<input id="cfind" placeholder="Search by name, mobile or email" ' +
+          'value="' + esc(cfind) + '"></span></div>' +
+      '<p class="hint">An account exists from the moment somebody buys — nobody ' +
+      'is asked to register and nobody keys a customer in. Open a row for his ' +
+      'orders, his sittings, what the house has written down about him, and ' +
+      'whether he may be written to at all.</p>' +
+      (rows.length
+        ? '<div class="card"><div class="scroll"><table><thead><tr>' +
+          '<th>Who</th><th>Contact</th><th>Stage</th><th>Tags</th><th>Orders</th>' +
+          '<th>Lifetime</th><th>Last order</th><th></th></tr></thead><tbody>' +
+          rows.map(function (c) {
+            var pid = Number(c.profile_id) || 0;
+            var mine = carried[c.profile_id] || [];
+            return '<tr data-person="' + pid + '">' +
+              '<td>' + esc(personName(c)) + '</td>' +
+              '<td class="muted">' + esc(c.phone || '—') +
+                (c.email ? '<br>' + esc(c.email) : '') + '</td>' +
+              '<td>' + stageTagFor(c.stage) + '</td>' +
+              '<td>' + (mine.length
+                  ? mine.map(chip).join(' ')
+                  : '<span class="muted">—</span>') + '</td>' +
+              '<td class="num">' + (c.orders || 0) + '</td>' +
+              '<td class="num">' + rupees(c.lifetime) + '</td>' +
+              '<td class="num">' + day(c.last_order) +
+                (c.unsubscribed_at
+                  ? '<br><span class="tag cancelled">no contact</span>' : '') + '</td>' +
+              '<td><button class="btn small" data-person="' + pid +
+                '">Open</button></td></tr>';
+          }).join('') + '</tbody></table></div>' + pager + '</div>'
+        : '<p class="empty">' + (cfind
+            ? 'Nobody matches “' + esc(cfind) + '”.'
+            : cstage === 'all'
+              ? 'No customers yet. This fills itself the first time somebody ' +
+                'buys — an order leaves an account behind it.'
+              : 'Nobody is at that stage today.') + '</p>')
+    );
+
+    /* Same debounce and same put-the-cursor-back as the orders search, for the
+       same reason: the field is redrawn under the person typing into it. */
+    var fi = document.getElementById('cfind');
+    if (fi) {
+      var t;
+      fi.addEventListener('input', function () {
+        clearTimeout(t);
+        t = setTimeout(function () {
+          cfind = fi.value.trim(); cpage = 0; customers();
+          var again = document.getElementById('cfind');
+          if (again) { again.focus(); again.setSelectionRange(9999, 9999); }
+        }, 350);
+      });
+    }
+  }
+
+  /* ---------- one customer ----------
+
+     The desk has always held five separate screens about the same man and no
+     way to put them beside each other, so the one question anybody actually
+     asks at the counter — who is this and what has he had from us? — could not
+     be answered without four searches and a good memory.
+
+     Nothing on this page is new information. Every row of it already existed
+     somewhere in the database. What is new is that it is in one place under
+     his name, and that the house can now write something down.
+
+     It loads in two rounds and never one request per row. The first round is
+     everything that hangs off the account id; the second is everything still
+     keyed on his mobile, because it was written before accounts existed. The
+     returns wait for the first round on purpose — they are found through his
+     orders as well as his account, since nothing back-filled returns. */
+
+  var PERSON = null;
+
+  function openPerson(id) {
+    PERSON = Number(id) || null;
+    here = 'person'; drawNav(); render();
+  }
+
+  /* Worked out from his own orders rather than asked for, because no view
+     carries it per account and one request per customer to find out which
+     collar he takes is exactly the cost this screen is built to avoid. */
+  function usualNeck(ords) {
+    var seen = {}, best = null;
+    (ords || []).forEach(function (o) {
+      if (o.status === 'cancelled') return;
+      (o.items || []).forEach(function (i) {
+        var s = i && i.size;
+        if (!s) return;
+        seen[s] = (seen[s] || 0) + (Number(i.qty) || 1);
+        if (!best || seen[s] > seen[best]) best = s;
+      });
+    });
+    return best;
+  }
+
+  function stamp(t) {
+    return t ? esc(String(t).slice(0, 16).replace('T', ' ')) : '—';
+  }
+
+  function person() {
+    if (!PERSON) { here = 'customers'; drawNav(); return render(); }
+    var id = PERSON;
+    Promise.all([
+      A.account(id),
+      A.accountLife(id).catch(function () { return {}; }),
+      A.accountOrders(id).catch(nil),
+      A.notes(id).catch(nil),
+      A.tagsOn(id).catch(nil),
+      A.tagBook().catch(nil)
+    ]).then(function (r) {
+      var p = r[0] || {}, life = r[1] || {}, ords = r[2] || [];
+      var phone = p.phone || life.phone || '';
+      var email = p.email || life.email || '';
+      return Promise.all([
+        A.accountReturns(id, ords.map(function (o) { return o.id; })).catch(nil),
+        A.personEnquiries(phone, email).catch(nil),
+        A.personCarts(phone, email).catch(nil),
+        A.personSittings(phone).catch(nil),
+        A.personCampaigns(phone, email).catch(nil),
+        A.campaigns().catch(nil)
+      ]).then(function (s) {
+        drawPerson({
+          id: id, p: p, life: life, orders: ords, notes: r[3] || [],
+          mine: r[4] || [], book: r[5] || [], returns: s[0] || [],
+          enquiries: s[1] || [], carts: s[2] || [], sittings: s[3] || [],
+          sent: s[4] || [], camps: s[5] || []
+        });
+      });
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function drawPerson(d) {
+    var p = d.p, life = d.life;
+    var phone = p.phone || life.phone || '';
+    var email = p.email || life.email || '';
+    var name = personName(p.first_name || p.last_name ? p : life);
+    var count = Number(life.orders || 0);
+    var spent = Number(life.lifetime || 0);
+
+    /* Two facts that look like one. `signed_in` on account_book is user_id
+       being present; claimed_at is the day it happened. A man can have bought
+       four shirts and never once signed in, and that is worth seeing — it is
+       the difference between a customer and an account. */
+    var identity =
+      '<div class="who-head">' +
+        '<h2>' + esc(name) + '</h2>' +
+        '<p class="sub">' + esc(phone || 'no mobile on file') +
+          (email ? ' &middot; ' + esc(email) : '') + '</p>' +
+        '<p class="lines">' + stageTagFor(life.stage) +
+          (p.user_id
+            ? '<span class="tag delivered">signed in ' + esc(day(p.claimed_at)) + '</span>'
+            : '<span class="tag">never signed in</span>') +
+          (p.unsubscribed_at
+            ? '<span class="tag cancelled">asked to be left alone</span>'
+            : p.marketing
+              ? '<span class="tag shipped">said yes to marketing</span>'
+              : '<span class="tag">no consent recorded</span>') +
+          '<span class="tag">first seen ' + esc(day(p.first_seen)) + '</span>' +
+        '</p>' +
+      '</div>';
+
+    var strip = [
+      ['Orders', count],
+      ['Lifetime', rupees(spent)],
+      ['Average order', rupees(count ? Math.round(spent / count) : 0)],
+      ['First order', day(life.first_order)],
+      ['Last order', day(life.last_order)],
+      ['Usual neck', usualNeck(d.orders) || '—']
+    ].map(function (f) {
+      return '<div><b>' + esc(f[1]) + '</b><span>' + f[0] + '</span></div>';
+    }).join('');
+
+    /* Every order opens the same slide-over the Orders screen uses. Building a
+       second one here would be two panels to keep in step, and the one that
+       gets forgotten is always the one the house is looking at. */
+    var ordersHTML = d.orders.length
+      ? '<div class="scroll"><table><thead><tr><th>Order</th><th>Placed</th>' +
+        '<th>What he bought</th><th>Amount</th><th>Stage</th><th></th>' +
+        '</tr></thead><tbody>' +
+        d.orders.map(function (o) {
+          var items = o.items || [];
+          return '<tr><td class="num">' + esc(o.ref) + '</td>' +
+            '<td class="num">' + day(o.placed_at) + '</td>' +
+            '<td>' + (items.length
+              ? items.map(function (i) {
+                  return esc(i.name || i.slug) + ' &times;' + (Number(i.qty) || 1) +
+                    ' <span class="muted">neck ' + esc(i.size) + '</span>';
+                }).join('<br>')
+              : '<span class="muted">nothing itemised</span>') + '</td>' +
+            '<td class="num">' + rupees(o.total) + '</td>' +
+            '<td>' + stageTag(o.status) + '</td>' +
+            '<td><button class="btn small" data-open="' + (Number(o.id) || 0) +
+              '">Open</button></td></tr>';
+        }).join('') + '</tbody></table></div>'
+      : '<p class="empty" style="padding:var(--s3) 0">Nothing bought yet.</p>';
+
+    var returnsHTML = d.returns.length
+      ? '<div class="scroll"><table><thead><tr><th>Order</th><th>Cloth</th>' +
+        '<th>Why</th><th>Kind</th><th>Stage</th></tr></thead><tbody>' +
+        d.returns.map(function (r) {
+          return '<tr><td class="num">' + esc(r.order_ref) + '</td>' +
+            '<td>' + esc(r.slug) + ' <span class="muted">neck ' + esc(r.size) +
+              '</span></td>' +
+            '<td>' + esc(WHY[r.reason] || r.reason || '—') + '</td>' +
+            '<td><span class="tag">' + esc(r.kind) + '</span></td>' +
+            '<td><span class="tag">' + esc(r.stage) + '</span></td></tr>';
+        }).join('') + '</tbody></table></div>'
+      : '<p class="empty" style="padding:var(--s3) 0">Nothing has come back.</p>';
+
+    var enqHTML = d.enquiries.length
+      ? '<div class="scroll"><table><thead><tr><th>Wanted</th><th>Said</th>' +
+        '<th>Came</th><th>Done</th></tr></thead><tbody>' +
+        d.enquiries.map(function (q) {
+          return '<tr><td>' + esc(q.service || '—') + '</td>' +
+            '<td>' + esc(q.message || '') + '</td>' +
+            '<td class="num">' + day(q.came_at) + '</td>' +
+            '<td><label class="tick"><input type="checkbox" data-handled="' +
+              (Number(q.id) || 0) + '"' + (q.handled ? ' checked' : '') +
+              '></label></td></tr>';
+        }).join('') + '</tbody></table></div>'
+      : '<p class="empty" style="padding:var(--s3) 0">He has never asked for ' +
+        'anything bespoke.</p>';
+
+    var cartsHTML = d.carts.length
+      ? '<div class="scroll"><table><thead><tr><th>Left</th><th>Lines</th>' +
+        '<th>Worth</th><th>State</th></tr></thead><tbody>' +
+        d.carts.map(function (c) {
+          return '<tr><td class="num">' + day(c.updated_at) + '</td>' +
+            '<td class="num">' + (Number(c.lines) || 0) + '</td>' +
+            '<td class="num">' + rupees(c.value) + '</td>' +
+            '<td><span class="tag ' + esc(c.state) + '">' + esc(c.state) +
+              '</span></td></tr>';
+        }).join('') + '</tbody></table></div>'
+      : '<p class="empty" style="padding:var(--s3) 0">He has never left a full ' +
+        'bag behind.</p>';
+
+    /* The sheet screen is already built and already knows how to take a fresh
+       sitting, so this links to it rather than growing a second copy. Each row
+       carries the phone the SITTING was recorded under, which is what that
+       screen looks up — not the one on the account, which may be typed
+       differently. */
+    var sitHTML = d.sittings.length
+      ? '<div class="scroll"><table><thead><tr><th>Taken</th><th>Neck</th>' +
+        '<th>Chest</th><th>Sleeve</th><th>Fit</th><th></th></tr></thead><tbody>' +
+        d.sittings.map(function (m) {
+          return '<tr><td class="num">' + day(m.taken_at) + '</td>' +
+            '<td class="num">' + esc(m.neck || '—') + '</td>' +
+            '<td class="num">' + esc(m.chest || '—') + '</td>' +
+            '<td class="num">' + esc(m.sleeve || '—') + '</td>' +
+            '<td>' + esc(m.fit || '—') + '</td>' +
+            '<td><button class="btn small" data-sheet="' + esc(m.phone) +
+              '">The sheet</button></td></tr>';
+        }).join('') + '</tbody></table></div>'
+      : '<p class="empty" style="padding:var(--s3) 0">No tape has ever been put ' +
+        'round him. <button class="btn small" data-sheet="new">Take a ' +
+        'sitting</button></p>';
+
+    var campName = {};
+    d.camps.forEach(function (c) { campName[c.id] = c.name; });
+    var sentHTML = d.sent.length
+      ? '<div class="scroll"><table><thead><tr><th>Campaign</th><th>Sent</th>' +
+        '</tr></thead><tbody>' +
+        d.sent.map(function (s) {
+          return '<tr><td>' + esc(campName[s.campaign_id] || 'a campaign') + '</td>' +
+            '<td class="num">' + (s.sent_at ? day(s.sent_at)
+              : '<span class="muted">not yet</span>') + '</td></tr>';
+        }).join('') + '</tbody></table></div>'
+      : '<p class="empty" style="padding:var(--s3) 0">He has never been on a ' +
+        'list.</p>';
+
+    var notesHTML = d.notes.length
+      ? '<div class="notes">' + d.notes.map(function (n) {
+          return '<div><p>' + esc(n.note) + '</p><span>' +
+            esc(n.by_email || 'the house') + ' &middot; ' + stamp(n.at) +
+            '</span></div>';
+        }).join('') + '</div>'
+      : '<p class="empty" style="padding:var(--s3) 0">Nothing written down yet.</p>';
+
+    var have = {};
+    d.mine.forEach(function (t) { have[t.tag] = true; });
+    var chips = d.mine.length
+      ? d.mine.map(function (t) {
+          return '<span class="chip">' + esc(t.tag) +
+            '<button data-untag="' + esc(t.tag) + '" title="Take this tag off" ' +
+            'aria-label="Take off ' + esc(t.tag) + '">&times;</button></span>';
+        }).join(' ')
+      : '<span class="muted">None yet.</span>';
+    var spare = d.book.filter(function (t) { return !have[t.tag]; });
+    var picker = spare.length
+      ? '<p class="f"><label for="tagpick">Give him a tag</label>' +
+          '<select class="cell wide" id="tagpick">' +
+            spare.map(function (t) {
+              return '<option value="' + esc(t.tag) + '">' + esc(t.tag) +
+                ' (' + (Number(t.people) || 0) + ')</option>';
+            }).join('') + '</select></p>' +
+        '<p class="filters" style="margin:var(--s2) 0 0">' +
+          '<button class="btn small" id="tagadd">Give it</button></p>'
+      : '<p class="hint" style="margin-top:var(--s3)">' + (d.book.length
+          ? 'He already carries every tag the house has made.'
+          : 'No tags exist yet. Make the first one below — the house’s own ' +
+            'words, not six somebody else chose.') + '</p>';
+
+    /* Consent is shown as three different sentences rather than a tick, because
+       "false" means two entirely different things here: nobody ever asked him,
+       or he asked to be left alone. Only the second is a promise the house has
+       made, and only the second is one the desk must never quietly undo. */
+    var optOutBtn = (phone || email)
+      ? '<p class="filters" style="margin:var(--s3) 0 0">' +
+        '<button class="btn small" id="optout">Record an opt-out</button></p>'
+      : '<p class="hint" style="margin-top:var(--s3)">There is no mobile and no ' +
+        'address on this account, so there is nothing to suppress.</p>';
+    var consent = p.unsubscribed_at
+      ? '<p class="note">Asked to be left alone on ' + esc(day(p.unsubscribed_at)) +
+        '. Every audience in the house already steps over him.</p>' +
+        '<p class="hint" style="margin-top:var(--s3)">Only he can undo that, from ' +
+        'the checkout, the bespoke form or his own account page. A tick the desk ' +
+        'made on his behalf is not consent, and the date beside it is exactly ' +
+        'what would have to be produced if anybody asked.</p>'
+      : (p.marketing
+          /* A yes with no date on it is not a defensible yes, and the screen
+             says which one this is rather than printing an em dash where the
+             evidence should be. */
+          ? '<p class="note">' + (p.marketing_at
+              ? 'Said yes on ' + esc(day(p.marketing_at)) +
+                (p.marketing_source ? ' at ' + esc(p.marketing_source) : '')
+              : 'Marked as willing to be written to, with no date and no form ' +
+                'recorded against it') + '.</p>'
+          : '<p class="note">No consent recorded. He can still be reached about ' +
+            'an order he placed; nothing marketing should go to him until he ' +
+            'asks for it.</p>') + optOutBtn;
+
+    body(
+      '<div class="filters">' +
+        '<button class="btn small" data-go="customers">&larr; Customers</button>' +
+      '</div>' +
+      identity +
+      '<div class="strip">' + strip + '</div>' +
+
+      '<div class="grid-2">' +
+        '<div class="card"><h3>Notes</h3>' +
+          '<p class="hint">What no report can hold: that he takes a longer ' +
+          'sleeve, that the office takes delivery and the flat does not, that ' +
+          'he is worth ringing when the linen lands. Signed, dated, and never ' +
+          'overwritten — the second thing anybody wants to know about a ' +
+          'customer is what he was like last time.</p>' +
+          '<textarea class="note-box" id="notetext" ' +
+            'placeholder="What should the house remember?"></textarea>' +
+          '<p class="filters" style="margin:var(--s2) 0 0">' +
+            '<button class="btn small" id="notesave">Add this note</button></p>' +
+          notesHTML +
+        '</div>' +
+
+        '<div class="card"><h3>Tags &amp; consent</h3>' +
+          '<p class="lines">' + chips + '</p>' +
+          picker +
+          '<p class="f" style="margin-top:var(--s3)">' +
+            '<label for="tagnew">Or make a new one</label>' +
+            '<input class="cell wide" id="tagnew" placeholder="wedding party"></p>' +
+          '<p class="hint" style="margin-top:var(--s2)">A tag has to be made ' +
+          'before it can be given, and that is the point of it: without the ' +
+          'list the house has VIP, vip and V.I.P by the end of the month — ' +
+          'three segments where it meant one.</p>' +
+          '<p class="filters" style="margin:var(--s2) 0 0">' +
+            '<button class="btn small" id="tagmake">Make it and give it</button></p>' +
+          '<h4 class="sub-h">Marketing</h4>' + consent +
+        '</div>' +
+      '</div>' +
+
+      '<div class="block"><h3>Everything he has bought</h3>' + ordersHTML + '</div>' +
+
+      '<div class="grid-2">' +
+        '<div class="card"><h3>Sittings</h3>' + sitHTML + '</div>' +
+        '<div class="card"><h3>What came back</h3>' + returnsHTML + '</div>' +
+      '</div>' +
+      '<div class="grid-2">' +
+        '<div class="card"><h3>What he asked for</h3>' + enqHTML + '</div>' +
+        '<div class="card"><h3>Bags he left behind</h3>' + cartsHTML + '</div>' +
+      '</div>' +
+      '<div class="grid-2">' +
+        '<div class="card"><h3>What he has been sent</h3>' + sentHTML + '</div>' +
+        '<div class="card"><h3>How he was matched</h3>' +
+          '<p class="hint" style="margin:0">His orders and his returns are ' +
+          'joined to this account properly. His sittings, enquiries, bags and ' +
+          'campaign lists are found by the last ten digits of ' +
+          esc(phone || 'a mobile he has not given') + ', because they were all ' +
+          'written down before accounts existed. A number typed with the digits ' +
+          'broken up some unusual way will not be found — which is worth ' +
+          'knowing before concluding a man has no history.</p></div>' +
+      '</div>'
+    );
+
+    wirePerson(d.id, phone, email);
+  }
+
+  /* Every one of these has a failure path, because a write that fails quietly
+     is the bug that was hunted across eighteen paths in this file already.
+
+     None of them goes through write(), and that is a decision rather than an
+     omission. write() exists for a field whose rendered value IS the database
+     — a price, a stock count — and its whole promise is to put that value back
+     when a save fails. Everything here is a button that adds something new
+     instead: the note in the box is not in the database yet, so "it has been
+     put back" would be a lie, and putting it back would empty the box and lose
+     the sentence somebody just wrote. So these say what actually happened, the
+     way every other action button on this desk does, and the typing stays
+     exactly where the house left it.
+
+     Every one of them also puts its own button back on a failure. A button
+     that stays disabled reads as "done", which is the opposite of what
+     happened. */
+  function wirePerson(id, phone, email) {
+    function failed(el, what, err) {
+      if (el) el.classList.add('unsaved');
+      tell(what + ' ' + ((err && err.message) || 'The shop could not be reached.'));
+    }
+
+    var box  = document.getElementById('notetext');
+    var save = document.getElementById('notesave');
+    if (save) save.addEventListener('click', function () {
+      var text = ((box && box.value) || '').trim();
+      if (!text) { tell('A note with nothing in it is not a note.'); return; }
+      save.disabled = true;
+      A.addNote(id, text).then(function () { person(); }, function (err) {
+        save.disabled = false;
+        failed(box, 'That note was not saved and is still in the box, so ' +
+                    'nothing has been lost — try again.', err);
+      });
+    });
+
+    var pick = document.getElementById('tagpick');
+    var add  = document.getElementById('tagadd');
+    if (add && pick) add.addEventListener('click', function () {
+      add.disabled = true;
+      A.addTag(id, pick.value).then(function () { person(); }, function (err) {
+        add.disabled = false;
+        failed(pick, 'That tag was not given. He is unchanged.', err);
+      });
+    });
+
+    var newTag = document.getElementById('tagnew');
+    var make   = document.getElementById('tagmake');
+    if (make && newTag) make.addEventListener('click', function () {
+      var tag = (newTag.value || '').trim();
+      if (!tag) { tell('Give the new tag a word first.'); return; }
+      make.disabled = true;
+      /* Two writes, and the second only if the first stood. Giving a tag that
+         was never made fails on the foreign key, and the house would be told
+         twice about one thing going wrong. The two failures are worded apart
+         on purpose: a tag that exists but was not given is a different problem
+         from one that was never made, and only the first can be retried from
+         the list above. */
+      A.makeTag(tag, null).then(function () {
+        return A.addTag(id, tag).then(function () { person(); }, function (err) {
+          make.disabled = false;
+          failed(newTag, 'The tag “' + tag + '” was made, but not given to him. ' +
+                         'It is in the list above now — try giving it from there.', err);
+        });
+      }, function (err) {
+        make.disabled = false;
+        failed(newTag, 'That tag was not made, so nothing was given.', err);
+      });
+    });
+
+    Array.prototype.slice.call(document.querySelectorAll('[data-untag]'))
+      .forEach(function (b) {
+        b.addEventListener('click', function () {
+          var tag = b.getAttribute('data-untag');
+          b.disabled = true;
+          A.dropTag(id, tag).then(function () { person(); }, function (err) {
+            b.disabled = false;
+            failed(null, 'That tag is still on him.', err);
+          });
+        });
+      });
+
+    var out = document.getElementById('optout');
+    if (out) out.addEventListener('click', function () {
+      if (!confirm('Record that this customer has asked to be left alone? ' +
+                   'Every audience will skip him from now on, and only he can ' +
+                   'undo it.')) return;
+      out.disabled = true;
+      A.optOut(phone, email).then(function (done) {
+        /* set_marketing() answers false when it could not find an account for
+           the number and the address it was handed, and a false that looked
+           like a success is precisely the promise the house must not break. */
+        if (done === false) {
+          out.disabled = false;
+          tell('That opt-out was not recorded — the account could not be ' +
+               'matched on the mobile or the address held for him.');
+          return;
+        }
+        tell('Recorded. He will be skipped by every audience.', true);
+        person();
+      }, function (err) {
+        out.disabled = false;
+        tell('That opt-out was not recorded. ' + ((err && err.message) || ''));
+      });
+    });
   }
 
   /* ---------- the range and inventory ---------- */
@@ -1706,10 +2306,19 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
           '<code>?utm_source=instagram</code> on a link and both the visits and ' +
           'the orders it brings appear here.</p>';
 
+      /* The largest drop on the site is bag to paid, and it was reported as one
+         step with nothing in the middle — so nobody could tell a shop that
+         loses people at the bag from one that loses them at the address form.
+         `started_checkout` sits LAST on the funnel view, because create or
+         replace may only add columns to the end and dropping a view the desk
+         is reading at ten in the morning is how a dashboard breaks. Its place
+         in the journey is here, between the bag and the order, and the journey
+         is what this list is. */
       var steps = [['Visited the site', f.visitors],
                    ['Opened a cloth', f.viewed_a_cloth],
                    ['Chose a neck', f.chose_a_size],
                    ['Added to cart', f.added_to_cart],
+                   ['Started checkout', f.started_checkout],
                    ['Ordered', f.ordered]];
       var topv = Math.max(1, f.visitors || 1);
 
@@ -3612,6 +4221,23 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 
     var pg = e.target.closest('[data-page]');
     if (pg && !pg.disabled) { opage = Math.max(0, +pg.getAttribute('data-page')); orders(); }
+
+    /* The customers list gets its own three names rather than borrowing the
+       orders ones. Two screens sharing data-page would each redraw the other
+       the moment anybody paged either of them. */
+    var cs = e.target.closest('[data-cstage]');
+    if (cs) { cstage = cs.getAttribute('data-cstage'); cpage = 0; customers(); }
+
+    var cg = e.target.closest('[data-cpage]');
+    if (cg && !cg.disabled) {
+      cpage = Math.max(0, +cg.getAttribute('data-cpage')); customers();
+    }
+
+    /* The whole row carries this as well as the button on the end of it, so a
+       thumb landing anywhere on the line opens the man. closest() finds the
+       button first when that is what was hit, so it only ever fires once. */
+    var pn = e.target.closest('[data-person]');
+    if (pn) openPerson(pn.getAttribute('data-person'));
 
     var inv = e.target.closest('[data-invoice]');
     if (inv) invoicePage(inv.getAttribute('data-invoice'));

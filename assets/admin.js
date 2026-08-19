@@ -222,29 +222,32 @@
   A.timeline     = function (id) {
     return api('order_events?order_id=eq.' + id + '&select=*&order=at.asc');
   };
-  /* Orders come back a page at a time with the total in a header, so a shop
-     with four thousand orders does not send them all to a browser. */
-  A.ordersPage = function (opts) {
-    opts = opts || {};
-    var q = 'orders?select=*&order=placed_at.desc';
-    if (opts.status && opts.status !== 'all') q += '&status=eq.' + opts.status;
-    if (opts.find) {
-      /* Inside or=(...) PostgREST reads , . ( ) : as grammar, and
-         encodeURIComponent leaves every one of them alone — so searching for
-         "R. Rao" or anything with a comma came back 400 and the house was told
-         to run SQL files. Double quotes make the term a plain value; the
-         backslashes are for quotes and backslashes inside it. A * still counts
-         as a wildcard, which is harmless and arguably what was meant. */
-      var term = String(opts.find).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-      var f = encodeURIComponent('"%' + term + '%"');
-      q += '&or=(ref.ilike.' + f + ',name.ilike.' + f + ',phone.ilike.' + f + ')';
-    }
-    var from = (opts.page || 0) * (opts.size || 10);
+  /* A search term is a VALUE, never grammar. Inside or=(...) PostgREST reads
+     , . ( ) : as its own punctuation and encodeURIComponent leaves every one
+     of them alone — so searching for "R. Rao" or anything with a comma came
+     back 400 and the house was told to run SQL files. Double quotes make the
+     term a plain value; the backslashes are for quotes and backslashes inside
+     it. A * still counts as a wildcard, which is harmless and arguably what
+     was meant.
+
+     It lives on its own now because the customers list needs exactly the same
+     care, and a second hand-rolled copy of this is a second chance to get it
+     wrong. */
+  function quoted(v) {
+    return encodeURIComponent('"' +
+      String(v == null ? '' : v).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"');
+  }
+  function like(term) { return quoted('%' + term + '%'); }
+
+  /* Rows come back a page at a time with the total in a header, so a shop with
+     four thousand of anything does not send them all to a browser. */
+  function ranged(q, page, size) {
+    var n = size || 10, from = (page || 0) * n;
     return fresh().then(function () {
       return fetch(URL_BASE + '/rest/v1/' + q, {
         headers: {
           apikey: ANON_KEY, Authorization: 'Bearer ' + (A.token || ANON_KEY),
-          Range: from + '-' + (from + (opts.size || 10) - 1),
+          Range: from + '-' + (from + n - 1),
           Prefer: 'count=exact'
         }
       }).then(function (r) {
@@ -259,6 +262,17 @@
         });
       });
     });
+  }
+
+  A.ordersPage = function (opts) {
+    opts = opts || {};
+    var q = 'orders?select=*&order=placed_at.desc';
+    if (opts.status && opts.status !== 'all') q += '&status=eq.' + opts.status;
+    if (opts.find) {
+      var f = like(opts.find);
+      q += '&or=(ref.ilike.' + f + ',name.ilike.' + f + ',phone.ilike.' + f + ')';
+    }
+    return ranged(q, opts.page, opts.size);
   };
   A.series     = function (period) {
     return api('rpc/revenue_series', { method: 'POST', body: { period: period } });
@@ -324,6 +338,193 @@
   A.addSitting = function (row) {
     row.taken_by = A.email;
     return api('measurements', { method: 'POST', prefer: 'return=minimal', body: [row] });
+  };
+
+  /* ---------- the customer, as a person rather than a report ----------
+
+     Five screens in this desk have always been about the same human being —
+     his orders, his sittings, the cart he left, the enquiry he sent, the
+     campaign he was on — and nothing joined any of them up. `profiles` is that
+     join at last, so everything below either hangs off an account id or, where
+     the row was written before accounts existed, off the mobile number the way
+     the rest of the house has always recognised somebody.
+
+     Nothing in here is asked for one row at a time. Ten customers on a page
+     cost one request for the page and one for all their tags, not eleven. */
+
+  /* Ten digits is the whole of an Indian mobile number, which is why the
+     database keys on them (see phone_key in RUN-THIS-FIFTEENTH). The browser
+     cannot call that function through PostgREST, so it matches on the same ten
+     digits by hand — twice, because the checkout strips a number to digits and
+     a sitting is typed by hand, and "98765 43210" and "9876543210" are one
+     man. The honest limit: a number broken up some third way will not be
+     found, and the screen says so rather than claiming he has no history. */
+  function tenOf(p) {
+    var d = String(p == null ? '' : p).replace(/\D/g, '');
+    return d.length >= 10 ? d.slice(-10) : d;
+  }
+
+  function whoOr(phone, email) {
+    var parts = [], d = tenOf(phone), e = String(email == null ? '' : email).trim();
+    if (d.length >= 10) {
+      parts.push('phone.ilike.' + quoted('%' + d + '%'));
+      parts.push('phone.ilike.' + quoted('%' + d.slice(0, 5) + '%' + d.slice(5) + '%'));
+    } else if (d) {
+      parts.push('phone.ilike.' + quoted('%' + d + '%'));
+    }
+    if (e) parts.push('email.ilike.' + quoted(e));
+    return parts.length ? 'or=(' + parts.join(',') + ')' : null;
+  }
+
+  /* No number and no address is not an error and not an empty screen — it is
+     a person the house genuinely cannot look up, so it asks nothing rather
+     than asking for everybody. */
+  function byWho(path, phone, email) {
+    var w = whoOr(phone, email);
+    if (!w) return Promise.resolve([]);
+    return api(path + (path.indexOf('?') < 0 ? '?' : '&') + w);
+  }
+
+  /* Only ids the browser made up itself go into a URL fragment like in.(…),
+     so anything that is not a number is dropped rather than passed on. */
+  function ids(list) {
+    var out = [], i, n;
+    for (i = 0; i < (list || []).length; i++) {
+      n = Number(list[i]);
+      if (n) out.push(n);
+    }
+    return out;
+  }
+
+  /* customer_lifecycle rather than account_book, because it is the only one
+     carrying the stage — and a stage the desk cannot filter on is a label
+     rather than a tool.
+
+     The second sort key is not decoration. Two people on the same lifetime
+     with nothing to break the tie come back in whatever order the planner
+     fancies that second, so one customer appears on page two and again on
+     page three while another is never shown at all. */
+  A.accountsPage = function (opts) {
+    opts = opts || {};
+    var q = 'customer_lifecycle?select=*&order=lifetime.desc,profile_id.asc';
+    if (opts.stage && opts.stage !== 'all')
+      q += '&stage=eq.' + encodeURIComponent(opts.stage);
+    if (opts.find) {
+      var f = like(opts.find);
+      q += '&or=(first_name.ilike.' + f + ',last_name.ilike.' + f +
+           ',email.ilike.' + f + ',phone.ilike.' + f + ')';
+    }
+    return ranged(q, opts.page, opts.size);
+  };
+
+  A.stages = function () { return api('lifecycle_stages?select=*'); };
+
+  /* Every tag on a whole page of people in ONE request. Asking per row would
+     be a dozen requests to draw a dozen lines on the screen the house opens
+     most often. */
+  A.tagsForPage = function (list) {
+    var safe = ids(list);
+    if (!safe.length) return Promise.resolve([]);
+    return api('customer_tags?select=profile_id,tag&profile_id=in.(' +
+               safe.join(',') + ')&order=tag.asc');
+  };
+
+  A.account     = function (id) {
+    return api('profiles?id=eq.' + Number(id) + '&select=*').then(one);
+  };
+  A.accountLife = function (id) {
+    return api('customer_lifecycle?profile_id=eq.' + Number(id) + '&select=*').then(one);
+  };
+  /* Named columns rather than *, and `items` among them: what a man actually
+     bought is the first thing anybody at the counter wants, it is already
+     sitting on the row, and asking for it here saves a request per order. The
+     address and the courier are deliberately left behind — this is a page
+     about a person, and the order panel is one click away for the rest. */
+  A.accountOrders = function (id) {
+    return api('orders?profile_id=eq.' + Number(id) +
+      '&select=id,ref,status,total,items,placed_at&order=placed_at.desc');
+  };
+
+  /* Returns are asked for both ways round on purpose. `returns.profile_id` was
+     added with the accounts and nothing back-filled it, so every return opened
+     before that day still knows only which order it belongs to — and asking on
+     the account alone would report a man with three exchanges as having none. */
+  A.accountReturns = function (id, orderIds) {
+    var safe = ids(orderIds);
+    return api('returns?select=*&order=opened_at.desc&' + (safe.length
+      ? 'or=(profile_id.eq.' + Number(id) + ',order_id.in.(' + safe.join(',') + '))'
+      : 'profile_id=eq.' + Number(id)));
+  };
+
+  A.personEnquiries = function (ph, em) {
+    return byWho('enquiries?select=*&order=came_at.desc', ph, em);
+  };
+  A.personCarts = function (ph, em) {
+    return byWho('abandoned_carts?select=*&order=updated_at.desc', ph, em);
+  };
+  /* No email here, and it is not an oversight: `measurements` has a phone and
+     a name and nothing else to reach him by. Asking it for a column it has
+     never had would 400 the whole request and lose the sittings as well. */
+  A.personSittings = function (ph) {
+    return byWho('measurements?select=*&order=taken_at.desc', ph, null);
+  };
+  A.personCampaigns = function (ph, em) {
+    return byWho('campaign_recipients?select=*&order=id.desc', ph, em);
+  };
+
+  /* ---------- what the house writes down ---------- */
+
+  A.notes = function (id) {
+    return api('customer_notes?profile_id=eq.' + Number(id) +
+               '&select=*&order=at.desc');
+  };
+  /* by_email is deliberately not sent. The database stamps it from the
+     signed-in token, so a note cannot be filed under somebody else's name by
+     anything a browser posts. */
+  A.addNote = function (id, text) {
+    return api('customer_notes', { method: 'POST', prefer: 'return=minimal',
+      body: [{ profile_id: Number(id), note: text }] });
+  };
+
+  A.tagBook = function () { return api('tag_book?select=*'); };
+  A.tagsOn  = function (id) {
+    return api('customer_tags?profile_id=eq.' + Number(id) + '&select=*&order=tag.asc');
+  };
+  /* merge-duplicates, because the primary key already says a tag given twice
+     is given once — and a 409 on an impatient second click would read to the
+     house as a failure when nothing was wrong. */
+  A.addTag = function (id, tag) {
+    return api('customer_tags?on_conflict=profile_id,tag', {
+      method: 'POST', prefer: 'return=minimal,resolution=merge-duplicates',
+      body: [{ profile_id: Number(id), tag: tag }] });
+  };
+  A.dropTag = function (id, tag) {
+    return api('customer_tags?profile_id=eq.' + Number(id) +
+               '&tag=eq.' + encodeURIComponent(tag),
+      { method: 'DELETE', prefer: 'return=minimal' });
+  };
+  A.makeTag = function (tag, note) {
+    return api('tags?on_conflict=tag', {
+      method: 'POST', prefer: 'return=minimal,resolution=merge-duplicates',
+      body: [{ tag: tag, note: note || null }] });
+  };
+
+  /* Consent, and only ever downwards. The house may record that somebody asked
+     to be left alone, because that is a thing it was told. It may not record
+     consent on his behalf: a tick somebody else made is not consent under the
+     DPDP Act, and the date in that column is precisely what would have to be
+     produced if anybody ever asked how the house came to have his number.
+     Saying yes belongs to the checkout, the bespoke form and his own account
+     page, where he is the one ticking.
+
+     It goes through set_marketing() rather than a PATCH so the dates follow
+     the house's own rule — the day he first asked to be left alone is the date
+     that matters, and it never moves afterwards. */
+  A.optOut = function (phone, email) {
+    return api('rpc/set_marketing', { method: 'POST', body: {
+      in_phone: phone || null, in_email: email || null,
+      in_on: false, in_source: 'the desk'
+    } });
   };
 
   /* ---------- the range, in full ---------- */

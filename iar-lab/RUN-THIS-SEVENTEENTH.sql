@@ -126,6 +126,25 @@ end $$;
 revoke all on function public.set_marketing_for(bigint, boolean) from public;
 grant execute on function public.set_marketing_for(bigint, boolean) to authenticated;
 
+-- --------------------------------------------------- the way in, in the menu --
+
+-- Sign-in was put in the footer of every page and nowhere else. Raj's answer to
+-- that, and he is right: "Customer will not type /account". Nobody scrolls to
+-- the bottom of a shop to find their orders.
+--
+-- Putting it in the header's HTML is not enough on its own and it is worth
+-- knowing why, because it looks like it works. `house.js` reads this table on
+-- every page load and rewrites the menu to match it whenever the two differ —
+-- so five links in the HTML and four rows here means the fifth is silently
+-- removed a moment after the page paints. The row below is what actually puts
+-- it in the menu; the HTML is the copy that shows before this table is read and
+-- if Supabase is ever asleep.
+insert into public.nav_items (label, href, place, sort_order, live)
+select 'Your orders', 'account.html', 'main', 5, true
+where not exists (
+  select 1 from public.nav_items where href = 'account.html' and place = 'main'
+);
+
 -- ------------------------------------------------------------ one person ----
 
 -- Everything the house knows about one account, found by key rather than by

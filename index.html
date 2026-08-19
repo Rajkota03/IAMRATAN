@@ -571,6 +571,11 @@ html:not(.js) .hero-act{opacity:1}
 .circle-band{position:relative;isolation:isolate;overflow:hidden;
   min-height:clamp(24rem,62svh,36rem);display:grid;align-content:end;
   padding:var(--sy);color:#EDE9E0;background:#0B0C0E;margin:0}
+/* The band runs from ratio 0.65 on a phone to 2.92 at 1680, and the caption
+   covers the bottom 40%. 74%, not the 38% this started at: the rail of shirts
+   is the subject, and anywhere below about 62% the caption veil cuts across
+   the shirts at the wider ratios. At 74 the rail clears the text and the round
+   ottoman -- the reason this photograph suits the section -- sits under it. */
 .circle-band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   object-position:var(--pos,center);z-index:-2}
 .circle-band::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
@@ -853,8 +858,13 @@ html:not(.js) .hero-act{opacity:1}
   <!-- RATAN'S CIRCLE — see the CSS comment above .circle-band, and
        PENDING-FROM-CLIENT.md, before touching the caption text. -->
   <section data-band="circle" aria-labelledby="circle-h">
-    <figure class="circle-band" style="--pos:center 38%">
-      <img src="images/cuff-monogram.webp" alt="" loading="lazy" decoding="async">
+    <figure class="circle-band" style="--pos:center 74%">
+      <picture>
+        <source media="(min-width:820px)" srcset="images/hero/circle-wide.webp">
+        <img src="images/hero/circle-tall.webp"
+             alt="A private circular room, seven shirts on a brass rail and a round ottoman at its centre"
+             loading="lazy" decoding="async">
+      </picture>
       <figcaption>
         <p class="circle-kicker">By invitation</p>
         <h2 class="circle-name" id="circle-h">Ratan's Circle</h2>

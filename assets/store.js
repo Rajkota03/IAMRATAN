@@ -189,6 +189,23 @@
     return Store.settings.hide_sold_out && Store.allGone(slug);
   };
 
+  /* What a cloth IS, as the house has typed it at the desk.
+
+     This has to come from here and not from assets/catalogue.js, because that
+     file is a static snapshot of names, copy and photographs — it has no fabric
+     or weave in it and never will. The facts are a live column the house edits,
+     so they arrive with the prices and the stock.
+
+     Returns null when the row is not known yet, so a caller can tell "not
+     loaded" from "the house has not filled this in". */
+  Store.cloth = function (slug) {
+    var r = row(slug);
+    if (!r) return null;
+    return { fabric: r.fabric, weave: r.weave, pattern: r.pattern,
+             fit: r.fit, collar: r.collar, sleeve: r.sleeve,
+             origin: r.origin, care: r.care, sku: r.sku, mrp: r.mrp };
+  };
+
   /* The returns sentence, said with the house's own number rather than the
      bracketed [7] the product page used to print at a customer. */
   Store.returnsLine = function () {

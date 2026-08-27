@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1787853695">
+<link rel="stylesheet" href="assets/iar-house.css?v=1787858109">
 <style>
 /* ---------- the drench ----------
    The garment's own colour becomes the room, exactly as it does in the shop.
@@ -349,13 +349,13 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1787853695"></script>
-<script src="assets/house.js?v=1787853695"></script>
-<script src="assets/catalogue.js?v=1787853695"></script>
-<script src="assets/shots.js?v=1787853695"></script>
-<script src="assets/site.js?v=1787853695"></script>
-<script src="assets/shop.js?v=1787853695"></script>
-<script src="assets/iar-house.js?v=1787853695"></script>
+<script src="assets/store.js?v=1787858109"></script>
+<script src="assets/house.js?v=1787858109"></script>
+<script src="assets/catalogue.js?v=1787858109"></script>
+<script src="assets/shots.js?v=1787858109"></script>
+<script src="assets/site.js?v=1787858109"></script>
+<script src="assets/shop.js?v=1787858109"></script>
+<script src="assets/iar-house.js?v=1787858109"></script>
 <script>
 (function () {
   'use strict';
@@ -366,15 +366,16 @@
      left out, never invented and never shown as an empty row. This used to be a
      hard-coded "[composition and weave to be confirmed]", which is a placeholder
      a customer should never have been able to read. */
-  function clothFacts(p) {
+  function clothFacts(c) {
+    c = c || {};
     var rows = [
-      ['Cloth',   p.fabric],
-      ['Weave',   p.weave],
-      ['Pattern', p.pattern],
-      ['Fit',     p.fit],
-      ['Collar',  p.collar],
-      ['Sleeve',  p.sleeve],
-      ['Made in', p.origin]
+      ['Cloth',   c.fabric],
+      ['Weave',   c.weave],
+      ['Pattern', c.pattern],
+      ['Fit',     c.fit],
+      ['Collar',  c.collar],
+      ['Sleeve',  c.sleeve],
+      ['Made in', c.origin]
     ].filter(function (r) { return r[1]; });
 
     return (rows.length
@@ -382,8 +383,8 @@
           return '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>';
         }).join('') + '</dl>'
       : '') +
-      (p.care
-        ? '<p>' + esc(p.care) + '</p>'
+      (c.care
+        ? '<p>' + esc(c.care) + '</p>'
         : '<p>Machine wash cold with like colours, or hand wash. Line dry in ' +
           'shade. Warm iron while faintly damp. No bleach, no tumble dryer. ' +
           'The cloth outlives the machine that ruins it.</p>');
@@ -610,9 +611,8 @@
           '</div>' +
 
           '<div class="g-facts">' +
-            '<details name="pdp"><summary>Cloth &amp; care</summary><div class="fx">' +
-              clothFacts(p) +
-            '</div></details>' +
+            '<details name="pdp"><summary>Cloth &amp; care</summary>' +
+              '<div class="fx" id="gCloth">' + clothFacts(null) + '</div></details>' +
             '<details name="pdp"><summary>Size guide</summary><div class="fx">' +
               sizeGuide(p) +
               '<p class="fine">Measurements in inches, taken flat on the garment. ' +
@@ -690,6 +690,11 @@
     if (shipLine) shipLine.textContent = S.deliveryLine();
     /* the same two numbers the house sets once, rather than [3-7] and [7]
        printed in brackets at whoever is deciding whether to buy */
+    /* Filled here rather than when the panel was built, because the facts come
+       from the database and the panel is drawn before it has answered. */
+    var cloth = document.getElementById('gCloth');
+    if (cloth) cloth.innerHTML = clothFacts(S.cloth(slug));
+
     var terms = document.getElementById('gTerms');
     if (terms) {
       var a = S.settings.delivery_min_days, b = S.settings.delivery_max_days;
@@ -776,8 +781,8 @@
   });
 })();
 </script>
-<script src="assets/mark.js?v=1787853695"></script>
-<script src="assets/track.js?v=1787853695"></script>
+<script src="assets/mark.js?v=1787858109"></script>
+<script src="assets/track.js?v=1787858109"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -788,6 +793,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1787853695"></script>
+<script src="assets/nav.js?v=1787858109"></script>
 </body>
 </html>

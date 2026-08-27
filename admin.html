@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1787841087">
+<link rel="stylesheet" href="assets/iar-house.css?v=1787851194">
 <style>
 /* ---------- THE DESK ----------
    A control room, not a dashboard. The first question it answers is "what
@@ -204,6 +204,12 @@ input.cell{width:5.5rem;background:var(--room);border:1px solid var(--hair);
 input.cell:focus{outline:0;border-color:var(--ink)}
 input.cell.saved{border-color:var(--ink);background:var(--under)}
 .wide{width:100%;max-width:22rem}
+/* .wide on its own is (0,1,0) and loses to input.cell at (0,1,1), so an input
+   carrying it stays 5.5rem. A consignment number does not fit in 5.5rem.
+   Named for this one field on purpose: the same fault affects roughly ten
+   other fields here, and widening those reshapes tables that want looking at
+   before they move. */
+input.cell.consign{width:100%;max-width:22rem}
 /* In a table cell, width:100% resolves against a column that is sizing itself
    from its content — so the field collapses to the width of its placeholder.
    A min-width gives the column something real to size from. */
@@ -585,9 +591,9 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     <div class="over-card"></div></div>
 </main>
 
-<script src="assets/admin.js?v=1787841087"></script>
-<script src="assets/iar-house.js?v=1787841087"></script>
-<script src="assets/mark.js?v=1787841087"></script>
+<script src="assets/admin.js?v=1787851194"></script>
+<script src="assets/iar-house.js?v=1787851194"></script>
+<script src="assets/mark.js?v=1787851194"></script>
 <script>
 (function () {
   'use strict';
@@ -1032,7 +1038,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     return '<span class="tag ' + esc(st) + '">' + esc(st) + '</span>';
   }
   function thumbFor(slug) {
-    return slug ? 'images/set/' + slug + '/1-hero-t.jpg' : '';
+    return slug ? 'images/set/' + slug + '/1-hero-t.webp' : '';
   }
 
   function orders() {
@@ -1167,6 +1173,17 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
             '<div>' + esc(o.address || '') + '</div>' +
             '<div>' + esc(o.city || '') + ' ' + esc(o.pincode || '') + '</div>' +
             '<div>' + esc(o.state || '') + '</div>' +
+          '</section>' +
+
+          /* The consignment number. Saves on change like every other field
+             here, and the customer sees it on their own account the moment it
+             is typed, so it is worth being right. */
+          '<section><h4>Consignment</h4>' +
+            '<input class="cell consign" data-courier="' + o.id + '" ' +
+              'value="' + esc(o.courier || '') + '" ' +
+              'placeholder="Blue Dart 78451209336">' +
+            '<div class="muted" style="margin-top:var(--s1);font-size:.75rem">' +
+              'The customer sees this on their account.</div>' +
           '</section>' +
 
           '<section><h4>What was ordered</h4>' + items +
@@ -3560,6 +3577,11 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       A.setProduct(t.getAttribute('data-visible'), { visible: t.checked });
     if (has('data-order'))
       A.setOrder(t.getAttribute('data-order'), { status: t.value }).then(refreshKpis);
+    /* null rather than an empty string when it is cleared, so the customer's
+       account shows no consignment block at all rather than an empty heading */
+    if (has('data-courier'))
+      A.setOrder(t.getAttribute('data-courier'), { courier: t.value.trim() || null })
+        .then(function () { flash(t); });
     if (has('data-return'))
       A.setReturn(t.getAttribute('data-return'), { stage: t.value }).then(refreshKpis);
     if (has('data-handled'))

@@ -79,10 +79,27 @@
     return auth('recover', { email: email }).then(function () { return true; });
   };
 
-  /* The orders placed against this address. The policy decides what comes
-     back; this asks for everything and trusts the database to refuse. */
+  /* The orders placed against this address, each with its own timeline, in one
+     round trip. The policy decides what comes back; this asks and trusts the
+     database to refuse.
+
+     order_events is embedded rather than fetched per order. A customer has a
+     handful of orders, so one query beats one-plus-N, and the same row-level
+     policy covers the embedded rows as covers the parent.
+
+     by_email is deliberately NOT selected. The desk stamps its own address on
+     every stage it advances, and that is the house's business, not the
+     customer's. Ask only for the three fields the page actually prints. */
+  var FIELDS = [
+    'ref', 'total', 'status', 'placed_at', 'updated_at', 'items',
+    'address', 'city', 'pincode', 'state',
+    'payment_state', 'payment_ref', 'payment_method',
+    'discount_code', 'discount_amount', 'courier',
+    'order_events(stage,note,at)'
+  ].join(',');
+
   A.orders = function () {
-    return fetch(URL_BASE + '/rest/v1/orders?select=ref,total,status,placed_at,items' +
+    return fetch(URL_BASE + '/rest/v1/orders?select=' + FIELDS +
                  '&order=placed_at.desc', {
       headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + A.token }
     }).then(function (r) { return r.ok ? r.json() : []; })

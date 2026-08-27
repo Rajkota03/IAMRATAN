@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1787841087">
+<link rel="stylesheet" href="assets/iar-house.css?v=1787851194">
 <style>
 /* ---------- the account ----------
    One column, held narrow. This is a form, not a page to look at, and a form
@@ -42,13 +42,84 @@
 .acc-msg{margin:var(--s3) 0 0;font-size:.9375rem;line-height:1.6;min-height:1.2em}
 .acc-msg.bad{color:#8C2F2F}
 .acc-msg.good{color:var(--ink)}
-/* the orders a signed-in customer can see */
-.ord{border-top:1px solid var(--hair);padding:var(--s4) 0;display:grid;
-  grid-template-columns:1fr auto;gap:var(--s1) var(--s3);align-items:baseline}
+/* ---------- the orders a signed-in customer can see ----------
+   Wider than the form above it. 26rem is a column to type into; an order
+   carries photographs, a rail and a set of totals, and reading a document
+   through a letterbox is what made this page feel like an afterthought. */
+.acc.wide{max-width:44rem}
+
+.ord{border:1px solid var(--hair);padding:var(--s4);margin:0 0 var(--s4)}
+@media(min-width:640px){.ord{padding:var(--s5)}}
+
+.ord-head{display:flex;flex-wrap:wrap;justify-content:space-between;
+  align-items:baseline;gap:var(--s1) var(--s3)}
 .ord-ref{font-family:var(--mono);font-size:.75rem;letter-spacing:.1em}
-.ord-when{grid-column:1/-1;color:var(--muted);font-size:.8125rem}
-.ord-status{font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--muted)}
+.ord-when{color:var(--muted);font-size:.8125rem}
+.ord-tag{font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);
+  border:1px solid var(--hair);padding:var(--s0) var(--s1)}
+.ord-tag.on{color:var(--ink);border-color:var(--ink)}
+.ord-tag.off{color:#8C2F2F;border-color:#8C2F2F}
+
+/* ---- the rail ----
+   Vertical, not a horizontal progress bar. Five labels across a 375px screen
+   are unreadable at any size that suits the rest of the page, and a house that
+   makes a shirt over a fortnight is not a parcel tracker. Reads as a document:
+   what has happened, when, and what is still to come. */
+.rail{list-style:none;margin:var(--s5) 0 0;padding:0}
+.ord-lines+.ord-tot{margin-top:var(--s4)}
+.rail li{position:relative;padding:0 0 var(--s4) var(--s5)}
+.rail li:last-child{padding-bottom:0}
+/* the thread between two dots, drawn only where both ends have been reached */
+.rail li::before{content:'';position:absolute;left:.3125rem;top:.875rem;bottom:0;
+  width:1px;background:var(--hair)}
+.rail li:last-child::before{display:none}
+.rail li.lit::before{background:var(--ink)}
+.rail li::after{content:'';position:absolute;left:0;top:.3125rem;
+  width:.6875rem;height:.6875rem;border-radius:50%;
+  border:1px solid var(--hair);background:var(--room)}
+.rail li.done::after{background:var(--ink);border-color:var(--ink)}
+.rail li.off::after{background:#8C2F2F;border-color:#8C2F2F}
+.rail b{font-weight:400;font-size:.9375rem}
+.rail li:not(.done) b{color:var(--muted)}
+.rail li.off b{color:#8C2F2F}
+.rail time,.rail .said{display:block;color:var(--muted);font-size:.8125rem;
+  margin-top:var(--s0);line-height:1.5}
+.rail .said em{font-style:normal;font-family:var(--mono);font-size:.6875rem;
+  word-break:break-all}
+
+/* ---- what was ordered ---- */
+.ord-lines{margin:var(--s5) 0 0;display:grid;gap:var(--s3)}
+.ord-line{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s3);
+  align-items:center}
+.ord-line img{width:3.25rem;height:4.0625rem;object-fit:cover;display:block;
+  background:var(--under)}
+.ord-line b{font-weight:400;font-size:.9375rem;display:block}
+.ord-line small{color:var(--muted);font-size:.8125rem;font-family:var(--mono)}
+.ord-line .num{font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:.8125rem;white-space:nowrap}
+
+.ord-tot{margin:var(--s4) 0 0;padding-top:var(--s3);
+  border-top:1px solid var(--hair);display:grid;gap:var(--s1)}
+.ord-tot div{display:flex;justify-content:space-between;gap:var(--s2);
+  font-size:.875rem;color:var(--muted)}
+.ord-tot .big{font-size:1.0625rem;color:var(--ink)}
+/* the ink line divides the total from the lines above it, so it is drawn only
+   when there are lines above it — otherwise it doubles the hairline that
+   already separates the totals from the shirts */
+.ord-tot .big:not(:only-child){margin-top:var(--s1);padding-top:var(--s2);
+  border-top:1px solid var(--ink)}
+.ord-tot .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ---- the address, and what was paid ---- */
+.ord-facts{margin:var(--s5) 0 0;display:grid;gap:var(--s4)}
+@media(min-width:560px){.ord-facts{grid-template-columns:1fr 1fr}}
+.ord-facts h4{margin:0 0 var(--s1);font-weight:400;font-family:var(--mono);
+  font-size:.625rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted)}
+.ord-facts p{margin:0;font-size:.875rem;line-height:1.65}
+.ord-facts .mono{font-family:var(--mono);font-size:.6875rem;word-break:break-all;
+  color:var(--muted)}
 </style>
 </head>
 <body data-no-grounds>
@@ -120,13 +191,13 @@
   </div>
 </footer>
 
-<script src="assets/catalogue.js?v=1787841087"></script>
-<script src="assets/site.js?v=1787841087"></script>
-<script src="assets/store.js?v=1787841087"></script>
-<script src="assets/house.js?v=1787841087"></script>
-<script src="assets/iar-house.js?v=1787841087"></script>
-<script src="assets/mark.js?v=1787841087"></script>
-<script src="assets/track.js?v=1787841087"></script>
+<script src="assets/catalogue.js?v=1787851194"></script>
+<script src="assets/site.js?v=1787851194"></script>
+<script src="assets/store.js?v=1787851194"></script>
+<script src="assets/house.js?v=1787851194"></script>
+<script src="assets/iar-house.js?v=1787851194"></script>
+<script src="assets/mark.js?v=1787851194"></script>
+<script src="assets/track.js?v=1787851194"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -137,9 +208,9 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1787841087"></script>
+<script src="assets/nav.js?v=1787851194"></script>
 
-<script src="assets/account.js?v=1787841087"></script>
+<script src="assets/account.js?v=1787851194"></script>
 <script>
 (function () {
   'use strict';
@@ -169,6 +240,8 @@ p.innerHTML=h;f.appendChild(p);});})();
 
   /* ---- signed out: sign in, or register ------------------------------- */
   function gate() {
+    /* the form is a narrow column again, whatever the orders needed */
+    root.classList.remove('wide');
     root.innerHTML =
       '<p class="label muted">Your account</p>' +
       '<h1 class="essay-name" style="font-size:clamp(1.8rem,4vw,2.4rem)">' +
@@ -240,18 +313,157 @@ p.innerHTML=h;f.appendChild(p);});})();
     };
   }
 
+  /* ---- an order, drawn out in full ------------------------------------
+     The five stages the house works through. The database calls them by these
+     words; a customer should not have to read 'packed' as a status code. */
+  var FLOW = ['new', 'making', 'packed', 'shipped', 'delivered'];
+  var SAID = { new: 'Order placed', making: 'In the making', packed: 'Packed',
+               shipped: 'On its way', delivered: 'Delivered',
+               /* not a stage on the rail, but the head still has to name it */
+               cancelled: 'Cancelled' };
+
+  /* A remark carries its reference after a middle dot — 'Payment received ·
+     pay_LkQ…'. Set the reference in mono so it can be read back over a phone. */
+  function remark(n) {
+    var bits = String(n).split(' · ');
+    return esc(bits[0]) + (bits[1] ? ' <em>' + esc(bits[1]) + '</em>' : '');
+  }
+
+  function moment(t) {
+    if (!t) return '';
+    var d = new Date(t);
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) +
+      ', ' + d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+  }
+
+  /* Where the order has reached, and what was recorded along the way.
+
+     Two kinds of row land in order_events. A stage stamp, written by the
+     database trigger every time the status moves, which carries no note. And a
+     remark — a payment settling, a payment refused — which carries one. They
+     can share a stage value, because a payment is stamped with whatever stage
+     the order happened to be in, so the note is what tells them apart. */
+  function rail(o) {
+    var evs = (o.order_events || []).slice().sort(function (a, b) {
+      return String(a.at) < String(b.at) ? -1 : 1;
+    });
+
+    var at = {}, notes = {};
+    evs.forEach(function (e) {
+      if (!e.note || e.note === 'Order placed') {
+        if (!at[e.stage]) at[e.stage] = e.at;      /* the first time it got there */
+      } else {
+        (notes[e.stage] = notes[e.stage] || []).push(e.note);
+      }
+    });
+
+    var dead = o.status === 'cancelled';
+    var reached = FLOW.indexOf(o.status);
+    if (dead) {
+      /* A cancelled order still got as far as it got, and saying so is more
+         use than replacing the whole history with one word. */
+      reached = 0;
+      FLOW.forEach(function (st, i) { if (at[st]) reached = i; });
+    }
+    if (reached < 0) reached = 0;
+
+    var rows = FLOW.map(function (st, i) {
+      return { label: SAID[st], done: i <= reached,
+               at: at[st], notes: notes[st] || [] };
+    });
+    if (dead) {
+      rows = rows.slice(0, reached + 1);
+      rows.push({ label: 'Cancelled', done: true, off: true,
+                  at: at.cancelled, notes: notes.cancelled || [] });
+    }
+
+    return '<ul class="rail">' + rows.map(function (r, i) {
+      /* the thread is drawn only where both ends have been reached */
+      var lit = r.done && rows[i + 1] && rows[i + 1].done;
+      return '<li class="' + (r.done ? 'done' : '') + (lit ? ' lit' : '') +
+          (r.off ? ' off' : '') + '">' +
+        '<b>' + esc(r.label) + '</b>' +
+        (r.at ? '<time>' + esc(moment(r.at)) + '</time>' : '') +
+        r.notes.map(function (n) {
+          return '<span class="said">' + remark(n) + '</span>';
+        }).join('') +
+      '</li>';
+    }).join('') + '</ul>';
+  }
+
+  function lines(o) {
+    return '<div class="ord-lines">' + (o.items || []).map(function (i) {
+      var src = i.slug ? 'images/set/' + encodeURIComponent(i.slug) + '/1-hero-t.webp' : '';
+      var qty = Number(i.qty) || 1;
+      return '<div class="ord-line">' +
+        (src ? '<img src="' + src + '" alt="" loading="lazy" width="52" height="65">'
+             : '<span></span>') +
+        '<span><b>' + esc(i.name || i.slug) + '</b>' +
+          '<small>Neck ' + esc(i.size) + (qty > 1 ? ' · ' + qty : '') + '</small></span>' +
+        '<span class="num">' + money((Number(i.price) || 0) * qty) + '</span>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+
+  function totals(o) {
+    var off = Number(o.discount_amount) || 0;
+    return '<div class="ord-tot">' +
+      (off ? '<div><span>Before the code</span>' +
+               '<span class="num">' + money(Number(o.total) + off) + '</span></div>' +
+             '<div><span>' + esc(o.discount_code || 'Discount') + '</span>' +
+               '<span class="num">−' + money(off) + '</span></div>' : '') +
+      '<div class="big"><span>Total</span>' +
+        '<span class="num">' + money(o.total) + '</span></div>' +
+    '</div>';
+  }
+
+  /* Said plainly, because 'pending' on a screen a customer paid money into is
+     alarming when it only means the card is still clearing. */
+  var PAID = { paid: 'Paid in full', failed: 'That payment did not go through',
+               pending: 'Awaiting payment' };
+
+  function facts(o) {
+    var to = [o.address, [o.city, o.pincode].filter(Boolean).join(' '), o.state]
+      .filter(Boolean).map(esc).join('<br>');
+    return '<div class="ord-facts">' +
+      '<div><h4>Going to</h4><p>' + (to || '<span class="mono">Not given</span>') + '</p></div>' +
+      '<div><h4>Payment</h4><p>' + esc(PAID[o.payment_state] || 'Awaiting payment') +
+        (o.payment_ref ? '<br><span class="mono">' + esc(o.payment_ref) + '</span>' : '') +
+      '</p></div>' +
+      (o.courier ? '<div><h4>Consignment</h4><p><span class="mono">' +
+        esc(o.courier) + '</span></p></div>' : '') +
+    '</div>';
+  }
+
+  function card(o) {
+    var tag = o.status === 'cancelled' ? 'off'
+            : o.status === 'delivered' ? 'on' : '';
+    return '<article class="ord">' +
+      '<div class="ord-head">' +
+        '<span class="ord-ref">' + esc(o.ref) + '</span>' +
+        '<span class="ord-tag ' + tag + '">' +
+          esc(SAID[o.status] || o.status || '') + '</span>' +
+        '<span class="ord-when">Placed ' + esc(when(o.placed_at)) + '</span>' +
+      '</div>' +
+      rail(o) + lines(o) + totals(o) + facts(o) +
+    '</article>';
+  }
+
   /* ---- signed in: who you are, and what you have ordered -------------- */
   function signedIn() {
+    root.classList.add('wide');
     root.innerHTML =
       '<p class="label muted">Your account</p>' +
       '<h1 class="essay-name" style="font-size:clamp(1.8rem,4vw,2.4rem)">' +
         (A.name ? esc(A.name) + '.' : 'Welcome.') + '</h1>' +
       '<p class="acc-alt" style="margin-top:var(--s2)">' + esc(A.email) +
         ' &nbsp;·&nbsp; <button type="button" id="out">Sign out</button></p>' +
-      '<h2 class="label muted" style="margin:var(--sy) 0 0">Your orders</h2>' +
+      '<h2 class="label muted" style="margin:var(--sy) 0 var(--s4)">Your orders</h2>' +
       '<div id="orders"><p class="waitbox">Looking for your orders</p></div>';
 
-    document.getElementById('out').onclick = function () { A.signOut(); mode = 'in'; gate(); };
+    document.getElementById('out').onclick = function () {
+      root.classList.remove('wide'); A.signOut(); mode = 'in'; gate();
+    };
 
     A.orders().then(function (rows) {
       var box = document.getElementById('orders');
@@ -260,16 +472,7 @@ p.innerHTML=h;f.appendChild(p);});})();
           'When you place one it will appear here, with where it has reached.</p>';
         return;
       }
-      box.innerHTML = rows.map(function (o) {
-        var n = (o.items || []).length;
-        return '<div class="ord">' +
-          '<span class="ord-ref">' + esc(o.ref) + '</span>' +
-          '<span>' + money(o.total) + '</span>' +
-          '<span class="ord-when">' + esc(when(o.placed_at)) +
-            (n ? ' &nbsp;·&nbsp; ' + n + (n === 1 ? ' shirt' : ' shirts') : '') + '</span>' +
-          '<span class="ord-status">' + esc(o.status || '') + '</span>' +
-        '</div>';
-      }).join('');
+      box.innerHTML = rows.map(card).join('');
     });
   }
 

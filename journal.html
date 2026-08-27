@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1787851194">
+<link rel="stylesheet" href="assets/iar-house.css?v=1787853695">
 <style>
 /* THE JOURNAL
    The homepage carries five of these as a sideways rail. Here they are a
@@ -102,7 +102,7 @@
       <p class="lede rise" style="margin-top:var(--s3);max-width:46ch;color:var(--muted)">
         On cloth, on colour, and on the details that only show at arm's length.</p>
 
-      <div class="jrn-list">
+      <div class="jrn-list" id="jrn-list">
         <article class="entry">
           <a class="entry-link" href="journal-twenty-years.html">
             <figure class="entry-shot rise">
@@ -209,13 +209,13 @@
   </div>
 </footer>
 
-<script src="assets/catalogue.js?v=1787851194"></script>
-<script src="assets/site.js?v=1787851194"></script>
-<script src="assets/store.js?v=1787851194"></script>
-<script src="assets/house.js?v=1787851194"></script>
-<script src="assets/iar-house.js?v=1787851194"></script>
-<script src="assets/mark.js?v=1787851194"></script>
-<script src="assets/track.js?v=1787851194"></script>
+<script src="assets/catalogue.js?v=1787853695"></script>
+<script src="assets/site.js?v=1787853695"></script>
+<script src="assets/store.js?v=1787853695"></script>
+<script src="assets/house.js?v=1787853695"></script>
+<script src="assets/iar-house.js?v=1787853695"></script>
+<script src="assets/mark.js?v=1787853695"></script>
+<script src="assets/track.js?v=1787853695"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -226,6 +226,70 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1787851194"></script>
+<script src="assets/nav.js?v=1787853695"></script>
+
+<script>
+/* ---------- the journal index ----------
+   The four essays below are written into the page. They are the truth if this
+   script never runs, if the database is unreachable, or if a reader has no
+   JavaScript — the journal has to be readable in all three cases, and a page
+   that renders empty for a crawler is a page nobody finds.
+
+   When the fetch does answer, the list is rebuilt from what the house has
+   published, so an entry written at the desk this morning appears here without
+   anybody touching a file. The order is the house's own. */
+(function () {
+  'use strict';
+  var URL_BASE = 'https://hckbqcphijihqbysibos.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhja2JxY3BoaWppaHFieXNpYm9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDY1ODQsImV4cCI6MjEwMjI4MjU4NH0.wg5IdL1ArScKk4dWWTtX8xyi8s4Z-1B9gKQQJBvX9V8';
+  var box = document.getElementById('jrn-list');
+  if (!box) return;
+
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+  function two(n) { return (n < 10 ? '0' : '') + n; }
+
+  fetch(URL_BASE + '/rest/v1/journal?published=eq.true' +
+        '&select=slug,title,kicker,standfirst,hero,hero_alt,path' +
+        '&order=sort_order.asc', {
+    headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
+  })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (rows) {
+      /* Nothing published, or the table is not there yet: leave the four that
+         are already on the page alone. Never blank the journal. */
+      if (!rows || !rows.length) return;
+
+      box.innerHTML = rows.map(function (e, i) {
+        var href = e.path ? e.path
+          : 'journal-entry.html?entry=' + encodeURIComponent(e.slug);
+        return '<article class="entry">' +
+          '<a class="entry-link" href="' + esc(href) + '">' +
+            (e.hero
+              ? '<figure class="entry-shot rise"><img src="' + esc(e.hero) +
+                '" alt="' + esc(e.hero_alt || '') +
+                '" loading="lazy" decoding="async"></figure>'
+              : '') +
+            '<div class="entry-body">' +
+              '<p class="entry-kick rise"><span class="fig">' + two(i + 1) +
+                '</span>' + (e.kicker ? ' &nbsp;\u00B7&nbsp; ' + esc(e.kicker) : '') + '</p>' +
+              '<h2 class="entry-name rise d1">' + esc(e.title) + '</h2>' +
+              (e.standfirst
+                ? '<p class="entry-note rise d2">' + esc(e.standfirst) + '</p>' : '') +
+              '<span class="entry-go label">Read the essay</span>' +
+            '</div>' +
+          '</a></article>';
+      }).join('');
+
+      /* the reveal watches elements that existed when it ran, so anything the
+         house has added since needs showing by hand */
+      box.querySelectorAll('.rise').forEach(function (el) { el.classList.add('in'); });
+    })
+    .catch(function () { /* the four on the page stand */ });
+}());
+</script>
 </body>
 </html>

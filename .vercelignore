@@ -21,6 +21,10 @@ assets/*.mp4
 # previews written by iar-lab/fit.py, alongside whatever it checked
 *-fit.jpg
 
+# test harnesses: a real page with its database swapped for fixtures, so a
+# screen can be walked without an account. Never for the live site.
+_*fit.html
+
 # placket correction working set: 2k PNG masters, not served
 placket-fixed
 tmp-src

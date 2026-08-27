@@ -216,6 +216,33 @@ this code prints is prefixed `[pay]`.
 
 ---
 
+## 4b · Publishing a journal entry
+
+The desk → **Shop front → Journal**. Write an entry, save it as a draft, and it
+appears nowhere. Tick it live and it is on the site straight away.
+
+The four essays that were written before this existed keep their own hand-built
+pages, because each was laid out around its own photographs and pouring them
+into a template would lose the thing that makes them worth reading. Their rows
+carry a `path` and the journal index links to that file. Open one at the desk
+and you can change its title, its kicker and its card, but not its words: those
+live in the file.
+
+Anything written at the desk has no file. It is laid out in the house style by
+`journal-entry.html`, which reads the entry by its address. One paragraph to a
+line with a blank line between them is the whole of the formatting, on purpose.
+
+**A photograph has to exist before it can be named.** The Photograph field takes
+a path like `images/journal/button.webp`; put the file in that folder and deploy
+it first. Use **Shop front → Media** to see what is already there.
+
+One limitation worth knowing: an entry written at the desk is drawn by the
+browser, so a search engine that does not run JavaScript sees an empty page.
+The four flagship essays are real HTML and do not have this problem. If a new
+entry matters for search, it is worth turning into its own file.
+
+---
+
 ## 5 · Running the shop day to day
 
 - **Orders, products, discounts:** `admin.html` on the site, signed in with a
@@ -223,6 +250,11 @@ this code prints is prefixed `[pay]`.
 - **Raw data, if the desk cannot do it:** Supabase → Table editor.
 - **Changing a price:** the `products` table. Nothing is hard-coded in a page;
   the site reads prices from there, and so does the payment code.
+- **Adding a cloth:** Catalogue → The range → **Add a cloth**. It arrives hidden.
+  Give it its photographs and its facts, then tick it onto the shop.
+- **A cloth's fabric, weave, fit, collar, care:** click its name in The range.
+  These print on the product page, and any one left empty simply does not
+  appear there rather than showing as a blank row.
 
 ---
 

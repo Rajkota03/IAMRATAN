@@ -41,6 +41,7 @@
       shop_open: true,
       delivery_min_days: 3,
       delivery_max_days: 7,
+      returns_days:      7,
       announcement: ''
     },
     live: false,          /* did the database actually answer? */
@@ -86,6 +87,7 @@
       shop_open:         bool(s.shop_open, true),
       delivery_min_days: num(s.delivery_min_days, 3),
       delivery_max_days: num(s.delivery_max_days, 7),
+      returns_days:      num(s.returns_days, 7),
       /* the bar. Off unless the house has switched it on and written a line —
          both, so a stale sentence left in the box cannot reappear on the shop
          front the day somebody flicks the switch to see what it does. */
@@ -185,6 +187,14 @@
     if (!Store.products) return false;                 /* nothing known yet */
     if (!row(slug)) return true;                       /* not in the shop view */
     return Store.settings.hide_sold_out && Store.allGone(slug);
+  };
+
+  /* The returns sentence, said with the house's own number rather than the
+     bracketed [7] the product page used to print at a customer. */
+  Store.returnsLine = function () {
+    var d = Store.settings.returns_days;
+    return 'Unworn, with tags, a shirt can come back within ' + d +
+           ' day' + (d === 1 ? '' : 's') + ' for an exchange or a refund.';
   };
 
   Store.deliveryLine = function () {

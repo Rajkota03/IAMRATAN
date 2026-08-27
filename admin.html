@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1787851194">
+<link rel="stylesheet" href="assets/iar-house.css?v=1787853695">
 <style>
 /* ---------- THE DESK ----------
    A control room, not a dashboard. The first question it answers is "what
@@ -203,13 +203,33 @@ input.cell{width:5.5rem;background:var(--room);border:1px solid var(--hair);
   border-radius:.3rem}
 input.cell:focus{outline:0;border-color:var(--ink)}
 input.cell.saved{border-color:var(--ink);background:var(--under)}
-.wide{width:100%;max-width:22rem}
-/* .wide on its own is (0,1,0) and loses to input.cell at (0,1,1), so an input
-   carrying it stays 5.5rem. A consignment number does not fit in 5.5rem.
-   Named for this one field on purpose: the same fault affects roughly ten
-   other fields here, and widening those reshapes tables that want looking at
-   before they move. */
-input.cell.consign{width:100%;max-width:22rem}
+/* A save that failed has to look different from one that worked. Before this
+   the field simply did not flash, which is indistinguishable from not having
+   looked at it. */
+input.cell.failed,select.cell.failed{border-color:#8C2F2F;background:#F6ECEC}
+
+/* a name you can click. A button, because it acts rather than navigates. */
+.linky{appearance:none;background:none;border:0;padding:0;font:inherit;
+  color:inherit;cursor:pointer;text-align:left;
+  text-decoration:underline;text-decoration-color:var(--hair);
+  text-underline-offset:3px}
+.linky:hover{text-decoration-color:currentColor}
+
+/* the toast, for the reason itself */
+.toast{position:fixed;left:50%;bottom:var(--s4);transform:translateX(-50%);
+  z-index:90;max-width:min(34rem,calc(100vw - var(--s5)));
+  background:var(--ink);color:var(--room);padding:var(--s3) var(--s4);
+  border-radius:.4rem;font-size:.875rem;line-height:1.5;
+  box-shadow:0 .5rem 2rem rgba(0,0,0,.25);
+  opacity:0;pointer-events:none;transition:opacity .3s var(--settle)}
+.toast.on{opacity:1}
+.toast.bad{background:#8C2F2F}
+/* input.cell is (0,1,1) and .wide alone is (0,1,0), so for six years every
+   field carrying `class="cell wide"` has quietly stayed 5.5rem — the whole
+   cloth editor, the menu label and href, the collection blurb, the banner
+   heading, the image description, the announcement. A URL in an 88px box.
+   The element selectors here are what make the rule actually win. */
+.wide,input.cell.wide,select.cell.wide,textarea.cell.wide{width:100%;max-width:22rem}
 /* In a table cell, width:100% resolves against a column that is sizing itself
    from its content — so the field collapses to the width of its placeholder.
    A min-width gives the column something real to size from. */
@@ -591,9 +611,9 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     <div class="over-card"></div></div>
 </main>
 
-<script src="assets/admin.js?v=1787851194"></script>
-<script src="assets/iar-house.js?v=1787851194"></script>
-<script src="assets/mark.js?v=1787851194"></script>
+<script src="assets/admin.js?v=1787853695"></script>
+<script src="assets/iar-house.js?v=1787853695"></script>
+<script src="assets/mark.js?v=1787853695"></script>
 <script>
 (function () {
   'use strict';
@@ -698,7 +718,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
                          ['campaigns','Campaigns'],['carts','Abandoned carts']]],
     ['Shop front', null, [['website','Website'],['homepage','Home page'],
                           ['navigation','Menu'],['media','Media'],
-                          ['bar','Announcement bar'],['pages','Pages']]],
+                          ['bar','Announcement bar'],['journal','Journal'],
+                          ['pages','Pages']]],
     ['Insights', null, [['analytics','Analytics'],['reports','Reports'],
                         ['demand','Bespoke demand'],['enquiries','Enquiries']]],
     ['System', null, [['settings','Settings']]]
@@ -812,7 +833,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
        website:website, reports:reports,
        marketing:marketing, campaigns:campaigns, carts:carts,
        newcode:newcode, newcamp:newcamp, homepage:homepage,
-       navigation:navigation, media:media, bar:bar, pages:pages }[here] || dashboard)();
+       navigation:navigation, media:media, bar:bar, pages:pages,
+       journal:journal, newentry:newentry }[here] || dashboard)();
   }
 
   /* ---------- dashboard ----------
@@ -1179,7 +1201,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
              here, and the customer sees it on their own account the moment it
              is typed, so it is worth being right. */
           '<section><h4>Consignment</h4>' +
-            '<input class="cell consign" data-courier="' + o.id + '" ' +
+            '<input class="cell wide" data-courier="' + o.id + '" ' +
               'value="' + esc(o.courier || '') + '" ' +
               'placeholder="Blue Dart 78451209336">' +
             '<div class="muted" style="margin-top:var(--s1);font-size:.75rem">' +
@@ -1441,7 +1463,29 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 
         body('<div class="strip">' + figs + '</div>' +
           '<p class="hint">Price is in whole rupees, inclusive of tax. Untick a ' +
-          'cloth to take it off the shop without deleting anything.</p>' +
+          'cloth to take it off the shop without deleting anything. Click a ' +
+          'name to set its cloth, its care and its photographs.</p>' +
+
+          '<div class="block"><h3>Add a cloth</h3>' +
+          '<p class="hint">It arrives hidden. Give it its photographs and its ' +
+          'facts first, then tick it onto the shop when it is ready to be seen.</p>' +
+          '<form class="filters" id="newcloth">' +
+            '<input class="cell wide" name="name" placeholder="Cocoa Drift" required>' +
+            '<input class="cell" name="price" type="number" min="0" ' +
+              'placeholder="2999" required>' +
+            '<input class="cell" name="hex" type="color" value="#8FA5C0" ' +
+              'title="The cloth\'s colour, used for the swatch">' +
+            '<input class="cell wide" name="collection" placeholder="Everyday" ' +
+              'list="collist">' +
+            '<datalist id="collist">' + PRODUCTS.map(function (x) {
+              return x.collection;
+            }).filter(function (c, i, all) {
+              return c && all.indexOf(c) === i;
+            }).map(function (c) {
+              return '<option value="' + esc(c) + '">';
+            }).join('') + '</datalist>' +
+            '<button class="btn small" type="submit">Add</button>' +
+          '</form></div>' +
           '<div class="card"><div class="scroll"><table><thead><tr><th></th>' +
           '<th>Cloth</th><th>SKU</th><th>Price</th><th>Necks</th><th>Stock</th>' +
           '<th>Collection</th><th>On the shop</th></tr></thead><tbody>' +
@@ -1452,7 +1496,11 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
             return '<tr>' +
               '<td><img class="thumb" src="' + thumbFor(p.slug) + '" alt="" ' +
                 'loading="lazy" onerror="this.style.visibility=\'hidden\'"></td>' +
-              '<td>' + esc(p.name) + '</td>' +
+              /* openCloth has existed all along and nothing ever linked to it,
+                 so the photographs and the cloth's own facts were unreachable
+                 from the desk. This is the way in. */
+              '<td><button class="linky" data-cloth-open="' + p.id + '">' +
+                esc(p.name) + '</button></td>' +
               '<td class="num muted">' + esc(p.sku || '—') + '</td>' +
               '<td><input class="cell" inputmode="numeric" value="' + p.price +
                 '" data-price="' + p.id + '"></td>' +
@@ -1464,6 +1512,37 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
                 p.id + '"' + (p.visible ? ' checked' : '') + '> shown</label></td>' +
             '</tr>';
           }).join('') + '</tbody></table></div></div>');
+
+        /* The slug is the address the shop will use for ever, so it is made
+           from the name rather than asked for: a shirtmaker should not have to
+           know what a slug is, and a hand-typed one is how you end up with two
+           clothes fighting over the same URL. */
+        document.getElementById('newcloth').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var f = e.target, btn = f.querySelector('button');
+          var name = f.elements.name.value.trim();
+          var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+                         .replace(/^-|-$/g, '');
+          if (!slug) return toast('Give the cloth a name first.', true);
+          if (PRODUCTS.some(function (x) { return x.slug === slug; }))
+            return toast('There is already a cloth called that.', true);
+
+          btn.disabled = true;
+          A.addProduct({
+            name: name, slug: slug,
+            price: parseInt(f.elements.price.value, 10) || 0,
+            hex: f.elements.hex.value,
+            collection: f.elements.collection.value.trim() || null,
+            visible: false,                 /* never straight onto the shop */
+            sort_order: PRODUCTS.length + 1
+          }).then(function (row) {
+            toast(name + ' added. Give it its photographs.');
+            openCloth(row.id);
+          }, function (err) {
+            btn.disabled = false;
+            toast('Could not add that cloth. ' + (err && err.message), true);
+          });
+        });
       }).catch(function (e) { body(needsSQL(e)); });
   }
 
@@ -2734,9 +2813,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         '<div class="grid-2">' +
           '<div class="card"><h3>The shop front</h3>' +
             '<div class="scroll"><table><tbody>' +
-            [['Address', '<a href="https://iar-next.vercel.app" target="_blank" ' +
-              'rel="noopener">iar-next.vercel.app</a> <span class="muted">' +
-              '(the working link — the domain is the last thing we wire)</span>'],
+            [['Address', '<a href="' + SITE + '" target="_blank" ' +
+              'rel="noopener">www.iamratan.co.in</a>'],
              ['Announcement bar', barOn
                 ? '<span class="tag active">on</span> ' + esc(val('announcement') || '(no words yet)')
                 : '<span class="tag draft">off</span>'],
@@ -3045,7 +3123,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
               '<td><label class="tick"><input type="checkbox" data-pagefoot="' +
                 esc(p.slug) + '"' + (p.in_footer ? ' checked' : '') + '></label></td>' +
               '<td><a class="btn small" target="_blank" rel="noopener" ' +
-                'href="https://iar-next.vercel.app/' + esc(p.path) + '">View</a></td>' +
+                'href="' + SITE + '/' + esc(p.path) + '">View</a></td>' +
               '</tr>';
           }).join('') + '</tbody></table></div>'
         : '<p class="empty">No pages recorded.</p>') +
@@ -3054,6 +3132,158 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         'and that is me. What you can change here is what an existing page is ' +
         'called and whether it appears in the footer.</p>');
     }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  /* ---------- the journal ----------
+     Four entries were written as hand-built HTML files, and publishing a fifth
+     meant a developer. Now the house writes here.
+
+     Two kinds of entry live in one list. The four that already exist carry a
+     `path` and keep rendering from their own files, because each has its own
+     layout and photographs and rebuilding them into a template would lose the
+     thing that makes them worth reading. Anything written here has no file and
+     renders through journal-entry.html from the words kept in the row. The
+     index does not care which is which. */
+
+  function entryHref(e) {
+    return e.path ? e.path : 'journal-entry.html?entry=' + encodeURIComponent(e.slug);
+  }
+
+  function journal() {
+    A.journal().then(function (rows) {
+      rows = rows || [];
+      var live = rows.filter(function (e) { return e.published; }).length;
+      body('<div class="strip">' +
+          '<div><b>' + rows.length + '</b><span>Entries</span></div>' +
+          '<div><b>' + live + '</b><span>Published</span></div>' +
+          '<div class="warn"><b>' + (rows.length - live) + '</b><span>Drafts</span></div>' +
+        '</div>' +
+
+        '<div class="filters">' +
+          '<button class="btn" data-go="newentry">+ Write an entry</button></div>' +
+
+        '<p class="hint">Order is the order they appear in the journal. Untick ' +
+        'to take an entry down without deleting it. The four older essays have ' +
+        'their own hand-built pages and open there; anything written here is ' +
+        'laid out by the house style.</p>' +
+
+        (rows.length
+        ? '<div class="card"><div class="scroll"><table><thead><tr>' +
+          '<th>Order</th><th>Entry</th><th>Kicker</th><th>Published</th>' +
+          '<th>Live</th><th></th></tr></thead><tbody>' +
+          rows.map(function (e) {
+            return '<tr>' +
+              '<td><input class="cell" type="number" style="width:4rem" value="' +
+                (e.sort_order || 0) + '" data-entry="' + e.id +
+                '" data-efield="sort_order"></td>' +
+              '<td><button class="linky" data-entry-open="' + e.id + '">' +
+                esc(e.title) + '</button>' +
+                '<br><span class="muted">' + esc(e.slug) +
+                (e.path ? ' &middot; its own page' : '') + '</span></td>' +
+              '<td class="muted">' + esc(e.kicker || '—') + '</td>' +
+              '<td class="num muted">' + (e.published_at ? day(e.published_at) : '—') + '</td>' +
+              '<td><label class="tick"><input type="checkbox" data-entrylive="' +
+                e.id + '"' + (e.published ? ' checked' : '') + '> live</label></td>' +
+              '<td><a class="btn small" target="_blank" rel="noopener" href="' +
+                SITE + '/' + esc(entryHref(e)) + '">View</a></td>' +
+            '</tr>';
+          }).join('') + '</tbody></table></div></div>'
+        : '<p class="empty">Nothing in the journal yet.</p>'));
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
+  function newentry() {
+    body('<div class="filters"><button class="btn small" data-go="journal">' +
+        '&larr; The journal</button></div>' +
+      '<div class="block"><h3>Write an entry</h3>' +
+      '<p class="hint">It is saved as a draft. Nothing appears on the site ' +
+      'until you tick it live, so there is no hurry and no harm in starting.</p>' +
+      '<form id="entryform" class="f">' +
+        '<label>Title<input class="cell wide" name="title" ' +
+          'placeholder="What a button is for" required></label>' +
+        '<label>Kicker<input class="cell wide" name="kicker" ' +
+          'placeholder="On detail"></label>' +
+        '<label>The line under the title<input class="cell wide" name="standfirst" ' +
+          'placeholder="Four holes, one thread, and a hundred years of argument."></label>' +
+        '<label>Photograph<input class="cell wide" name="hero" ' +
+          'placeholder="images/journal/button.webp"></label>' +
+        '<label>What the photograph shows<input class="cell wide" name="hero_alt" ' +
+          'placeholder="A button with I AM RATAN engraved around the rim"></label>' +
+        '<label>The entry<textarea class="cell wide" name="body" rows="16" ' +
+          'style="max-width:46rem;font-family:inherit;font-size:1rem;line-height:1.7" ' +
+          'placeholder="One paragraph to a line. Leave a blank line between them."></textarea></label>' +
+        '<div class="filters"><button class="btn" type="submit">Save as a draft</button>' +
+        '<button class="btn small" type="button" data-go="journal">Cancel</button></div>' +
+      '</form></div>');
+
+    document.getElementById('entryform').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = e.target, btn = f.querySelector('button[type=submit]');
+      var title = f.elements.title.value.trim();
+      var slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      if (!slug) return toast('Give the entry a title first.', true);
+      btn.disabled = true;
+      A.addEntry({
+        slug: slug, title: title,
+        kicker: f.elements.kicker.value.trim() || null,
+        standfirst: f.elements.standfirst.value.trim() || null,
+        hero: f.elements.hero.value.trim() || null,
+        hero_alt: f.elements.hero_alt.value.trim() || null,
+        body: f.elements.body.value.trim() || null,
+        published: false, sort_order: 99
+      }).then(function () {
+        toast('Saved as a draft.');
+        here = 'journal'; drawNav(); render();
+      }, function (err) {
+        btn.disabled = false;
+        toast('Could not save that. ' + (err && err.message), true);
+      });
+    });
+  }
+
+  function openEntry(id) {
+    here = 'journal'; drawNav(); shell(waiting());
+    A.entry(id).then(function (e) {
+      body('<div class="filters"><button class="btn small" data-go="journal">' +
+          '&larr; The journal</button>' +
+          '<a class="btn small" target="_blank" rel="noopener" href="' + SITE +
+            '/' + esc(entryHref(e)) + '">View on the site</a></div>' +
+        '<p class="hint">' + esc(e.title) + '. Every field saves as you leave it.' +
+          (e.path ? ' This entry has its own hand-built page, so the words below ' +
+                    'are what the journal index shows, not the essay itself.' : '') +
+        '</p>' +
+
+        '<div class="block"><h3>The entry</h3><div class="f">' +
+          field(e, 'title', 'Title') +
+          field(e, 'kicker', 'Kicker') +
+          field(e, 'standfirst', 'The line under the title') +
+          field(e, 'hero', 'Photograph') +
+          field(e, 'hero_alt', 'What the photograph shows') +
+        '</div></div>' +
+
+        (e.path ? '' :
+          '<div class="block"><h3>The words</h3>' +
+          '<p class="hint">One paragraph to a line, with a blank line between ' +
+          'them. That is all the formatting there is, on purpose.</p>' +
+          '<textarea class="cell wide" data-entry="' + e.id + '" data-efield="body" ' +
+            'rows="18" style="max-width:46rem;font-family:inherit;font-size:1rem;' +
+            'line-height:1.7">' + esc(e.body || '') + '</textarea></div>') +
+
+        '<div class="block"><h3>Publishing</h3>' +
+          '<label class="tick"><input type="checkbox" data-entrylive="' + e.id + '"' +
+            (e.published ? ' checked' : '') + '> live on the site</label>' +
+          '<p class="hint" style="margin-top:var(--s2)">' +
+            (e.published_at ? 'First published ' + day(e.published_at) + '.'
+                            : 'Not yet published.') + '</p>' +
+          '<button class="btn warn small" data-entry-del="' + e.id + '">Delete this entry</button>' +
+        '</div>');
+    }).catch(function (err) { body(needsSQL(err)); });
+  }
+
+  function field(e, name, label) {
+    return '<label>' + label + '<input class="cell wide" value="' +
+      esc(e[name] || '') + '" data-entry="' + e.id + '" data-efield="' + name +
+      '"></label>';
   }
 
   /* ---------- reports ----------
@@ -3333,6 +3563,11 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 
   /* ---------- one cloth: its details and its photographs ---------- */
 
+  /* Where the shop actually is. Written once: this used to be the Vercel
+     preview address in three places, so every View button in the admin sent
+     the house to a working link rather than to their own shop. */
+  var SITE = 'https://www.iamratan.co.in';
+
   var GARMENT = [['sku','SKU'],['fabric','Fabric'],['fit','Fit'],['weave','Weave'],
                  ['collar','Collar'],['sleeve','Sleeve'],['pattern','Pattern'],
                  ['origin','Country of origin']];
@@ -3434,9 +3669,61 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
      a Save button is a thing to forget, and the failure it causes is silent. */
 
   function flash(el) {
+    el.classList.remove('failed');
     el.classList.add('saved');
     setTimeout(function () { el.classList.remove('saved'); }, 900);
   }
+
+  /* ---------- when a save does not work ----------
+     The rule here is that every edit saves on change and the field flashes. The
+     unspoken half of that rule was that a save which FAILED did nothing at all,
+     which looks exactly like not having touched the field. Nine fields in the
+     cloth editor were writing to columns that did not exist and nobody could
+     have known, because the page never said so.
+
+     So: the field goes red and keeps the value the house typed, and the reason
+     is said out loud. Never swallow this. */
+  var toastEl, toastT;
+  function toast(msg, bad) {
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.className = 'toast';
+      toastEl.setAttribute('role', 'status');
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.toggle('bad', !!bad);
+    toastEl.classList.add('on');
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { toastEl.classList.remove('on'); }, bad ? 6000 : 2600);
+  }
+
+  /* Wraps a save so the two outcomes are both visible. Every write in the
+     change listener goes through this. */
+  function saving(promise, el, what) {
+    return promise.then(function (r) {
+      if (el) flash(el);
+      return r;
+    }, function (err) {
+      if (el) { el.classList.remove('saved'); el.classList.add('failed'); }
+      var m = (err && err.message) || 'unknown';
+      console.error('[admin] could not save', what || '', '·', m);
+      toast('That did not save' + (what ? ' (' + what + ')' : '') + '. ' + m, true);
+      /* Still thrown, so a chain that would have refreshed a count on success
+         does not run. Marked as already said, so the catch-all below does not
+         replace this message with a vaguer one. */
+      try { err.__told = true; } catch (e2) {}
+      throw err;
+    });
+  }
+
+  /* Anything that still escapes — a save outside the change listener, a render
+     that throws — is said rather than lost to the console. */
+  window.addEventListener('unhandledrejection', function (e) {
+    if (e.reason && e.reason.__told) return;      /* saving() already said it */
+    var m = (e.reason && e.reason.message) || String(e.reason || '');
+    if (m) toast('Something did not work: ' + m, true);
+  });
 
   document.addEventListener('click', function (e) {
     var f = e.target.closest('[data-of]');
@@ -3469,6 +3756,15 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     if (sh) openSheet(sh.getAttribute('data-sheet'));
     var cl = e.target.closest('[data-cloth-open]');
     if (cl) openCloth(cl.getAttribute('data-cloth-open'));
+
+    var eo = e.target.closest('[data-entry-open]');
+    if (eo) openEntry(eo.getAttribute('data-entry-open'));
+
+    var ed = e.target.closest('[data-entry-del]');
+    if (ed && confirm('Delete this entry for good? It cannot be undone.')) {
+      saving(A.delEntry(ed.getAttribute('data-entry-del')), null, 'the entry')
+        .then(function () { toast('Deleted.'); here = 'journal'; drawNav(); render(); });
+    }
     var di = e.target.closest('[data-delimg]');
     if (di) {
       e.preventDefault();
@@ -3564,40 +3860,43 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       var why = (document.getElementById('why') || {}).value || 'correction';
       t.classList.toggle('zero', q === 0);
       t.classList.toggle('low', q > 0 && q <= 3);
-      A.moveStock(t.getAttribute('data-stock'), t.getAttribute('data-size'),
-                  was, q, why)
-        .then(function () { t.setAttribute('data-was', q); flash(t); refreshKpis(); });
+      saving(A.moveStock(t.getAttribute('data-stock'), t.getAttribute('data-size'),
+                         was, q, why), t, 'stock')
+        .then(function () { t.setAttribute('data-was', q); refreshKpis(); });
     }
     if (has('data-price')) {
       var p = parseInt(t.value, 10);
-      if (!isNaN(p) && p >= 0) A.setProduct(t.getAttribute('data-price'), { price: p })
-        .then(function () { flash(t); });
+      if (!isNaN(p) && p >= 0)
+        saving(A.setProduct(t.getAttribute('data-price'), { price: p }), t, 'price');
     }
     if (has('data-visible'))
-      A.setProduct(t.getAttribute('data-visible'), { visible: t.checked });
+      saving(A.setProduct(t.getAttribute('data-visible'), { visible: t.checked }),
+             null, 'on the shop');
     if (has('data-order'))
-      A.setOrder(t.getAttribute('data-order'), { status: t.value }).then(refreshKpis);
+      saving(A.setOrder(t.getAttribute('data-order'), { status: t.value }), null, 'the stage')
+        .then(refreshKpis);
     /* null rather than an empty string when it is cleared, so the customer's
        account shows no consignment block at all rather than an empty heading */
     if (has('data-courier'))
-      A.setOrder(t.getAttribute('data-courier'), { courier: t.value.trim() || null })
-        .then(function () { flash(t); });
+      saving(A.setOrder(t.getAttribute('data-courier'),
+                        { courier: t.value.trim() || null }), t, 'the consignment');
     if (has('data-return'))
-      A.setReturn(t.getAttribute('data-return'), { stage: t.value }).then(refreshKpis);
+      saving(A.setReturn(t.getAttribute('data-return'), { stage: t.value }), null, 'the return')
+        .then(refreshKpis);
     if (has('data-handled'))
-      A.setEnquiry(t.getAttribute('data-handled'), { handled: t.checked }).then(refreshKpis);
+      saving(A.setEnquiry(t.getAttribute('data-handled'), { handled: t.checked }),
+             null, 'the enquiry').then(refreshKpis);
     if (has('data-set')) {
       var v = t.type === 'checkbox' ? String(t.checked) : t.value;
-      A.setSetting(t.getAttribute('data-set'), v)
-        .then(function () { if (t.classList.contains('cell')) flash(t); });
+      saving(A.setSetting(t.getAttribute('data-set'), v),
+             t.classList.contains('cell') ? t : null, t.getAttribute('data-set'));
     }
     if (has('data-slot'))
-      A.setContent(t.getAttribute('data-slot'), t.value)
-        .then(function () { flash(t); });
+      saving(A.setContent(t.getAttribute('data-slot'), t.value), t, 'the words');
     /* an offer switched off stops at the very next checkout — the database is
        asked again on every order, never the page */
     if (has('data-live'))
-      A.setDiscount(t.getAttribute('data-live'), { live: t.checked })
+      saving(A.setDiscount(t.getAttribute('data-live'), { live: t.checked }), null, 'the offer')
         .then(function () { discounts(); });
 
     /* ---- the shop windows ---- */
@@ -3606,45 +3905,63 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       var bf = t.getAttribute('data-bfield');
       var bp = {};
       bp[bf] = bf === 'sort_order' ? (parseInt(t.value, 10) || 1) : (t.value.trim() || null);
-      A.setBand(t.getAttribute('data-band'), bp).then(function () { flash(t); });
+      saving(A.setBand(t.getAttribute('data-band'), bp), t, 'the band');
     }
     if (has('data-bandlive'))
-      A.setBand(t.getAttribute('data-bandlive'), { live: t.checked });
+      saving(A.setBand(t.getAttribute('data-bandlive'), { live: t.checked }), null, 'the band');
 
     if (has('data-nav')) {
       var nf = t.getAttribute('data-nfield');
       var np = {};
       np[nf] = nf === 'sort_order' ? (parseInt(t.value, 10) || 1) : t.value.trim();
-      A.setNav(t.getAttribute('data-nav'), np).then(function () { flash(t); });
+      saving(A.setNav(t.getAttribute('data-nav'), np), t, 'the menu');
     }
     if (has('data-navlive'))
-      A.setNav(t.getAttribute('data-navlive'), { live: t.checked });
+      saving(A.setNav(t.getAttribute('data-navlive'), { live: t.checked }), null, 'the menu');
 
     if (has('data-alt'))
-      A.setMedia(t.getAttribute('data-alt'), { alt: t.value.trim() || null })
-        .then(function () { flash(t); });
+      saving(A.setMedia(t.getAttribute('data-alt'), { alt: t.value.trim() || null }),
+             t, 'the description');
 
     if (has('data-pagefoot'))
-      A.setPage(t.getAttribute('data-pagefoot'), { in_footer: t.checked });
+      saving(A.setPage(t.getAttribute('data-pagefoot'), { in_footer: t.checked }),
+             null, 'the footer');
     if (has('data-col')) {
       var fld = t.getAttribute('data-field');
       var val = fld === 'sort_order' ? (parseInt(t.value, 10) || 0) : t.value;
       var patch = {}; patch[fld] = val;
-      A.setCollection(t.getAttribute('data-col'), patch)
-        .then(function () { flash(t); });
+      saving(A.setCollection(t.getAttribute('data-col'), patch), t, 'the collection');
     }
     if (has('data-colvis'))
-      A.setCollection(t.getAttribute('data-colvis'), { visible: t.checked });
+      saving(A.setCollection(t.getAttribute('data-colvis'), { visible: t.checked }),
+             null, 'the collection');
     if (has('data-code'))
-      A.setDiscount(t.getAttribute('data-code'), { live: t.checked });
+      saving(A.setDiscount(t.getAttribute('data-code'), { live: t.checked }), null, 'the offer');
     if (has('data-imgkind'))
-      A.setImage(t.getAttribute('data-imgkind'), { kind: t.value });
+      saving(A.setImage(t.getAttribute('data-imgkind'), { kind: t.value }), t, 'the photograph');
+
+    /* ---- the journal ---- */
+    if (has('data-entry')) {
+      var ef = t.getAttribute('data-efield');
+      var ev = ef === 'sort_order' ? (parseInt(t.value, 10) || 0)
+                                   : (t.value.trim() || null);
+      var ep = {}; ep[ef] = ev;
+      saving(A.setEntry(t.getAttribute('data-entry'), ep), t, ef);
+    }
+    if (has('data-entrylive')) {
+      var onNow = t.checked;
+      saving(A.setEntry(t.getAttribute('data-entrylive'), { published: onNow }),
+             null, 'publishing')
+        .then(function () {
+          toast(onNow ? 'Published. It is on the site now.'
+                      : 'Taken down. It is still here as a draft.');
+        }, function () { t.checked = !onNow; });   /* put the tick back */
+    }
     if (has('data-cloth')) {
       var cf = t.getAttribute('data-field');
       var cv = cf === 'mrp' ? (parseInt(t.value, 10) || null) : t.value;
       var cp = {}; cp[cf] = cv;
-      A.setProduct(t.getAttribute('data-cloth'), cp)
-        .then(function () { flash(t); });
+      saving(A.setProduct(t.getAttribute('data-cloth'), cp), t, cf);
     }
   });
 

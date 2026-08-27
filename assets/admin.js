@@ -256,6 +256,36 @@
     return api('product_images?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
   };
 
+  /* A new cloth. return=representation because the screen needs the id back to
+     open the cloth's own page straight away — the house has just named a thing
+     and the next thing it wants is to put photographs on it. */
+  A.addProduct = function (row) {
+    return api('products', { method: 'POST', prefer: 'return=representation',
+                             body: [row] }).then(one);
+  };
+  A.delProduct = function (id) {
+    return api('products?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+  };
+
+  /* ---------- the journal ----------
+     The four entries written before this existed keep their own hand-built
+     files; their row carries `path` and the index links straight to it. An
+     entry written here has no file, so it renders from `body` through
+     journal-entry.html. Both kinds live in one list and one order. */
+
+  A.journal   = function () { return api('journal?select=*&order=sort_order.asc'); };
+  A.entry     = function (id) { return api('journal?id=eq.' + id + '&select=*').then(one); };
+  A.addEntry  = function (row) {
+    return api('journal', { method: 'POST', prefer: 'return=representation',
+                            body: [row] }).then(one);
+  };
+  A.setEntry  = function (id, patch) {
+    return api('journal?id=eq.' + id, { method: 'PATCH', body: patch, prefer: 'return=minimal' });
+  };
+  A.delEntry  = function (id) {
+    return api('journal?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+  };
+
   /* ---------- collections, offers, the shop windows ---------- */
 
   A.collections   = function () { return api('collections?select=*&order=sort_order.asc'); };

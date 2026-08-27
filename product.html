@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1787851194">
+<link rel="stylesheet" href="assets/iar-house.css?v=1787853695">
 <style>
 /* ---------- the drench ----------
    The garment's own colour becomes the room, exactly as it does in the shop.
@@ -226,6 +226,11 @@
    Fabric, sizing, delivery, returns — as quiet accordions under the meta, the
    way every serious shirtmaker's page carries them. Native <details name="pdp">
    so only one opens at a time, and no JS owns it. */
+.cloth-facts{display:grid;grid-template-columns:auto 1fr;gap:var(--s1) var(--s3);
+  margin:0 0 var(--s3)}
+.cloth-facts dt{font-family:var(--mono);font-size:.6875rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted)}
+.cloth-facts dd{margin:0}
 .g-facts{margin:var(--s5) 0 0;border-top:1px solid color-mix(in oklab,currentColor 22%,transparent)}
 .g-facts details{border-bottom:1px solid color-mix(in oklab,currentColor 22%,transparent)}
 .g-facts summary{list-style:none;cursor:pointer;display:flex;
@@ -344,16 +349,45 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1787851194"></script>
-<script src="assets/house.js?v=1787851194"></script>
-<script src="assets/catalogue.js?v=1787851194"></script>
-<script src="assets/shots.js?v=1787851194"></script>
-<script src="assets/site.js?v=1787851194"></script>
-<script src="assets/shop.js?v=1787851194"></script>
-<script src="assets/iar-house.js?v=1787851194"></script>
+<script src="assets/store.js?v=1787853695"></script>
+<script src="assets/house.js?v=1787853695"></script>
+<script src="assets/catalogue.js?v=1787853695"></script>
+<script src="assets/shots.js?v=1787853695"></script>
+<script src="assets/site.js?v=1787853695"></script>
+<script src="assets/shop.js?v=1787853695"></script>
+<script src="assets/iar-house.js?v=1787853695"></script>
 <script>
 (function () {
   'use strict';
+
+
+  /* What this particular cloth is, said by the house rather than by a template.
+     Every line is printed only if the house has filled it in: an absent fact is
+     left out, never invented and never shown as an empty row. This used to be a
+     hard-coded "[composition and weave to be confirmed]", which is a placeholder
+     a customer should never have been able to read. */
+  function clothFacts(p) {
+    var rows = [
+      ['Cloth',   p.fabric],
+      ['Weave',   p.weave],
+      ['Pattern', p.pattern],
+      ['Fit',     p.fit],
+      ['Collar',  p.collar],
+      ['Sleeve',  p.sleeve],
+      ['Made in', p.origin]
+    ].filter(function (r) { return r[1]; });
+
+    return (rows.length
+      ? '<dl class="cloth-facts">' + rows.map(function (r) {
+          return '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>';
+        }).join('') + '</dl>'
+      : '') +
+      (p.care
+        ? '<p>' + esc(p.care) + '</p>'
+        : '<p>Machine wash cold with like colours, or hand wash. Line dry in ' +
+          'shade. Warm iron while faintly damp. No bleach, no tumble dryer. ' +
+          'The cloth outlives the machine that ruins it.</p>');
+  }
 
   var R = IAR.RANGE, main = document.getElementById('main');
   var slug = new URLSearchParams(location.search).get('p');
@@ -577,11 +611,7 @@
 
           '<div class="g-facts">' +
             '<details name="pdp"><summary>Cloth &amp; care</summary><div class="fx">' +
-              '<p>[100% cotton, woven for the house. Composition and weave to be ' +
-              'confirmed by the house per cloth.]</p>' +
-              '<p>Machine wash cold with like colours, or hand wash. Line dry in ' +
-              'shade. Warm iron while faintly damp. No bleach, no tumble dryer. ' +
-              'The cloth outlives the machine that ruins it.</p>' +
+              clothFacts(p) +
             '</div></details>' +
             '<details name="pdp"><summary>Size guide</summary><div class="fx">' +
               sizeGuide(p) +
@@ -591,10 +621,8 @@
               'is the answer.</p>' +
             '</div></details>' +
             '<details name="pdp"><summary>Delivery &amp; returns</summary><div class="fx">' +
-              '<p>Ships across India in [3&ndash;7] working days. Unworn, with ' +
-              'tags, a shirt can come back within [7] days for an exchange or a ' +
-              'refund. A fault in cloth or making is ours to put right at any ' +
-              'reasonable point.</p>' +
+              '<p id="gTerms">A fault in cloth or making is ours to put right ' +
+              'at any reasonable point.</p>' +
               '<p><a href="shipping.html" style="text-decoration:underline;text-underline-offset:3px">The full shipping &amp; returns page</a></p>' +
             '</div></details>' +
           '</div>' +
@@ -660,6 +688,16 @@
     var stockLine = document.getElementById('gStock');
     var shipLine  = document.getElementById('gShip');
     if (shipLine) shipLine.textContent = S.deliveryLine();
+    /* the same two numbers the house sets once, rather than [3-7] and [7]
+       printed in brackets at whoever is deciding whether to buy */
+    var terms = document.getElementById('gTerms');
+    if (terms) {
+      var a = S.settings.delivery_min_days, b = S.settings.delivery_max_days;
+      terms.textContent =
+        'Ships across India in ' + (a === b ? a : a + '\u2013' + b) +
+        ' working days. ' + S.returnsLine() +
+        ' A fault in cloth or making is ours to put right at any reasonable point.';
+    }
 
     main.querySelectorAll('.sz[data-size]').forEach(function (b) {
       if (b.hasAttribute('data-uncut')) return;      /* bespoke, not sold out */
@@ -738,8 +776,8 @@
   });
 })();
 </script>
-<script src="assets/mark.js?v=1787851194"></script>
-<script src="assets/track.js?v=1787851194"></script>
+<script src="assets/mark.js?v=1787853695"></script>
+<script src="assets/track.js?v=1787853695"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -750,6 +788,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1787851194"></script>
+<script src="assets/nav.js?v=1787853695"></script>
 </body>
 </html>

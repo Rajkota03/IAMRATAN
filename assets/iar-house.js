@@ -28,7 +28,17 @@
   } catch (e) {}
 
   /* ---- reveals ---------------------------------------------------------- */
-  var marks = doc.querySelectorAll('.snap,.rise');
+  /* .settle and .lines hold their contents hidden until .in arrives, exactly as
+     .rise does, so they belong in the same pass.
+
+     The flag on <html> is why the hiding is safe at all. Every "start hidden"
+     rule is scoped behind it, so a photograph is only ever made invisible once
+     this script is running and can be relied on to reveal it. If the file never
+     loads, fails, or is blocked, the attribute never appears, none of those
+     rules match, and the page is simply the page. Same contract nav.js uses for
+     the drawer. */
+  doc.documentElement.setAttribute('data-reveal', 'on');
+  var marks = doc.querySelectorAll('.snap,.rise,.settle,.lines,.stag');
 
   function releaseAll() {
     for (var i = 0; i < marks.length; i++) marks[i].classList.add('in');

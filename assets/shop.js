@@ -39,6 +39,11 @@
   };
   Shop.remove = function (i) { Shop.bag.splice(i, 1); save(); Shop.emit(); };
 
+  /* Emptied once an order is paid for. Same reason setQty lives here: saving is
+     private to this file, so a page that emptied Shop.bag itself would clear the
+     screen and find the old bag waiting on the next reload. */
+  Shop.clear = function () { Shop.bag.length = 0; save(); Shop.emit(); };
+
   /* Quantity belongs here rather than in the checkout page, because saving is
      private to this file — a page nudging bag[i].qty directly would change the
      number on screen and lose it on the next reload. Going to zero removes the

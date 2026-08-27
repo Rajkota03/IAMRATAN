@@ -21,8 +21,8 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786988400">
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/iar-house.css?v=1787841087">
 <style>
 /* the cross-document crossfade now lives in iar-house.css, on every page */
 
@@ -347,28 +347,110 @@ img{display:block;max-width:100%}
    copy: the headline sits at 4.15–5.27:1 against chalk where it needs 3.0, and
    the smaller sub and button at 7.5–11.3:1 where they need 4.5. So the veil did
    not have to be strengthened to move — only mirrored. */
+/* The veil is for the words, not for the picture.
+   It used to be two full-width bands, a bottom one at .86 and a left field at
+   .62, so every frame was darkened across its whole width including the part
+   the photograph is actually about. On garment-forward frames — a shirt in its
+   box, swatch cards laid along the bottom — that meant the veil sat directly on
+   the product.
+   It is now a single pool anchored at the bottom-left corner, where the copy
+   is, fading out well before the middle of the frame. The thin bottom fade that
+   remains is only strong enough to hold the frame ticks. */
+/* The shade used to be pinned to the bottom left corner, which only suited the
+   frames whose words sat there. Now the picture carries almost nothing: a thin
+   wash at the foot so the ticks and the scroll cue stay legible, and the real
+   shading travels with the copy instead (see .hero-copy::before). The garment
+   and the logo are never under it, because the copy is never over them. */
 .hero::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:
-    linear-gradient(to top,rgba(8,9,11,.86) 0%,rgba(8,9,11,.42) 42%,rgba(8,9,11,0) 74%),
-    linear-gradient(to left,rgba(8,9,11,.62) 0%,rgba(8,9,11,.12) 52%,rgba(8,9,11,0) 78%)}
+  background:linear-gradient(to top,rgba(8,9,11,.34) 0%,rgba(8,9,11,0) 16%)}
 
-.hero-copy{position:relative;z-index:2;width:100%;max-width:1500px;
+/* The campaign frame hides the page's copy on a desktop, so while it is on
+   screen there are no words to protect and the veil comes off entirely. */
+.hero::after{transition:opacity .6s var(--settle)}
+
+/* All five copy blocks are stacked in the same cell and only one is shown, so
+   the bar never changes height as the frames turn. The outgoing block leaves
+   before the incoming one arrives, which is why the fade out is quicker than
+   the fade in: two blocks visible at once for even a moment reads as a fault. */
+.hero-copy{grid-area:1/1;position:relative;z-index:2;width:100%;max-width:1500px;
   margin-inline:auto;padding:var(--gut) var(--gut) var(--sz);
   display:grid;gap:var(--s3);justify-items:start;
-  transition:opacity .6s var(--settle)}
-/* The campaign frame carries its own lettering, so while it is on screen the
-   page's copy stands aside — two headlines on one screen is a shouting match.
-   Desktop only: the phone crop of that frame is the clean photograph, and the
-   copy there sits on its own panel below the picture, not over it. */
+  opacity:0;visibility:hidden;translate:0 10px;
+  transition:opacity .35s var(--settle),translate .35s var(--settle),
+             visibility 0s linear .35s}
+.hero-copy.is-on{opacity:1;visibility:visible;translate:none;
+  transition:opacity .7s var(--settle) .12s,translate .8s var(--settle) .12s,
+             visibility 0s}
+/* frame one is the only one whose picture is quiet on the right */
+.hero-copy.is-right{justify-items:end;text-align:right}
+.hero-copy.is-right .hero-sub{margin-left:auto}
+
+/* WHERE EACH BLOCK SITS, AND HOW WIDE IT MAY BE
+   Measured, not chosen. Each frame was divided into a 6x3 grid and the standard
+   deviation of every cell taken, which separates empty ground from cloth. The
+   quietest two-by-two block in each picture is where its words go, and --copyw
+   stops the line before it reaches the product.
+
+   The bar used to align everything to the bottom, which is why frame three sat
+   across the shirt: that photograph's empty space is the TOP left, not the
+   bottom. Vertical position now varies per frame too. */
+/* THE GROUND THE WORDS STAND ON
+   Not flat black. Each frame passes its own shadow colour in as --veil, taken
+   from the shadow side of the band the copy sits in, so the panel behind the
+   type reads as the photograph going dark rather than as a card laid on top of
+   it: maroon on the swatch frame, navy on the two shirt frames.
+
+   A linear wash from the copy's own edge, not a pool around it. It holds almost
+   flat across the whole text column so the end of the longest line is as
+   readable as its start, then drops to nothing by three quarters of the way
+   across, leaving the far side of every frame untouched.
+
+   The strength is the lightest one that still clears AA body contrast against
+   the brightest pixel any letter actually sits on, measured per element on all
+   five frames: about a third of the picture still shows through it. */
 @media(min-width:820px){
-  .hero:has(.hero-frame.self-titled.is-on) .hero-copy{opacity:0;
-    pointer-events:none}
+  .hero-copy::before{content:'';position:absolute;z-index:-1;pointer-events:none;
+    inset:-30% auto -30% 0;width:74%;
+    background:linear-gradient(to right,
+      rgb(var(--veil) / .68) 0%,  rgb(var(--veil) / .64) 64%,
+      rgb(var(--veil) / .29) 86%, rgb(var(--veil) / 0)   92%);
+    -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 18%,#000 82%,transparent 100%);
+    mask-image:linear-gradient(to bottom,transparent 0,#000 18%,#000 82%,transparent 100%)}
+  .hero-copy.is-right::before{inset:-30% 0 -30% auto;
+    background:linear-gradient(to left,
+      rgb(var(--veil) / .68) 0%,  rgb(var(--veil) / .64) 64%,
+      rgb(var(--veil) / .29) 86%, rgb(var(--veil) / 0)   92%)}
+}
+
+/* WHERE THE BLOCK SITS
+   Centred, and inset from the edge by more than the page gutter, so the words
+   read as part of the picture instead of a caption pinned to its corner. Frames
+   whose subject sits high or low take a nudge of their own through --copyy. */
+.hero-copy{align-self:center;transform:translateY(var(--copyy,0))}
+@media(min-width:820px){
+  .hero-copy{gap:var(--s2);padding-inline:var(--copyx,var(--gut))}
+  .hero-sub{margin-top:0}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-copy,.hero-copy.is-on{transition:opacity .2s linear;translate:none}
 }
 .hero-kicker{margin:0;font-family:var(--mono);font-size:.625rem;letter-spacing:.28em;
   text-transform:uppercase;color:rgba(237,233,224,.76)}
-.hero-line{margin:0;font-weight:200;letter-spacing:-.035em;line-height:.98;
-  font-size:clamp(2.9rem,7.4vw,6rem);text-wrap:balance}
-.hero-sub{margin:var(--s0) 0 0;max-width:38ch;font-weight:250;
+/* The banner headline is the one place on the site that should feel like a
+   campaign rather than an interface, so it is set in Cormorant Garamond: an old
+   style serif with real stroke contrast, which is where "luxury" actually comes
+   from in type. The rest of the site keeps its sans, because a serif at 15px in
+   a product grid is affectation, not elegance.
+
+   Weight 400 rather than 300: over a photograph the thin cut loses its hairlines
+   and the word starts to break up. Size is smaller than the sans it replaces,
+   because a serif at the same measure reads larger and these frames have real
+   pictures in them that the words must not cross. */
+.hero-line{margin:0;font-family:'Cormorant Garamond',Georgia,serif;
+  font-weight:400;letter-spacing:-.005em;line-height:1;
+  font-size:clamp(2.3rem,4.9vw,4.05rem);text-wrap:balance;
+  max-width:var(--copyw,26ch)}
+.hero-sub{margin:var(--s0) 0 0;max-width:min(var(--copyw,38ch),44ch);font-weight:250;
   font-size:clamp(1rem,1.4vw,1.22rem);line-height:1.55;color:rgba(237,233,224,.84)}
 .hero-act{margin:var(--s1) 0 0}
 .hero .cta:hover{background:#EDE9E0;color:#0B0C0E}
@@ -417,8 +499,21 @@ html:not(.js) .hero-act{opacity:1}
    right edge reads as a decision. The phone keeps the copy left and below the
    picture, where it has its own ground and blocks nothing.                   */
 @media(min-width:820px){
-  .hero-copy{justify-items:end;text-align:right}
-  .hero-ticks{right:auto;left:var(--gut)}
+  /* Per frame now, not for the whole bar. This rule used to send every copy
+     block right, which was correct when there was one block over one picture.
+     With five frames the side has to follow the photograph: measured across the
+     thirds of each image, the quiet space is on the right in frame one and on
+     the left in the other four, so only frame one carries .is-right and the
+     rest sit left where their own frame is empty. */
+  .hero-copy.is-right{justify-items:end;text-align:right}
+  .hero-copy.is-right .hero-sub,
+  .hero-copy.is-right .hero-line{margin-left:auto}
+  /* The ticks stay on the right on every frame. They used to jump to the left
+     whenever frame one was up, to keep clear of words that sit right on that
+     one — but they ride near the foot of the picture and the copy is centred,
+     so there was never anything to clear. All it did was move the one control
+     on the banner while the reader was looking at it. */
+  .hero-ticks{right:var(--gut);left:auto}
 }
 /* ---------- the hero, on a phone ----------
    A phone window is about 0.46 wide-to-tall. The frames are cut at 4:5, which
@@ -438,15 +533,39 @@ html:not(.js) .hero-act{opacity:1}
 @media(max-width:819px){
   /* the offset for the fixed bar is on the base rule now — it is needed at
      every width, not only here */
-  .hero{align-content:space-between}
+  /* start, not space-between: the slack used to be dealt out between the
+     picture and the copy, so the gap changed with whichever slide was showing
+     and the last one pushed its button off the screen. Top aligned, the slack
+     collects at the foot where the dots live. */
+  .hero{align-content:start}
   /* 4:5 is the frames' own shape, so nothing is scaled. But a wide phone is
      also a SHORT one — 4:5 of 430px is 538px of picture, and the screen has
      less height to give, not more. So the stage is capped at what is left once
      the bar and the copy are paid for, and the overflow is taken off the FOOT
      of the picture. Heads are the one thing that must never be cropped. */
+  /* SAME PICTURE ON EVERY PHONE
+     The frames are 4:5 and want 125vw of height. The reserve below takes what
+     the bar, the copy and the dots need, and on a tall handset that leaves the
+     full 125vw so nothing is cropped at all. On a short one it left 282px of
+     the 469 the picture wanted: forty per cent gone, where a Pro Max lost
+     nothing. The same page was two different photographs depending on the
+     phone in your hand.
+
+     min-height is the floor that stops it. 110vw is 88% of the 125vw the frame
+     wants, so no handset can crop more than a eighth, and a short screen pays
+     for it with a little scrolling instead of with the picture. min-height
+     beats max-height in the cascade, which is exactly the behaviour wanted
+     here: the floor is the promise, the ceiling is only a preference. */
   .hero-stage{position:relative;inset:auto;width:100%;aspect-ratio:4/5;
-    max-height:calc(100svh - 22rem)}
-  .hero-frame img{object-position:center top}
+    min-height:110vw;
+    max-height:calc(100svh - var(--bar) - 19.5rem)}
+  /* Which end of the picture to sacrifice, decided per frame. Two of these
+     keep their point at the FOOT, so the overflow comes off their heads: the
+     cuff signature on the striped frame, the brass feet under the swatch
+     stands. The other two are the opposite and are marked --objy:top — the
+     buttons falling into the box, and the model's FACE in the convertible,
+     which is the one thing on this page that must never be cut. */
+  .hero-frame img{object-position:center var(--objy,bottom)}
   .hero-frame.is-on img{animation:none;transform:none}
   /* the veil earned its keep when the type sat on the picture. It doesn't now */
   .hero::after{display:none}
@@ -455,7 +574,52 @@ html:not(.js) .hero-act{opacity:1}
   .hero-copy{gap:var(--s2);padding:var(--s4) var(--gut) var(--s5)}
   .hero-sub{margin-top:0}
   .hero-act{margin-top:var(--s0)}
+  /* On a phone the copy has its own ground below the picture, so the per frame
+     placement is undone: every block sits the same way and the measured column
+     widths, which are widths of a desktop photograph, do not apply. This has to
+     live here, below the rules it undoes, because a media query adds no
+     specificity and the later rule is the one that wins. */
+  /* ORDER. The five copy blocks all sit in grid-area 1/1 so they can stack on
+     top of each other on a desktop, and that explicit row 1 pushed the picture
+     into row 2 — the words ended up above the banner. On a phone the picture is
+     in flow, so it takes row 1 and the copy stacks in row 2 instead. */
+  .hero-stage{grid-row:1}
+  .hero-copy{grid-row:2;align-self:start;padding-top:var(--s2);
+    padding-inline:var(--gut);transform:none}
+
+  /* and the seam between them is dissolved rather than drawn: the foot of the
+     picture fades into the hero's own ground, so the copy reads as the same
+     surface continuing rather than a black panel stuck underneath */
+  .hero-stage{-webkit-mask-image:linear-gradient(to bottom,#000 93%,transparent 100%);
+    mask-image:linear-gradient(to bottom,#000 93%,transparent 100%)}
+
+  /* On a desktop the blocks cross fade in place and it reads as one line
+     replacing another. On a phone they are different heights, stacked in the
+     same cell and top aligned, so 230ms of overlap shows two headlines and two
+     buttons at once. Here the outgoing block leaves completely before the
+     incoming one starts: a hand off, not a dissolve. */
+  .hero-copy{transition:opacity .22s var(--settle),
+    visibility 0s linear .22s}
+  .hero-copy.is-on{transition:opacity .5s var(--settle) .24s,
+    visibility 0s}
+  .hero-copy.is-right{justify-items:start;text-align:left}
+  .hero-copy.is-right .hero-sub,.hero-copy.is-right .hero-line{margin-left:0}
+  .hero-line,.hero-sub{max-width:none}
   .hero-ticks{bottom:clamp(1.2rem,4vw,2rem)}
+}
+
+/* A SHORT PHONE, NOT A NARROW ONE
+   An SE is 667 tall where a 14 is 844, and height is what this banner spends.
+   Even with the crop floored, the bar, the picture, the copy and the dots came
+   to 752 and the button fell below the fold. Everything here buys those 85px
+   back from the copy's own air rather than from the photograph: the picture is
+   what the reader came for, and the button is what they need to reach. */
+@media(max-width:819px) and (max-height:720px){
+  .hero-stage{min-height:104vw}
+  .hero-copy{gap:var(--s1);padding-top:var(--s0);padding-bottom:var(--s1)}
+  .hero-sub{margin-top:0}
+  .hero-act{margin-top:var(--s0)}
+  .hero-ticks{bottom:var(--s1)}
 }
 
 @media(prefers-reduced-motion:reduce){
@@ -680,7 +844,7 @@ html:not(.js) .hero-act{opacity:1}
   "email": "prashanth@iamratan.co.in",
   "areaServed": "IN",
   "currenciesAccepted": "INR",
-  "address": { "@type": "PostalAddress", "addressLocality": "Hyderabad", "addressRegion": "Telangana", "addressCountry": "IN" },
+  "address": { "@type": "PostalAddress", "streetAddress": "Linoy Lumina, Floor 1, Plot No. 233, Road No. 5, Kakatiya Hills, Guttala Begumpet, Madhapur", "addressLocality": "Hyderabad", "addressRegion": "Telangana", "postalCode": "500081", "addressCountry": "IN" },
   "sameAs": ["https://instagram.com/iamratanofficial"]
 }
 </script>
@@ -695,9 +859,11 @@ html:not(.js) .hero-act{opacity:1}
     <a href="shop.html">Shop</a>
     <a href="bespoke.html">Bespoke</a>
     <a href="house.html">About us</a>
+  </nav>
+  <div class="top-end">
     <a href="account.html" class="nav-acc">Sign in</a>
     <a href="account.html?register" class="nav-reg">Register</a>
-  </nav>
+  </div>
 </header>
 
 <main id="main">
@@ -711,24 +877,24 @@ html:not(.js) .hero-act{opacity:1}
        landscape one squeezed. -->
   <section class="hero" data-band="hero" data-ink="light" aria-label="Autumn winter 2025">
     <div class="hero-stage">
-      <figure class="hero-frame is-on">
+      <figure class="hero-frame is-on" style="--objy:top">
         <picture>
           <source media="(min-width:820px)" srcset="images/hero/conv-wide.webp">
           <img src="images/hero/conv-tall.webp" alt="A cream shirt, worn open, in a parked convertible"
             fetchpriority="high" decoding="async">
         </picture>
       </figure>
-      <figure class="hero-frame">
+      <figure class="hero-frame" style="--objy:top">
         <picture>
           <source media="(min-width:820px)" srcset="images/hero/jet-wide.webp">
-          <img src="images/hero/jet-tall.webp" alt="A white shirt at the foot of the steps, in late afternoon sun"
+          <img src="images/hero/jet-tall.webp" alt="A navy shirt folded into the house box, engraved buttons suspended above it"
             loading="lazy" decoding="async">
         </picture>
       </figure>
       <figure class="hero-frame">
         <picture>
           <source media="(min-width:820px)" srcset="images/hero/news-wide.webp">
-          <img src="images/hero/news-tall.webp" alt="A burgundy shirt, read by a window in the morning"
+          <img src="images/hero/news-tall.webp" alt="A blue striped shirt, the house signature embroidered at the cuff"
             loading="lazy" decoding="async">
         </picture>
       </figure>
@@ -740,24 +906,79 @@ html:not(.js) .hero-act{opacity:1}
            This frame replaced the navy cuff macro: its subject IS the signature
            cuff, and the garment-forward answer to "the eye goes to the model"
            still stands — the face here is cropped at the lips by design. -->
-      <figure class="hero-frame self-titled">
+      <figure class="hero-frame">
         <picture>
           <source media="(min-width:820px)" srcset="images/hero/campaign-wide.webp">
-          <img src="images/hero/campaign-tall.webp" alt="I Am Ratan, shirts that speak silence. A pale blue shirt, its signature embroidered at the cuff"
+          <img src="images/hero/campaign-tall.webp" alt="A claret shirt with cloth swatches and engraved buttons set before it"
             loading="lazy" decoding="async">
         </picture>
       </figure>
+      <!-- The only frame in the set with the shirt actually worn, which is why
+           it closes the sequence. It sits last rather than beside frame three
+           on purpose: both are the same blue stripe, and two of one cloth in a
+           row reads as a repeat rather than a range.
+
+           Its composition suits the bar better than any of the others: the left
+           third is an empty navy panel, which is exactly where the copy sits, so
+           the words land on ground rather than on cloth. -->
     </div>
 
-    <div class="hero-copy">
+    <!-- One copy block per frame, because one line of copy across four different
+         photographs makes four of them illustrations of a sentence about the
+         fifth. Each block says what its own picture is about.
+
+         The side each block sits on is measured, not chosen: edge energy across
+         the thirds of every frame says the quiet space is on the RIGHT in frame
+         one and on the LEFT in the other four, so the words go where the
+         photograph is empty and the garment is never covered.
+
+         These words are ours. The copy document supplies no home page, which is
+         recorded in PENDING-FROM-CLIENT.md. Every claim is one the site already
+         makes elsewhere: the engraved button, the tone on tone signature and the
+         thirty measurements are all on the product and bespoke pages. -->
+
+    <div class="hero-copy is-right is-on" data-copy="0" style="--veil:19 17 16;--copyx:12%;--copyw:26vw">
       <p class="hero-kicker"><span>Autumn winter 2025</span></p>
       <h1 class="hero-line">
         <span class="ln"><span>Shirts that</span></span>
         <span class="ln"><span>speak silence.</span></span>
       </h1>
-      <p class="hero-sub"><span><span data-cloths>Twenty-seven</span> cloths, cut in five sizes, finished by
-        hands that have made luxury for twenty years.</span></p>
+      <p class="hero-sub"><span><span data-cloths>Twenty-seven</span> cloths, cut in five sizes,
+        finished by hand.</span></p>
       <p class="hero-act"><a class="cta" href="shop.html">See the range</a></p>
+    </div>
+
+    <div class="hero-copy" data-copy="1" aria-hidden="true" style="--veil:10 15 26;--copyx:9%;--copyw:46vw">
+      <p class="hero-kicker"><span>The house box</span></p>
+      <h1 class="hero-line">
+        <span class="ln"><span>It arrives with</span></span>
+        <span class="ln"><span>our name on it.</span></span>
+      </h1>
+      <p class="hero-sub"><span>Every button engraved around its rim, every box
+        packed by the house that made the shirt.</span></p>
+      <p class="hero-act"><a class="cta" href="house.html">The house</a></p>
+    </div>
+
+    <div class="hero-copy" data-copy="2" aria-hidden="true" style="--veil:1 17 33;--copyx:9%;--copyy:-18%;--copyw:36vw">
+      <p class="hero-kicker"><span>The signature</span></p>
+      <h1 class="hero-line">
+        <span class="ln"><span>Embroidered</span></span>
+        <span class="ln"><span>tone on tone.</span></span>
+      </h1>
+      <p class="hero-sub"><span>At the cuff, in its own colour, where only the
+        person wearing it will ever look.</span></p>
+      <p class="hero-act"><a class="cta" href="shop.html">See the range</a></p>
+    </div>
+
+    <div class="hero-copy" data-copy="3" aria-hidden="true" style="--veil:37 6 8;--copyx:9%;--copyy:-5%;--copyw:30vw">
+      <p class="hero-kicker"><span>The cloth</span></p>
+      <h1 class="hero-line">
+        <span class="ln"><span>By weight,</span></span>
+        <span class="ln"><span>not by eye.</span></span>
+      </h1>
+      <p class="hero-sub"><span>Weave, weight and drape are settled long before
+        a single shirt is cut.</span></p>
+      <p class="hero-act"><a class="cta" href="shop.html">See the cloths</a></p>
     </div>
 
     <div class="hero-ticks" role="tablist" aria-label="Change the frame">
@@ -843,19 +1064,19 @@ html:not(.js) .hero-act{opacity:1}
          index instead, and two of them named pieces that no longer exist. -->
     <ul class="jrn-rail rise d1" role="list">
       <li><a class="jc" href="journal-twenty-years.html">
-        <span class="jc-shot"><img src="images/journal/lobby.webp"
-          alt="An olive shirt, photographed in a lobby" loading="lazy" decoding="async"></span>
+        <span class="jc-shot"><img src="images/journal/reclaim-card.webp"
+          alt="The house box in navy, RECLAIM foiled across the lid and the I Am Ratan signature beneath" loading="lazy" decoding="async"></span>
         <span class="jc-kick">On the house</span>
         <span class="jc-name">Twenty years, no name on the box</span>
       </a></li>
       <li><a class="jc" href="journal-a-shirt-should-disappear.html">
-        <span class="jc-shot"><img src="images/journal/road.webp"
-          alt="A stone shirt on the road, sleeves turned back" loading="lazy" decoding="async"></span>
+        <span class="jc-shot"><img src="images/journal/disappear-card.webp"
+          alt="A man seated in a leather chair in a plain grey shirt, the shirt asking for no attention" loading="lazy" decoding="async"></span>
         <span class="jc-kick">On wearing it</span>
         <span class="jc-name">A shirt should disappear</span>
       </a></li>
       <li><a class="jc" href="journal-what-a-button-is-for.html">
-        <span class="jc-shot"><img src="images/journal/button.jpg"
+        <span class="jc-shot"><img src="images/journal/button.webp"
           alt="A button with I AM RATAN engraved around the rim" loading="lazy" decoding="async"></span>
         <span class="jc-kick">On detail</span>
         <span class="jc-name">What a button is for</span>
@@ -920,7 +1141,10 @@ html:not(.js) .hero-act{opacity:1}
         <p class="label" style="color:var(--muted);margin-bottom:var(--s2)">Visit</p>
         <ul>
           <li>Artisan Apparels</li>
-          <li>Hyderabad, India</li>
+          <li>Linoy Lumina, Floor 1</li>
+          <li>Plot No. 233, Road No. 5</li>
+          <li>Kakatiya Hills, Guttala Begumpet</li>
+          <li>Madhapur, Hyderabad 500081</li>
           <li><a href="https://iamratan.co.in" rel="noopener">iamratan.co.in</a></li>
         </ul>
       </div>
@@ -933,10 +1157,10 @@ html:not(.js) .hero-act{opacity:1}
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786988400"></script>
-<script src="assets/house.js?v=1786988400"></script>
-<script src="assets/catalogue.js?v=1786988400"></script>
-<script src="assets/site.js?v=1786988400"></script>
+<script src="assets/store.js?v=1787841087"></script>
+<script src="assets/house.js?v=1787841087"></script>
+<script src="assets/catalogue.js?v=1787841087"></script>
+<script src="assets/site.js?v=1787841087"></script>
 <script>
 (function(){
   'use strict';
@@ -1069,8 +1293,8 @@ html:not(.js) .hero-act{opacity:1}
   document.getElementById('year').textContent=new Date().getFullYear();
 })();
 </script>
-<script src="assets/mark.js?v=1786988400"></script>
-<script src="assets/track.js?v=1786988400"></script>
+<script src="assets/mark.js?v=1787841087"></script>
+<script src="assets/track.js?v=1787841087"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -1081,6 +1305,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1786988400"></script>
+<script src="assets/nav.js?v=1787841087"></script>
 </body>
 </html>

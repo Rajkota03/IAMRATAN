@@ -78,13 +78,13 @@ with the e-commerce rules can carry penalties and, at the extreme, imprisonment.
 
 | | Item | Notes |
 |---|---|---|
-| 🔒 | 3.1 Razorpay account + KYC | **Client's own name and business.** Not yours. |
+| ✅ | 3.1 Razorpay account + KYC | The client has the account. Keys still to be entered in Vercel. |
 | ✅ | 3.2 Checkout — guest by default | No forced sign-in. Forced accounts are the #2 cause of abandonment (26%). |
-| ⬜ | 3.3 UPI, cards, netbanking | UPI first — it is how India pays |
+| ⏳ | 3.3 UPI, cards, netbanking | Gateway built and deployed (`/api/pay/`). Dormant until the six env vars are set. UPI, cards and netbanking all come with Razorpay Standard Checkout. |
 | ⬜ | 3.4 COD — decide yes or no | High return rates. The client's call. |
 | ⬜ | 3.5 GST invoice generated per order | Legally required, emailed automatically |
 | ⬜ | 3.6 Order confirmation — email + WhatsApp | WhatsApp matters more here |
-| ⬜ | 3.7 Failed-payment recovery | Payment drops happen; don't lose the order |
+| ✅ | 3.7 Failed-payment recovery | Payment drops happen; don't lose the order |
 | ⬜ | 3.8 Test with a real ₹1 transaction | End to end, then refund it |
 
 ---
@@ -154,8 +154,8 @@ sending email or SMS is not, and is not pretended to be anywhere on the screen.
 
 | | Item | Notes |
 |---|---|---|
-| 🔒 | 6.1 Decide the final domain | `iamratan.co.in`? Blocks 6.2–6.5. |
-| ⬜ | 6.2 Canonical tags | Must point at the final domain |
+| ✅ | 6.1 Decide the final domain | `iamratan.co.in`? Blocks 6.2–6.5. |
+| ✅ | 6.2 Canonical tags | Must point at the final domain |
 | ⬜ | 6.3 sitemap.xml + robots.txt | |
 | ✅ | 6.4 Product structured data | Product JSON-LD per cloth (name, price, INR, availability, photographs) restated once the database answers, so the price Google reads is the price charged. ClothingStore schema on the home page. **No aggregateRating** — there are no reviews, and inventing one is what earns a manual penalty. |
 | ⬜ | 6.5 Google Search Console | |
@@ -186,10 +186,10 @@ sending email or SMS is not, and is not pretended to be anywhere on the screen.
 | | Item |
 |---|---|
 | ⬜ | 8.1 Final content pass — no `[brackets]`, no "For the house" notes |
-| ⬜ | 8.2 SSL on the real domain |
+| ✅ | 8.2 SSL on the real domain |
 | ⬜ | 8.3 Email working on the domain |
 | ⬜ | 8.4 One real order, start to finish, by someone who didn't build it |
-| ⬜ | 8.5 Handover sheet — every account, who owns it, what it costs, when it renews |
+| ✅ | 8.5 Handover sheet — every account, who owns it, what it costs, when it renews |
 | ⬜ | 8.6 Supabase project transferred to the client's org |
 | ⬜ | 8.7 Rollback plan written down |
 

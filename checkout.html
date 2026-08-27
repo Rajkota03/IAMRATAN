@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1786988400">
+<link rel="stylesheet" href="assets/iar-house.css?v=1787841087">
 <style>
 /* ---------- CHECKOUT ----------
    Guest by default, and there is no account to make. Forced sign-in is the
@@ -106,9 +106,11 @@
     <a href="shop.html">Shop</a>
     <a href="bespoke.html">Bespoke</a>
     <a href="house.html">About us</a>
+  </nav>
+  <div class="top-end">
     <a href="account.html" class="nav-acc">Sign in</a>
     <a href="account.html?register" class="nav-reg">Register</a>
-  </nav>
+  </div>
 </header>
 
 <main id="main">
@@ -130,14 +132,14 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1786988400"></script>
-<script src="assets/house.js?v=1786988400"></script>
-<script src="assets/catalogue.js?v=1786988400"></script>
-<script src="assets/site.js?v=1786988400"></script>
-<script src="assets/shop.js?v=1786988400"></script>
-<script src="assets/iar-house.js?v=1786988400"></script>
-<script src="assets/mark.js?v=1786988400"></script>
-<script src="assets/track.js?v=1786988400"></script>
+<script src="assets/store.js?v=1787841087"></script>
+<script src="assets/house.js?v=1787841087"></script>
+<script src="assets/catalogue.js?v=1787841087"></script>
+<script src="assets/site.js?v=1787841087"></script>
+<script src="assets/shop.js?v=1787841087"></script>
+<script src="assets/iar-house.js?v=1787841087"></script>
+<script src="assets/mark.js?v=1787841087"></script>
+<script src="assets/track.js?v=1787841087"></script>
 <script>
 (function () {
   'use strict';
@@ -164,7 +166,13 @@
       body: opts.body ? JSON.stringify(opts.body) : undefined
     }).then(function (r) {
       if (!r.ok) throw new Error(r.status);
-      return r.status === 204 ? null : r.json();
+      /* Read the body as text first, and only parse it if there is any.
+         `Prefer: return=minimal` makes PostgREST answer 201 with an EMPTY body,
+         and .json() on an empty body throws — which rejected the whole chain
+         and sent every order to WhatsApp before it could reach the gateway.
+         Checking for 204 alone was not enough, because 201 is what an insert
+         actually returns. */
+      return r.text().then(function (t) { return t ? JSON.parse(t) : null; });
     });
   }
 
@@ -402,7 +410,57 @@
     trust.innerHTML = 'The house confirms every order before it is made. ' +
       'Card and UPI payment is being connected. Until then your order reaches ' +
       'the house directly and payment is arranged with you.';
+
+    /* The form is rebuilt whenever the bag changes, so anything typed has to be
+       put back each time, not only on first load. */
+    restoreFields();
   }
+
+  /* -------------------------------------------- the details, remembered --
+     A customer who types their address and then leaves the page — handed to
+     WhatsApp, sent to the payment window, or simply pressing back — should not
+     come back to an empty form and have to type it all again. Their own
+     details, in their own browser, never sent anywhere until they place the
+     order. Cleared the moment an order is placed.
+
+     This was found the hard way: the WhatsApp fallback navigates away, and
+     coming back looked exactly like the form had crashed. */
+  var REMEMBER = 'iar-checkout-details';
+
+  function rememberFields() {
+    try {
+      var out = {};
+      FIELDS().forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && el.value) out[id] = el.value;
+      });
+      localStorage.setItem(REMEMBER, JSON.stringify(out));
+    } catch (e) { /* private browsing, a full disk — never worth breaking for */ }
+  }
+
+  function restoreFields() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(REMEMBER) || '{}');
+      FIELDS().forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && !el.value && saved[id]) el.value = saved[id];
+      });
+    } catch (e) {}
+  }
+
+  function forgetFields() {
+    try { localStorage.removeItem(REMEMBER); } catch (e) {}
+  }
+
+  function FIELDS() {
+    return RULES.map(function (r) { return r[0]; });
+  }
+
+  /* One listener on the form rather than one per field, so it keeps working
+     when the form is redrawn — which it is, every time the bag changes. */
+  document.addEventListener('input', function (e) {
+    if (e.target && e.target.closest && e.target.closest('#payForm')) rememberFields();
+  });
 
   var RULES = [
     ['fn', function (v) { return v.trim().length >= 2; }, 'Please give your first name.'],
@@ -508,9 +566,9 @@
       location.href = 'https://wa.me/918282826264?text=' + encodeURIComponent(msg);
     };
 
-    /* Record it, then hand it to WhatsApp. The order must never be lost because
-       the database was asleep, so a failure here still sends the customer on —
-       the house gets the order either way, and only the tidy copy is missing. */
+    /* Record it, then try to take the money. The order must never be lost
+       because something downstream was asleep, so every failure below still
+       ends at WhatsApp — the house gets the order either way. */
     var btn = document.getElementById('payBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="wait">Placing the order</span>';
@@ -523,8 +581,139 @@
             { method: 'PATCH', body: { recovered: ref } }).catch(function () {});
         }
       })
-      .then(go, go);
+      .then(function () { return pay(ref, go); },
+            function (err) {
+              /* The order is safe in the database or it is not; either way the
+                 customer must not be stranded. Log the reason, then hand over. */
+              console.error('[checkout] could not reach the gateway ·', err);
+              return go();
+            });
   });
+
+  /* ------------------------------------------------------ taking the money --
+     Everything here is written so the order survives it.
+
+     If the gateway is not configured yet, /api/pay/create answers 502 and this
+     hands straight to WhatsApp — which is exactly how the house worked before
+     any of this existed. That is deliberate: the code can ship long before the
+     keys do, and the day they land the same page starts taking cards with no
+     further change.
+
+     The amount is not passed in. The server reads it from the order row, so
+     nothing this page says can decide what anybody pays. */
+
+  function loadCheckout() {
+    if (window.Razorpay) return Promise.resolve(true);
+    return new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      s.onload = function () { resolve(true); };
+      s.onerror = function () { resolve(false); };   /* offline, or blocked */
+      document.head.appendChild(s);
+    });
+  }
+
+  function pay(ref, fallback) {
+    return fetch('/api/pay/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: ref })
+    })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (intent) {
+      if (!intent || !intent.ok) return fallback();      /* not wired up yet */
+      return loadCheckout().then(function (ready) {
+        if (!ready) return fallback();
+        openModal(intent, ref, fallback);
+      });
+    })
+    .catch(fallback);
+  }
+
+  function payButton() { return document.getElementById('payBtn'); }
+  function resting() {
+    var b = payButton();
+    if (b) { b.disabled = false; b.innerHTML = 'Place the order'; }
+  }
+  function working(label) {
+    var b = payButton();
+    if (b) { b.disabled = true; b.innerHTML = '<span class="wait">' + label + '</span>'; }
+  }
+
+  function openModal(intent, ref, fallback) {
+    resting();
+
+    var rzp = new window.Razorpay({
+      key: intent.key_id,
+      order_id: intent.order_id,
+      amount: intent.amount,
+      currency: intent.currency,
+      name: 'I Am Ratan',
+      description: 'Order ' + ref,
+      prefill: intent.prefill,
+      notes: { ref: ref },
+      theme: { color: '#0B0C0E' },
+      handler: function (r) {
+        /* Razorpay says it worked. Only the server may decide whether to
+           believe that, so the page does not celebrate until it answers. */
+        working('Confirming');
+        fetch('/api/pay/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ref: ref,
+            razorpay_order_id: r.razorpay_order_id,
+            razorpay_payment_id: r.razorpay_payment_id,
+            razorpay_signature: r.razorpay_signature
+          })
+        })
+        .then(function (x) { return x.json(); })
+        .then(function (out) {
+          if (out && out.ok) { paid(ref); }
+          else { fallback(); }
+        })
+        .catch(function () {
+          /* The money is taken; only our confirmation is missing. The webhook
+             settles it within seconds. Never tell them it failed. */
+          paid(ref);
+        });
+      },
+      modal: {
+        ondismiss: function () {          /* they closed it without paying */
+          resting();
+          note('The payment was not completed. Your order is saved — you can ' +
+               'pay now, or send it to us on WhatsApp instead.');
+        }
+      }
+    });
+
+    rzp.on('payment.failed', function (e) {
+      note('That payment did not go through' +
+           (e && e.error && e.error.description ? ': ' + e.error.description : '') +
+           '. Your order is saved.');
+      resting();
+    });
+
+    rzp.open();
+  }
+
+  function paid(ref) {
+    var main = document.querySelector('main') || document.body;
+    main.innerHTML =
+      '<div class="wrap" style="padding:var(--clear) 0 var(--sz);max-width:34rem">' +
+      '<p class="label muted">Thank you</p>' +
+      '<h1 class="display" style="margin-top:var(--s2)">Your order is placed.</h1>' +
+      '<p style="margin-top:var(--s4);line-height:1.75">We have your payment and ' +
+      'your order. Your reference is <strong>' + ref + '</strong> — quote it if ' +
+      'you write or call.</p>' +
+      '<p style="margin-top:var(--s3);line-height:1.75">We will be in touch as ' +
+      'soon as it is cut.</p>' +
+      '<p style="margin-top:var(--s5)"><a class="cta" href="shop.html">See the range</a></p>' +
+      '</div>';
+    if (window.SHOP && SHOP.clear) SHOP.clear();
+    forgetFields();          /* the order is placed; stop holding their address */
+    window.scrollTo(0, 0);
+  }
 
   SHOP.on(draw);
   draw();
@@ -540,6 +729,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1786988400"></script>
+<script src="assets/nav.js?v=1787841087"></script>
 </body>
 </html>

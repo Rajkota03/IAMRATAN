@@ -1,0 +1,324 @@
+/* I AM RATAN — the About page, third version. Namespaced .v3 throughout so it
+   cannot reach v1, v2 or the rest of the site.
+
+   THE IDEA
+   The story has four movements and the page changes ground under each one:
+   bone while the house is making for other people, black at the moment nobody
+   knows their name, claret when they decide to use it, bone again at the end.
+   The colour is the narration. Nothing else on the site does this, which is why
+   it belongs on the one page that is a story rather than a shop.
+
+   The two showpieces are a filmstrip that runs sideways while you scroll down,
+   and an ethos held on screen for three screens. Both are driven from scroll
+   POSITION rather than a timer, so they move exactly as fast as the reader.  */
+
+.v3{--paper:#EDE9E0;--figure:#1A1C1E;
+  background:var(--paper);color:var(--figure);
+  transition:background-color 1.1s var(--settle),color 1.1s var(--settle)}
+.v3[data-act="dark"]  {--paper:#0B0C0E;--figure:#EDE9E0}
+.v3[data-act="claret"]{--paper:#4A1F27;--figure:#EDE9E0}
+/* The bar does NOT join the narration. It is the same fixed bone bar with the
+   same hairline as every other page, because it is navigation, not story: a
+   header that changes colour under you reads as a bug, and the one thing a
+   reader needs to stay put while the ground moves is the way out. Nothing here
+   overrides it any more; it simply inherits the site's own --room and --ink. */
+
+/* ---------- opening ---------- */
+.v3-open{position:relative;min-height:100svh;display:grid;align-content:center;
+  overflow:clip;background:#0B0C0E;color:#EDE9E0}
+.v3-open picture{position:absolute;inset:0;display:block}
+.v3-open picture img{width:100%;height:100%;object-fit:cover;display:block}
+.v3-open::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(8,9,11,.92) 0%,rgba(8,9,11,.72) 42%,rgba(8,9,11,.15) 78%)}
+.v3-open>.wrap{position:relative;z-index:2}
+.v3-eyebrow{font-family:var(--mono);font-size:.6875rem;letter-spacing:.24em;
+  text-transform:uppercase;opacity:.75;margin:0 0 var(--s5)}
+.v3-h1{font-weight:200;font-size:clamp(2.7rem,8vw,6.5rem);line-height:.96;
+  letter-spacing:-.04em;margin:0;max-width:14ch}
+.v3-lede{margin:var(--s5) 0 0;max-width:40ch;line-height:1.65;
+  font-size:clamp(1rem,1.35vw,1.15rem);color:rgba(237,233,224,.78)}
+
+/* ---------- the filmstrip that runs sideways ----------
+   The height used to be a flat 320svh, which meant three and a bit screens of
+   scrolling bought 368px of sideways travel: the page appeared to stop dead
+   while the reader kept scrolling.
+
+   The right height is the pinned screen plus the distance the track actually
+   has to cover, and that distance depends on how the frames resolve at this
+   width, which CSS cannot work out. So the script measures it once and writes
+   --travel. Once, on load and on resize, not per frame: the motion itself is
+   the stylesheet's job below. The vw fallback is only for no-JS. */
+.v3-strip{position:relative;height:calc(100svh + var(--travel,55vw))}
+/* minmax(0,1fr), not the default auto column. The track is a flex row four
+   frames wide, about 1037px, and an auto column sizes itself to its widest
+   item: the column became 1037 and the head, at width:100%, became 1037 with
+   it, so on a 375px screen the sentences ran off the side and were clipped by
+   the overflow rather than wrapping. The column is the pane's width now and
+   the track overflows it on purpose, which is the whole idea. */
+.v3-strip-in{position:sticky;top:0;height:100svh;overflow:clip;
+  display:grid;grid-template-columns:minmax(0,1fr);
+  grid-template-rows:auto 1fr;align-content:center;align-items:center}
+/* in flow above the track now, not floated over it, so the words and the
+   pictures share the pinned screen instead of taking turns on the page */
+/* width:100% for the same reason .v3-stage-copy needs it: this .wrap is a GRID
+   ITEM, and an auto inline margin that fills the line in normal flow shrinks a
+   grid item to its content instead. Without it the head took the width of the
+   paragraph's own max-width, 736px, and a 375px screen clipped the sentences
+   rather than wrapping them. */
+.v3-strip-head{position:relative;z-index:3;width:100%;padding-top:var(--clear)}
+.v3-strip-say{max-width:min(46rem,100%);margin:var(--s4) 0 0;line-height:1.75;
+  font-size:clamp(1.0625rem,1.15vw,1.1875rem)}
+/* Each sentence waits at a low tone and comes up as the strip reaches its
+   share of the travel, on the SAME timeline that moves the track, so the words
+   and the pictures cannot drift out of step with one another.
+
+   Full strength here, not dimmed. The waiting tone belongs to the animation's
+   own first keyframe, which its `both` fill applies before the range begins.
+   Written as a base state instead, a browser without scroll timelines would
+   never run the animation and would simply show the client's paragraph at a
+   fifth of its opacity, for good. */
+.v3-strip-say span{opacity:1}
+/* width:max-content so the BOX is as wide as the four frames, not as wide as
+   the column it sits in. The slide keyframe travels by calc(100vw - 100%), and
+   100% is this element's own width: once the column was pinned to the pane the
+   box became the pane's width too, and the strip moved fifteen pixels forward
+   instead of three hundred and fifty back. */
+.v3-track{display:flex;width:max-content;gap:var(--s4);
+  padding-inline:var(--gut);will-change:transform}
+.v3-frame{flex:0 0 auto;width:min(62vw,26rem)}
+.v3-frame figure{margin:0;aspect-ratio:3/4;overflow:hidden;background:#0f1113}
+.v3-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.v3-frame figcaption{margin:var(--s3) 0 0;font-family:var(--mono);
+  font-size:.625rem;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+
+/* ---------- the black beat ---------- */
+.v3-beat{min-height:76svh;display:grid;place-content:center;text-align:center;
+  padding:var(--sz) 0}
+.v3-beat p{margin:0;max-width:18ch;font-weight:200;
+  font-size:clamp(2.1rem,6vw,4.4rem);line-height:1.04;letter-spacing:-.035em}
+
+/* ---------- the box ---------- */
+.v3-plate{position:relative;min-height:92svh;overflow:clip;background:#0B0C0E}
+.v3-plate picture{position:absolute;inset:0;display:block}
+.v3-plate img{width:100%;height:100%;object-fit:cover;display:block}
+.v3-plate figcaption{position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:var(--gut);color:#EDE9E0;
+  background:linear-gradient(to top,rgba(8,9,11,.9),rgba(8,9,11,0))}
+.v3-plate figcaption p{margin:0;font-size:clamp(1.05rem,1.5vw,1.3rem);max-width:30ch}
+
+/* ---------- the founders ---------- */
+.v3-two{padding:var(--sz) 0}
+.v3-two>.wrap{display:grid;gap:var(--sy) var(--s6);align-items:center}
+@media(min-width:900px){.v3-two>.wrap{grid-template-columns:1.05fr .95fr}}
+.v3-two figure{margin:0;position:relative;aspect-ratio:16/10;overflow:hidden;
+  background:#111}
+.v3-two img{width:100%;height:100%;object-fit:cover;display:block}
+.v3-two h2{font-weight:250;font-size:clamp(1.7rem,3.4vw,2.7rem);line-height:1.08;
+  letter-spacing:-.03em;margin:0 0 var(--s4);max-width:18ch}
+.v3-two p{margin:0 0 1.1em;max-width:42ch;line-height:1.75}
+.v3-names{font-family:var(--mono);font-size:.625rem;letter-spacing:.2em;
+  text-transform:uppercase;opacity:.7;margin-top:var(--s4)}
+
+/* ---------- the ethos, held ----------
+   This was a photograph at 42% over a bone page: a white wash that made every
+   picture look milky and left dark type sitting on it at low contrast. It is a
+   dark full bleed panel now, the same move the box plate already makes, so the
+   photograph runs at full strength and the words are light on top of it.
+
+   The type matches the banner: Cormorant Garamond for the word, mono for the
+   numeral. One display voice across the site rather than two. */
+.v3-stage{position:relative}
+.v3-stage-in{position:sticky;top:0;min-height:100svh;overflow:clip;
+  display:grid;align-content:center;background:#0B0C0E;color:#EDE9E0}
+/* VERTICAL CARRY
+   Not a cross fade. The beat that is leaving travels up and out while the one
+   arriving comes up from below, both at the same time and the same speed, so
+   the three read as one strip being wound past rather than three pictures
+   swapping places.
+
+   Three states, never a direction flag: anything before the current beat is
+   parked above, anything after it is parked below, and the browser animates
+   whatever changed. Scroll back up and the motion reverses itself for free. */
+.v3-stage-shot{position:absolute;inset:0;overflow:clip}
+.v3-stage-shot img{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;transform:translateY(100%);will-change:transform;
+  transition:transform 1.05s var(--swing)}
+.v3-stage-shot img.on{transform:none}
+.v3-stage-shot img.above{transform:translateY(-100%)}
+
+/* the shade is directional, on the side the words are, so the far side of the
+   picture keeps its light. A flat overlay is what made the old one grey. */
+.v3-stage-in::after{content:'';position:absolute;inset:0;z-index:1;
+  pointer-events:none;
+  background:linear-gradient(100deg,rgba(8,9,11,.90) 0%,rgba(8,9,11,.78) 34%,
+    rgba(8,9,11,.44) 60%,rgba(8,9,11,.18) 82%,rgba(8,9,11,.10) 100%)}
+
+/* width:100% because this .wrap is a GRID ITEM. An auto inline margin fills the
+   line in normal flow, but on a grid item it shrinks the box to its content and
+   centres it instead: the copy was floating mid screen in a 533px column while
+   every other block on the page started at the gutter. */
+.v3-stage-copy{position:relative;z-index:2;display:grid;width:100%}
+.v3-stage-copy>div{grid-area:1/1}
+
+/* The words are carried the same way, each line in its own window so it is
+   clipped the moment it leaves. The stagger belongs to the LINE, not to the
+   state, so the line that is leaving and the line that is arriving are always
+   on the same beat as each other: numeral first, word, then the note. */
+.v3-num,.v3-word,.v3-note{overflow:hidden}
+.v3-num i,.v3-word i,.v3-note i{display:block;font-style:normal;
+  transform:translateY(110%);transition:transform .95s var(--swing)}
+.v3-num i {transition-delay:0s}
+.v3-word i{transition-delay:.07s}
+.v3-note i{transition-delay:.14s}
+.v3-stage-copy>div.on    i{transform:none}
+.v3-stage-copy>div.above i{transform:translateY(-110%)}
+
+.v3-num{font-family:var(--mono);font-size:.6875rem;letter-spacing:.3em;
+  color:rgba(237,233,224,.62);margin:0 0 var(--s4)}
+.v3-word{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;
+  font-size:clamp(3.2rem,10vw,7.5rem);line-height:1;letter-spacing:-.01em;
+  margin:0}
+.v3-note{margin:var(--s4) 0 0;max-width:34ch;line-height:1.7;
+  font-size:clamp(1.0625rem,1.25vw,1.2rem);color:rgba(237,233,224,.82)}
+
+/* three beats, and which one you are on */
+.v3-rail{position:absolute;z-index:3;left:0;right:0;bottom:var(--sy);
+  padding-inline:max(var(--gut),(100% - var(--max)) / 2);
+  display:flex;gap:var(--s2)}
+.v3-rail i{display:block;width:var(--s6);height:2px;
+  background:rgba(237,233,224,.24);overflow:hidden}
+.v3-rail i::after{content:'';display:block;height:100%;width:100%;
+  background:#EDE9E0;transform:scaleX(0);transform-origin:left;
+  transition:transform .7s var(--settle)}
+.v3-rail i.on::after{transform:none}
+
+/* One screen of scrolling per beat. That distance is what makes a single swipe
+   advance a single word, and it is enough on its own.
+
+   There was a snap here as well, and it had to come out. Measured against a
+   steady scroll it left the page fighting the reader on 60 frames and pulling
+   the position as much as 269px away from where they had put it, which is
+   exactly what "not smooth" feels like. Frame timing was identical with it and
+   without it, so this was never about speed. The beats are discrete anyway:
+   whatever the reader stops on, a whole word is showing.
+
+   The height is stated on the section rather than built out of markers, because
+   the pinned pane is sticky and sticky elements still take their own space:
+   three in-flow screens plus the pane made this four screens tall and the third
+   beat never came up at all. */
+.v3-stage{height:300svh}
+
+/* ---------- closing ---------- */
+.v3-end{padding:var(--sz) 0}
+.v3-claim{font-weight:200;font-size:clamp(2.1rem,6vw,4.6rem);line-height:1.02;
+  letter-spacing:-.04em;margin:0;max-width:16ch}
+.v3-claim span{display:block;overflow:hidden}
+.v3-claim i{display:block;font-style:normal}
+
+/* nothing is hidden unless the script that reveals it is running */
+[data-reveal] .v3-claim i{transform:translateY(105%);
+  transition:transform .95s var(--swing)}
+[data-reveal] .v3-claim.in i{transform:none}
+[data-reveal] .v3-claim.in span:nth-child(2) i{transition-delay:.12s}
+[data-reveal] .v3-claim.in span:nth-child(3) i{transition-delay:.24s}
+
+@supports (animation-timeline: view()) {
+  @media(prefers-reduced-motion:no-preference){
+    /* THE FILMSTRIP, OFF THE MAIN THREAD
+       The script reads getBoundingClientRect on every scroll and writes a
+       transform, which is always one frame behind the finger. Handed to a view
+       timeline instead, the browser runs it on the compositor and it tracks the
+       scroll exactly. The distance is expressible without measuring anything:
+       -100% is the track's own width and 100vw is the window, so 100vw - 100%
+       lands the last frame flush with the right edge, which is precisely what
+       the script was computing. about.js stands down when this is supported. */
+    .v3-strip{view-timeline:--strip block}
+    .v3-track{animation:v3slide linear both;
+      animation-timeline:--strip;animation-range:contain}
+    @keyframes v3slide{to{transform:translate3d(calc(100vw - 100%),0,0)}}
+
+    .v3-strip-say span{animation:v3say linear both;animation-timeline:--strip}
+    .v3-strip-say span:nth-child(1){animation-range:contain 0%  contain 24%}
+    .v3-strip-say span:nth-child(2){animation-range:contain 24% contain 54%}
+    .v3-strip-say span:nth-child(3){animation-range:contain 54% contain 84%}
+    @keyframes v3say{from{opacity:.2}to{opacity:1}}
+
+    /* clip-path on a full bleed image repaints the whole plate every frame.
+       A scale settle is the same gesture and stays on the compositor. */
+    .v3-plate img{animation:v3open linear both;
+      animation-timeline:view();animation-range:entry 0% cover 42%}
+    @keyframes v3open{from{transform:scale(1.12)}to{transform:scale(1)}}
+    .v3-open picture img{animation:v3pull linear both;
+      animation-timeline:view();animation-range:cover}
+    @keyframes v3pull{from{transform:scale(1.14)}to{transform:scale(1)}}
+    .v3-two img{animation:v3drift linear both;
+      animation-timeline:view();animation-range:cover}
+    @keyframes v3drift{from{transform:scale(1.08) translateY(-2%)}
+                       to{transform:scale(1.08) translateY(2%)}}
+
+    /* EVERY BLOCK OF WORDS ARRIVES WHEN THE READER DOES
+       The pictures were revealing on scroll and the closing claim was, but the
+       reading blocks and the black beat were simply present: fully set before
+       the reader had left the section above them. They are on a view timeline
+       now, so each one is still on its way in while the section above is what
+       is being read, and lands as the reader gets to it.
+
+       No stagger is written here, and none is needed: these blocks are stacked
+       down the page, so each reaches its own entry at its own scroll position.
+
+       A view timeline rather than a class and a script, for the same reason the
+       filmstrip is: it runs on the compositor and cannot cost the page a frame.
+       Where it is unsupported the words are simply there, which is the correct
+       thing to fall back to. */
+    .v3-beat p,
+    .v3-read .v3-col > *,
+    .v3-end .v3-col > *,
+    .v3-end .v3-eyebrow,
+    .v3-two .wrap > div > *{
+      animation:v3rise linear both;animation-timeline:view();
+      animation-range:entry 6% cover 26%}
+    @keyframes v3rise{from{opacity:0;transform:translateY(22px)}
+                      to{opacity:1;transform:none}}
+    /* the one display line on a black ground carries a little further */
+    .v3-beat p{animation-range:entry 2% cover 32%}
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .v3,.v3 *{transition:none!important}
+  /* no travel: the beat that is up is simply the one that is there */
+  .v3-stage-shot img{transform:none;opacity:0}
+  .v3-stage-shot img.on{opacity:1}
+  .v3-num i,.v3-word i,.v3-note i{transform:none}
+  .v3-stage-copy>div{visibility:hidden}
+  .v3-stage-copy>div.on{visibility:visible}
+  [data-reveal] .v3-claim i{transform:none}
+}
+/* no script: show the first of each rather than an empty screen */
+html:not([data-reveal]) .v3-stage-shot img:first-child{transform:none;opacity:1}
+html:not([data-reveal]) .v3-stage-copy>div:first-child i{transform:none}
+
+/* ---------- reading passages ----------
+   The client's copy is long and every word of it stays on the page. These are
+   the plain reading blocks between the set pieces: one column, held near 62
+   characters, so a paragraph is never a wall. */
+.v3-read{padding:var(--sz) 0}
+/* three reading blocks in a row were each paying a full --sz top and bottom, so
+   the gap between two paragraphs of the same argument was twice the gap inside
+   a set piece. Consecutive blocks share one. */
+.v3-read + .v3-read{padding-top:0}
+.v3-col{max-width:34rem;margin-inline:auto}
+.v3-col p{margin:0 0 1.15em;line-height:1.75;
+  font-size:clamp(1.0625rem,1.15vw,1.1875rem)}
+.v3-col p:last-child{margin-bottom:0}
+/* the question the whole house turns on, set as the quotation it is */
+.v3-quote{font-weight:250;font-size:clamp(1.35rem,2.6vw,2rem);line-height:1.25;
+  letter-spacing:-.02em;margin:var(--s5) 0;padding-left:var(--s4);
+  border-left:1px solid currentColor;max-width:24ch}
+.v3-lift{font-weight:300;font-size:clamp(1.15rem,1.8vw,1.4rem);
+  margin:var(--s5) 0 var(--s5)}
+.v3-signature{font-weight:250;font-size:clamp(1.6rem,3.2vw,2.4rem);
+  letter-spacing:-.03em;margin:var(--s5) 0 0}
+.v3-ethos-h{font-weight:250;font-size:clamp(1.5rem,3vw,2.3rem);line-height:1.2;
+  letter-spacing:-.025em;margin:var(--s3) 0 0;max-width:26ch}
+.v3-two p{margin:0 0 1.1em;max-width:42ch;line-height:1.75}

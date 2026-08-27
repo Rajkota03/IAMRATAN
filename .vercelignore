@@ -42,3 +42,46 @@ cuff-images
 # The hero source PNGs (9 MB). The served crops live in images/hero/.
 new-hero
 images/hero/_bak
+
+# The superseded About pages. house.html is now version three, and its assets
+# ship under neutral names (assets/about.*, images/about) because they are the
+# About page's assets now, not an experiment's. What is left here is the three
+# versions it replaced, kept for reference and deployed to the preview project
+# on purpose, but never to the client's domain. The preview build strips these
+# lines back out.
+house-1.html
+house-2.html
+house-3.html
+assets/house2.*
+images/house2
+
+# the banner source PNGs, 6 MB. The served crops live in images/hero/.
+new-banners
+images/hero/_bak2
+
+# Design studies, never linked from the site. Checked before excluding: no page
+# a visitor can reach links to any of these, they only link to each other. They
+# were being deployed all the same, which put fifteen half-finished layouts and
+# a megabyte of their images one guessed URL away from the client.
+directions.html
+loom.html
+mockup.html
+preview.html
+range.html
+shop-a.html
+shop-b.html
+shop-c.html
+shop-grid.html
+shop-index.html
+shop-wall.html
+variant-*.html
+images/collar-0*.jpg
+images/hero-loop-poster.jpg
+images/cuff-monogram.jpg
+
+# the journal photographs that were replaced, and the jpg twins of ones that
+# have long been served as webp
+images/journal/*.jpg
+images/journal/lobby.webp
+images/journal/night.webp
+images/journal/road.webp

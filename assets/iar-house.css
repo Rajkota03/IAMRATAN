@@ -314,7 +314,19 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
    23px targets. The drawer now covers every touch-sized viewport and hands the
    row back only where there is a pointer to use it. */
 @media(max-width:1024px){
-  [data-nav] .top{grid-template-columns:1fr auto;gap:var(--s3)}
+  /* Below 1025px the bar held two columns but three in-flow items: the mark,
+     the account block and the menu button. The nav is the drawer and is fixed,
+     so it is not one of them. The button wrapped to a second row and the bar
+     stood 133px tall instead of 77.
+
+     A counted number of columns is what broke, so the fix does not count: the
+     mark takes the one 1fr track and everything after it makes its own column
+     on the same row, however many end up there. The account block is emptied
+     into the drawer at this width and is removed rather than left holding a
+     column and a gap open. */
+  [data-nav] .top{grid-template-columns:1fr;grid-auto-flow:column;
+    grid-auto-columns:max-content;gap:var(--s3)}
+  [data-nav] .top-end:not(:has(*)){display:none}
 
   .navbtn{display:inline-flex;flex-direction:column;justify-content:center;
     /* the gap between the three bars is the drawn glyph's own geometry, not
@@ -405,6 +417,12 @@ a.shot:hover img{transform:scale(1.03)}
 .plate{position:relative;min-height:62svh;display:grid;align-items:end;
   overflow:hidden;isolation:isolate;background:#191C1F}
 .plate--tall{min-height:100svh}
+/* <picture> counts as the child, not the <img> inside it, so a plate that uses
+   art direction lost its absolute fill and collapsed. The picture is made the
+   positioned box and the image fills it. */
+.plate>picture{position:absolute;inset:0;display:block}
+.plate>picture>img{width:100%;height:100%;object-fit:cover;
+  object-position:var(--pos,center)}
 .plate>img,.plate>video{position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;z-index:0}
 /* Two scrims, not one. A bottom-only gradient assumes a dark photograph; the
@@ -468,11 +486,23 @@ a.shot:hover img{transform:scale(1.03)}
    place on the site, and lining it up with Home and Shop invites a visitor to
    read it as a fifth section. Set in the mono like the rest of the bar so it
    stays quiet until wanted. */
-.nav-acc{margin-left:var(--s3);padding-left:var(--s3);
-  border-left:1px solid var(--hair);color:var(--muted)}
-.nav-reg{margin-left:var(--s3);color:var(--muted)}
+/* The right-hand group: the cart and the two account actions, together at the
+   end of the bar. They are actions, not places on the site, which is why they
+   sit apart from the four navigation words rather than among them. The hairline
+   is the divide between "where you can go" and "what you can do". */
+.top-end{display:flex;align-items:center;gap:var(--s3);justify-self:end}
+.top-end .bagbtn{margin:0}
+.nav-acc{padding-left:var(--s3);border-left:1px solid var(--hair);
+  color:var(--muted);white-space:nowrap}
+.nav-reg{color:var(--muted);white-space:nowrap}
 .nav-acc:hover,.nav-reg:hover{color:var(--ink)}
 @media(max-width:1024px){
+  /* On a phone the bar has room for the mark, the cart and the menu button and
+     nothing else, so the two account actions ride into the drawer instead.
+     nav.js moves the actual elements rather than copying them, so there is
+     never a second Sign in hidden off screen for a screen reader to find. */
+  .top-end{gap:var(--s2)}
+
   /* In the panel it stops being a link among links and becomes the action it
      is: a visitor who wants an account should not have to notice a word set in
      the same weight as Home. Drawn, not merely listed. */
@@ -505,6 +535,48 @@ a.shot:hover img{transform:scale(1.03)}
   [data-nav] .nav{display:flex;flex-direction:column}
 }
 @media(min-width:1025px){.nav-tail{display:none}}
+
+/* ---------- motion for a story page ----------
+   The About page was one weight of movement: everything faded up by 14px and
+   that was the whole vocabulary, so a page carrying a twenty-year story read
+   as flat as a price list.
+
+   Three additions, all slow. This house does not bounce. Nothing here moves
+   more than it must, and every one of them is a still frame under
+   prefers-reduced-motion rather than a faster version of itself. */
+
+/* A photograph settles rather than appears: it comes in fractionally large and
+   eases back to true, which reads as a camera coming to rest. 1.06, over 1.6s,
+   is at the edge of noticing, which is the point. */
+.settle img{transition:transform 1.6s var(--settle),opacity .9s var(--settle)}
+[data-reveal] .settle img{transform:scale(1.06);opacity:0}
+[data-reveal] .settle.in img{transform:none;opacity:1}
+
+/* Type that arrives a line at a time, so a claim lands as two beats rather
+   than one block. The mask is a clip, not an opacity fade: the line is either
+   read or it is not there, which is how a printed page behaves. */
+.lines>span{display:block;overflow:hidden}
+.lines>span>i{display:block;font-style:inherit;transition:transform .9s var(--swing)}
+[data-reveal] .lines>span>i{transform:translateY(105%)}
+[data-reveal] .lines.in>span>i{transform:none}
+.lines.in>span:nth-child(2)>i{transition-delay:.14s}
+.lines.in>span:nth-child(3)>i{transition-delay:.28s}
+
+/* A rule that draws itself under a word, left to right, once its column is
+   read. Used on the ethos, where three words needed to feel counted out. */
+.draw{height:1px;background:var(--ink);transform-origin:left;
+  transition:transform .7s var(--swing)}
+[data-reveal] .draw{transform:scaleX(0)}
+[data-reveal] .draw.in,[data-reveal] .stag.in .draw{transform:scaleX(1)}
+.stag.in>*:nth-child(1) .draw{transition-delay:.05s}
+.stag.in>*:nth-child(2) .draw{transition-delay:.25s}
+.stag.in>*:nth-child(3) .draw{transition-delay:.45s}
+
+@media(prefers-reduced-motion:reduce){
+  .settle>img,.settle.in>img{transform:none;opacity:1;transition:none}
+  .lines>span>i,.lines.in>span>i{transform:none;transition:none}
+  .draw,.draw.in{transform:scaleX(1);transition:none}
+}
 
 /* ---------- waiting ----------
    The house's own button, turning. Every shirt carries I AM RATAN engraved
@@ -636,6 +708,20 @@ a.shot:hover img{transform:scale(1.03)}
 }
 .foot ul{list-style:none;margin:0;padding:0;display:grid;gap:var(--s1)}
 .foot a:hover{text-decoration:underline;text-underline-offset:5px}
+
+/* REACHABLE ON A THUMB
+   Every link down here was a 17px line of type, and the legal row was 13px.
+   A target has to be 24px to be hit reliably, and these are the links a phone
+   user reaches for: the phone number, the email, the shop.
+
+   padding-block on an INLINE box grows what the finger can hit without moving
+   the line it sits on, so the footer still looks exactly as it did. The list
+   gap is --s1, which is why --s0 is the most each list link can take: any more
+   and two stacked targets would start to overlap and the wrong one would win.
+   The legal row is a single line with nothing above or below it to collide
+   with, so it can afford the full step. */
+.foot li a{padding-block:var(--s0)}
+.colophon a{padding-block:var(--s1)}
 .colophon{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--hair);
   display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);justify-content:space-between;
   color:var(--muted)}

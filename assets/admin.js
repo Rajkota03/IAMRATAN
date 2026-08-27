@@ -39,8 +39,15 @@
       body: opts.body ? JSON.stringify(opts.body) : undefined
     }).then(function (r) {
       if (r.status === 204) return null;
-      return r.json().then(function (j) {
-        if (!r.ok) throw new Error(j.message || j.hint || ('HTTP ' + r.status));
+      /* Read as text first, and only parse if there is any. `return=minimal` on
+         an INSERT gets 201 with an EMPTY body — not 204 — and .json() on nothing
+         throws, which told the shopkeeper the save had failed for a row that had
+         in fact landed. Seven things here insert that way, new discount codes
+         among them. */
+      return r.text().then(function (t) {
+        var j = null;
+        if (t) { try { j = JSON.parse(t); } catch (e) {} }
+        if (!r.ok) throw new Error((j && (j.message || j.hint)) || ('HTTP ' + r.status));
         return j;
       });
     });

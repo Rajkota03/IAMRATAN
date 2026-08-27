@@ -182,7 +182,11 @@
     if (!h) return;
     var frames = [].slice.call(h.querySelectorAll('.hero-frame'));
     var ticks  = [].slice.call(h.querySelectorAll('.hero-ticks button'));
-    if (frames.length < 2) { h.classList.add('lit'); return; }
+    var copies = [].slice.call(h.querySelectorAll('.hero-copy'));
+    if (frames.length < 2) {
+      if (copies[0]) copies[0].classList.add('is-on');
+      h.classList.add('lit'); return;
+    }
 
     var i = 0, timer = null, held = false;
     var HOLD = 3000;
@@ -200,6 +204,15 @@
       });
       ticks.forEach(function (t, k) {
         t.setAttribute('aria-selected', String(k === i));
+      });
+      /* Each frame has its own words. Hidden blocks are taken out of the
+         accessibility tree as well as out of view: five headlines read aloud
+         in a row is what happens if only opacity changes. */
+      copies.forEach(function (c, k) {
+        var on = k === i;
+        c.classList.toggle('is-on', on);
+        if (on) c.removeAttribute('aria-hidden');
+        else c.setAttribute('aria-hidden', 'true');
       });
     }
 
@@ -225,13 +238,22 @@
       root.setTimeout(light, 1200);
     } else { light(); }
 
+    /* Set the first frame BEFORE starting the timer. Without this nothing owns
+       the copy until the first interval fires: the banner opened with a picture
+       and no words on it for three seconds, and then jumped to the second slide
+       rather than the first. show() is what puts is-on on a copy block, so it
+       has to run once at the start and not only on a change. */
+    show(0);
     start();
   }
 
   /* Copy rises into place once, then stops. The class does the work so the
      motion is described in CSS and can be turned off in one media query. */
   function rises(scope) {
-    var els = (scope || doc).querySelectorAll('.rise');
+    /* .settle and .lines hide their contents until .in arrives exactly as .rise
+       does, so they must be observed by the same pass. Watching only .rise left
+       a photograph at opacity:0 with nothing on the page to ever reveal it. */
+    var els = (scope || doc).querySelectorAll('.rise,.settle,.lines');
     if (!els.length) return;
     function all() { els.forEach(function (e) { e.classList.add('in'); }); }
     if (reduce || !('IntersectionObserver' in root)) return all();

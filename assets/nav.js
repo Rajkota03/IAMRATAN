@@ -49,6 +49,21 @@
     '<p class="nav-ethos">Reclaim &middot; Redefine &middot; Resonate</p>';
   nav.appendChild(tail);
 
+  /* The account actions live at the right of the bar on a desktop and inside
+     the panel on a phone. They are MOVED between the two, not duplicated: two
+     copies of "Sign in" in the document is two tab stops and two things for a
+     screen reader to read out, one of them invisible. */
+  var end  = head.querySelector('.top-end');
+  var acct = end ? [].slice.call(end.querySelectorAll('.nav-acc,.nav-reg')) : [];
+  var wide = window.matchMedia('(min-width:1025px)');
+  function place() {
+    if (!acct.length) return;
+    var host = wide.matches ? end : nav;
+    acct.forEach(function (a) {
+      if (a.parentElement !== host) host.insertBefore(a, host === nav ? tail : null);
+    });
+  }
+
   head.appendChild(btn);
   /* The veil goes on <body>, not in the header. As a header child it was a grid
      item, and the grid laid it out despite position:fixed — measured 0px wide,
@@ -58,6 +73,10 @@
   /* the flag lives on <html> so it can reach the bar AND the veil at once */
   var root = document.documentElement;
   root.setAttribute('data-nav', 'closed');
+
+  place();
+  if (wide.addEventListener) wide.addEventListener('change', place);
+  else if (wide.addListener) wide.addListener(place);
 
   var open = false;
   var lastFocus = null;
@@ -101,9 +120,9 @@
   });
 
   /* Widen past the breakpoint with the panel open and the links belong to the
-     bar again — leaving overflow:hidden on the page would freeze the scroll.
-     Kept in step with the stylesheet's 1024px drawer breakpoint. */
-  var wide = window.matchMedia('(min-width:1025px)');
+     bar again: leaving overflow:hidden on the page would freeze the scroll.
+     Reuses the `wide` query declared above rather than opening a second one on
+     the same breakpoint. */
   (wide.addEventListener ? wide.addEventListener.bind(wide, 'change')
                          : wide.addListener.bind(wide))(function (m) {
     if (m.matches && open) set(false);

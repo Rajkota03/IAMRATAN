@@ -90,6 +90,7 @@
     return auth('token?grant_type=password', { email: email, password: password })
       .then(function (j) {
         save(j.access_token, email, j.user && j.user.user_metadata && j.user.user_metadata.name);
+        A.stoppedWaiting(); A.forget();
         return true;
       });
   };
@@ -112,6 +113,51 @@
       gotrue_meta_security: {}
     }, '?redirect_to=' + encodeURIComponent(A.landing())).then(function () { return true; });
   };
+
+  /* ---------- somebody who is waiting on an email ----------
+     The check-your-email page invites them to go and look at the range while
+     they wait, and then forgot them the moment they did: back on this page they
+     got the empty register form again, as though nothing had happened. Anybody
+     who has just typed their name, address and a password will not enjoy being
+     asked for all three a second time.
+
+     So the wait is remembered. A day is the outside life of a confirmation
+     link; past that the form is the honest thing to show. */
+  var PENDING = 'iar.account.pending';
+  var DAY = 24 * 60 * 60 * 1000;
+
+  A.waiting = function () {
+    try {
+      var w = JSON.parse(localStorage.getItem(PENDING) || 'null');
+      if (w && w.email && (Date.now() - (w.at || 0)) < DAY) return w.email;
+      if (w) localStorage.removeItem(PENDING);      /* stale */
+    } catch (e) {}
+    return null;
+  };
+  A.startedWaiting = function (email) {
+    try {
+      localStorage.setItem(PENDING, JSON.stringify({ email: email, at: Date.now() }));
+    } catch (e) {}
+  };
+  A.stoppedWaiting = function () {
+    try { localStorage.removeItem(PENDING); } catch (e) {}
+  };
+
+  /* What they typed into the register form, so leaving the page and coming back
+     does not cost them the typing. The PASSWORD IS NEVER KEPT — a password in
+     localStorage is readable by any script that ever runs on this origin, and
+     saving somebody two seconds is not worth that. */
+  var TYPED = 'iar.account.typed';
+  A.remember = function (name, email) {
+    try {
+      localStorage.setItem(TYPED, JSON.stringify({ n: name || '', e: email || '' }));
+    } catch (e) {}
+  };
+  A.recall = function () {
+    try { return JSON.parse(localStorage.getItem(TYPED) || 'null') || {}; }
+    catch (e) { return {}; }
+  };
+  A.forget = function () { try { localStorage.removeItem(TYPED); } catch (e) {} };
 
   /* Send the confirmation again. The first one goes astray often enough —
      spam folders, a mistyped address, a phone that was offline — that a

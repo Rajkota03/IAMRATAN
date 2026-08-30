@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1788078424">
+<link rel="stylesheet" href="assets/iar-house.css?v=1788079627">
 <style>
 /* ---------- the account ----------
    One column, held narrow. This is a form, not a page to look at, and a form
@@ -197,13 +197,13 @@
   </div>
 </footer>
 
-<script src="assets/catalogue.js?v=1788078424"></script>
-<script src="assets/site.js?v=1788078424"></script>
-<script src="assets/store.js?v=1788078424"></script>
-<script src="assets/house.js?v=1788078424"></script>
-<script src="assets/iar-house.js?v=1788078424"></script>
-<script src="assets/mark.js?v=1788078424"></script>
-<script src="assets/track.js?v=1788078424"></script>
+<script src="assets/catalogue.js?v=1788079627"></script>
+<script src="assets/site.js?v=1788079627"></script>
+<script src="assets/store.js?v=1788079627"></script>
+<script src="assets/house.js?v=1788079627"></script>
+<script src="assets/iar-house.js?v=1788079627"></script>
+<script src="assets/mark.js?v=1788079627"></script>
+<script src="assets/track.js?v=1788079627"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -214,9 +214,9 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1788078424"></script>
+<script src="assets/nav.js?v=1788079627"></script>
 
-<script src="assets/account.js?v=1788078424"></script>
+<script src="assets/account.js?v=1788079627"></script>
 <script>
 (function () {
   'use strict';
@@ -263,7 +263,14 @@ p.innerHTML=h;f.appendChild(p);});})();
       '</p>' +
       '<p class="acc-msg" id="accMsg"></p>' +
       '<p class="acc-alt">Nothing is lost if you close this. The link works ' +
-        'from any device, and you can order without an account at any time.</p>';
+        'from any device, and you can order without an account at any time.</p>' +
+      '<p class="acc-alt">Wrong address, or want to start again? ' +
+        '<button type="button" id="startAgain">Use a different one</button></p>';
+
+    document.getElementById('startAgain').onclick = function () {
+      A.stoppedWaiting(); A.forget();
+      mode = 'up'; gate();
+    };
 
     var again = document.getElementById('again');
     again.onclick = function () {
@@ -384,6 +391,18 @@ p.innerHTML=h;f.appendChild(p);});})();
     document.getElementById('tabIn').onclick = function () { mode = 'in'; gate(); };
     document.getElementById('tabUp').onclick = function () { mode = 'up'; gate(); };
 
+    /* Put back what they typed before they wandered off. Never the password:
+       see A.remember. Switching tabs carries it across too, so somebody who
+       registers and then realises they already have an account does not retype
+       their address. */
+    var had = A.recall();
+    var nmEl = document.getElementById('nm'), emEl = document.getElementById('em');
+    if (nmEl && had.n) nmEl.value = had.n;
+    if (emEl && had.e) emEl.value = had.e;
+    document.getElementById('accForm').addEventListener('input', function () {
+      A.remember(nmEl ? nmEl.value : had.n, emEl ? emEl.value : '');
+    });
+
     var form = document.getElementById('accForm'), go = document.getElementById('go');
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -401,7 +420,7 @@ p.innerHTML=h;f.appendChild(p);});})();
 
       var work = mode === 'in' ? A.signIn(em, pw) : A.register(em, pw, nm);
       work.then(function (r) {
-        if (r === 'confirm') return checkYourEmail(em);
+        if (r === 'confirm') { A.startedWaiting(em); return checkYourEmail(em); }
         signedIn();
       }).catch(function (err) {
         go.disabled = false; go.textContent = label;
@@ -603,7 +622,12 @@ p.innerHTML=h;f.appendChild(p);});})();
   } else if (back && back.kind === 'recovery') {
     newPassword();
   } else if (back) {
+    A.stoppedWaiting(); A.forget();
     A.whoami().then(confirmed, confirmed);
+  } else if (!A.restore() && A.waiting()) {
+    /* Mid-signup, waiting on the email, and they went for a look at the range.
+       Show them where they were, not an empty form. */
+    checkYourEmail(A.waiting());
   } else if (midReset && A.restore()) {
     /* Refreshed halfway through choosing a new password. fromEmail() has
        already spent the hash, so without this they land in their account with

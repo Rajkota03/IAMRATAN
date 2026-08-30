@@ -92,6 +92,9 @@
   border:0;font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
   text-transform:uppercase;cursor:pointer;margin-top:var(--s1)}
 .pay[disabled]{opacity:.45;cursor:not-allowed}
+.stock-warn{margin:0 0 var(--s3);padding:var(--s3);border:1px solid #8C2F2F;
+  border-radius:.3rem;background:#F6ECEC;color:#8C2F2F;
+  font-size:.9375rem;line-height:1.6}
 .trust{margin:var(--s2) 0 0;font-size:.75rem;color:var(--muted);line-height:1.6}
 .empty-cart{padding:var(--sz) 0;display:grid;gap:var(--s3);justify-items:start}
 </style>
@@ -165,7 +168,20 @@
       },
       body: opts.body ? JSON.stringify(opts.body) : undefined
     }).then(function (r) {
-      if (!r.ok) throw new Error(r.status);
+      if (!r.ok) {
+        /* Carry the database's message out, not just the number. The stock
+           trigger says exactly how many are left of which neck, and throwing
+           away that sentence means a customer refused for stock gets the
+           WhatsApp handoff instead of being told what happened. */
+        return r.text().then(function (t) {
+          var m = '';
+          try { m = (JSON.parse(t) || {}).message || ''; } catch (e) {}
+          var err = new Error(m || String(r.status));
+          err.status = r.status;
+          err.serverMessage = m;
+          throw err;
+        });
+      }
       /* Read the body as text first, and only parse it if there is any.
          `Prefer: return=minimal` makes PostgREST answer 201 with an EMPTY body,
          and .json() on an empty body throws — which rejected the whole chain
@@ -629,8 +645,19 @@
       })
       .then(function () { return pay(ref, go); },
             function (err) {
-              /* The order is safe in the database or it is not; either way the
-                 customer must not be stranded. Log the reason, then hand over. */
+              /* One failure must NOT end at WhatsApp: the shirt is not there.
+                 Sending them to chat to order it anyway just moves the
+                 disappointment to the house, who then has to explain it. */
+              var said = (err && err.serverMessage) || '';
+              if (/left of|asked for/.test(said)) {
+                placing = false;
+                resting();
+                outOfStock(said);
+                return;
+              }
+              /* Anything else — the gateway asleep, the keys missing, the
+                 network gone — still ends at WhatsApp. The order is already
+                 saved and an order by chat beats one lost to a timeout. */
               console.error('[checkout] could not reach the gateway ·', err);
               return go();
             });
@@ -680,6 +707,22 @@
       });
     })
     .catch(fallback);
+  }
+
+  /* The house has run out between them choosing and them paying. Rare, and it
+     has to be said plainly: what is gone, and what they can do about it. */
+  function outOfStock(said) {
+    var box = document.getElementById('stockWarn');
+    if (!box) {
+      box = document.createElement('p');
+      box.id = 'stockWarn';
+      box.className = 'stock-warn';
+      var form = document.getElementById('payForm');
+      if (form) form.insertBefore(box, form.firstChild);
+    }
+    box.textContent = said + ' Take that line out of the bag, or write to the ' +
+      'house and it can be made to measure.';
+    box.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
   function payButton() { return document.getElementById('payBtn'); }

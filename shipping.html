@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1787858109">
+<link rel="stylesheet" href="assets/iar-house.css?v=1788078424">
 <style>
 /* A QUIET PAGE
    The legal pages borrow the journal's reading rhythm: one column, a measure
@@ -28,8 +28,6 @@
 .legal p,.legal li{margin:0;color:var(--muted);line-height:1.7}
 .legal ul{margin:0;padding-left:1.2em;display:grid;gap:var(--s1)}
 .legal strong{color:var(--ink);font-weight:400}
-.pending{border:1px solid var(--hair);padding:var(--s4);margin:var(--sy) 0 0;max-width:62ch}
-.pending p{margin:var(--s1) 0 0;color:var(--muted);font-size:.9375rem;line-height:1.6}
 </style>
 </head>
 <body data-no-grounds>
@@ -55,23 +53,14 @@
       <p class="label muted">The house</p>
       <h1 class="display" style="max-width:16ch;margin-top:var(--s1)">Shipping &amp; returns.</h1>
 
-      <div class="pending label">
-        <span>For the house</span>
-        <p>This page is a working draft so the site carries a complete trust
-        layer. Values in [brackets] and anything that reads wrong should be
-        corrected by the house before the site goes to customers.</p>
-      </div>
-
       <div class="legal">
 
         <h2>Shipping</h2>
-        <p>Ready-to-wear shirts ship across India in [3&ndash;7] working days,
-        [free above &#8377;X / at a flat &#8377;Y]. Made-to-measure garments take
-        [2&ndash;4] weeks from the measure. We will tell you the honest date when
-        you order, and again if it moves.</p>
+        <p id="shipDays">Ready-to-wear shirts ship across India. We will tell you
+        the honest date when you order, and again if it moves.</p>
         <h2>Returns</h2>
         <p>A ready-to-wear shirt, unworn and unwashed with its tags, can come
-        back within [7] days for an exchange or a refund. Made-to-measure is adjusted rather than returned. We alter until it fits.</p>
+        back within <span id="shipReturns">7</span> days for an exchange or a refund. Made-to-measure is adjusted rather than returned. We alter until it fits.</p>
         <h2>Anything wrong</h2>
         <p>A fault in cloth or making is ours at any reasonable point, not just
         inside a window. One message and we collect it:
@@ -90,14 +79,33 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1787858109"></script>
-<script src="assets/house.js?v=1787858109"></script>
-<script src="assets/iar-house.js?v=1787858109"></script>
-<script src="assets/mark.js?v=1787858109"></script>
-<script src="assets/track.js?v=1787858109"></script>
+<script src="assets/store.js?v=1788078424"></script>
+<script src="assets/house.js?v=1788078424"></script>
+<script src="assets/iar-house.js?v=1788078424"></script>
+<script src="assets/mark.js?v=1788078424"></script>
+<script src="assets/track.js?v=1788078424"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
    has actually given them — see Store.sellerHTML */
+/* The delivery days, what postage costs, the returns window and how long made
+   to measure takes all live in settings, where the house can change them. They
+   were printed here in [square brackets] instead — on a page a customer reads
+   before deciding to trust us with money. */
+(function(){
+  if (!window.IARSTORE) return;
+  window.IARSTORE.ready.then(function (S) {
+    var st = S.settings || {}, a = st.delivery_min_days, b = st.delivery_max_days;
+    var days = document.getElementById('shipDays');
+    if (days) days.textContent =
+      'Ready-to-wear shirts ship across India in ' + (a === b ? a : a + '\u2013' + b) +
+      ' working days. ' + st.shipping_note +
+      '. Made-to-measure garments take ' + st.mtm_lead +
+      '. We will tell you the honest date when you order, and again if it moves.';
+    var ret = document.getElementById('shipReturns');
+    if (ret) ret.textContent = st.returns_days;
+  });
+}());
+
 (function(){var f=document.querySelector('.colophon');if(!f||!window.IARSTORE)return;
 window.IARSTORE.ready.then(function(S){var h=S.sellerHTML&&S.sellerHTML();if(!h)return;
 var p=document.createElement('p');p.className='label muted';

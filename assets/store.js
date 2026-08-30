@@ -42,6 +42,8 @@
       delivery_min_days: 3,
       delivery_max_days: 7,
       returns_days:      7,
+      shipping_note:     'Postage is free',
+      mtm_lead:          'two to four weeks from the measure',
       announcement: ''
     },
     live: false,          /* did the database actually answer? */
@@ -88,6 +90,8 @@
       delivery_min_days: num(s.delivery_min_days, 3),
       delivery_max_days: num(s.delivery_max_days, 7),
       returns_days:      num(s.returns_days, 7),
+      shipping_note:     s.shipping_note || 'Postage is free',
+      mtm_lead:          s.mtm_lead || 'two to four weeks from the measure',
       /* the bar. Off unless the house has switched it on and written a line —
          both, so a stale sentence left in the box cannot reappear on the shop
          front the day somebody flicks the switch to see what it does. */

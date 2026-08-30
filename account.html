@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1787858109">
+<link rel="stylesheet" href="assets/iar-house.css?v=1788078424">
 <style>
 /* ---------- the account ----------
    One column, held narrow. This is a form, not a page to look at, and a form
@@ -37,8 +37,14 @@
 .f input:focus{outline:none;border-bottom-color:var(--ink)}
 .acc .cta{display:block;width:100%;text-align:center;margin-top:var(--s2)}
 .acc-alt{margin:var(--s4) 0 0;color:var(--muted);font-size:.9375rem;line-height:1.6}
-.acc-alt button{appearance:none;background:none;border:0;padding:0;cursor:pointer;
-  color:inherit;font:inherit;text-decoration:underline;text-underline-offset:3px}
+/* padding-block, not height: these sit inside a sentence, so they have to grow
+   downward without pushing the line apart. At 0 they were 24px tall — "Send it
+   again" and "Forgotten your password" were both under the 44px a thumb needs,
+   on the one screen where somebody is already stuck. --s1 gets to 40, which is
+   still short; --s2 gets to 48. */
+.acc-alt button{appearance:none;background:none;border:0;padding:var(--s2) 0;
+  cursor:pointer;color:inherit;font:inherit;
+  text-decoration:underline;text-underline-offset:3px}
 .acc-msg{margin:var(--s3) 0 0;font-size:.9375rem;line-height:1.6;min-height:1.2em}
 .acc-msg.bad{color:#8C2F2F}
 .acc-msg.good{color:var(--ink)}
@@ -191,13 +197,13 @@
   </div>
 </footer>
 
-<script src="assets/catalogue.js?v=1787858109"></script>
-<script src="assets/site.js?v=1787858109"></script>
-<script src="assets/store.js?v=1787858109"></script>
-<script src="assets/house.js?v=1787858109"></script>
-<script src="assets/iar-house.js?v=1787858109"></script>
-<script src="assets/mark.js?v=1787858109"></script>
-<script src="assets/track.js?v=1787858109"></script>
+<script src="assets/catalogue.js?v=1788078424"></script>
+<script src="assets/site.js?v=1788078424"></script>
+<script src="assets/store.js?v=1788078424"></script>
+<script src="assets/house.js?v=1788078424"></script>
+<script src="assets/iar-house.js?v=1788078424"></script>
+<script src="assets/mark.js?v=1788078424"></script>
+<script src="assets/track.js?v=1788078424"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -208,9 +214,9 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1787858109"></script>
+<script src="assets/nav.js?v=1788078424"></script>
 
-<script src="assets/account.js?v=1787858109"></script>
+<script src="assets/account.js?v=1788078424"></script>
 <script>
 (function () {
   'use strict';
@@ -236,6 +242,112 @@ p.innerHTML=h;f.appendChild(p);});})();
     if (!n) return;
     n.textContent = msg || '';                 /* text, never html: this carries server words */
     n.className = 'acc-msg' + (msg ? (good ? ' good' : ' bad') : '');
+  }
+
+  /* ---- the moment after pressing Create my account --------------------
+     This used to be one line of small text under a form still headed "Create
+     my account", which reads as nothing having happened. Somebody who has just
+     given you their name and a password needs telling, plainly, that the thing
+     worked and what to do next. */
+  function checkYourEmail(email) {
+    root.classList.remove('wide');
+    root.innerHTML =
+      '<p class="label muted">Your account</p>' +
+      '<h1 class="essay-name" style="font-size:clamp(1.8rem,4vw,2.4rem)">' + 'Check your email.</h1>' +
+      '<p class="acc-alt" style="margin-top:var(--s3)">We have sent a link to <b>' + esc(email) + '</b>. ' +
+        'Open it and the account is yours. It may take a minute, and it ' +
+        'sometimes lands in the promotions or spam folder.</p>' +
+      '<p class="acc-alt" style="margin-top:var(--s4)">' +
+        '<a class="cta" href="shop.html">Look at the range while you wait</a>' +
+        '<button type="button" id="again">Send it again</button>' +
+      '</p>' +
+      '<p class="acc-msg" id="accMsg"></p>' +
+      '<p class="acc-alt">Nothing is lost if you close this. The link works ' +
+        'from any device, and you can order without an account at any time.</p>';
+
+    var again = document.getElementById('again');
+    again.onclick = function () {
+      again.disabled = true;
+      A.resend(email).then(function () {
+        say('Sent again. Give it a minute.', true);
+      }).catch(function (err) {
+        again.disabled = false;
+        say(err.message);
+      });
+    };
+  }
+
+  /* ---- back from the email, account confirmed ---- */
+  function confirmed() {
+    root.classList.remove('wide');
+    root.innerHTML =
+      '<p class="label muted">Your account</p>' +
+      '<h1 class="essay-name" style="font-size:clamp(1.8rem,4vw,2.4rem)">' + 'You are in' + (A.name ? ', ' + esc(A.name.split(' ')[0]) : '') + '.</h1>' +
+      '<p class="acc-alt" style="margin-top:var(--s3)">The account is confirmed and you are signed in. ' +
+        'Every order you place from here will show up on this page, with where ' +
+        'it has got to.</p>' +
+      '<p class="acc-alt" style="margin-top:var(--s4)">' +
+        '<a class="cta" href="shop.html">Start with the range</a>' +
+        '<button type="button" id="toOrders">See my account</button>' +
+      '</p>';
+    document.getElementById('toOrders').onclick = function () { signedIn(); };
+  }
+
+  /* ---- back from the email, but the link is spent ---- */
+  function linkSpent(why, kind) {
+    root.classList.remove('wide');
+    root.innerHTML =
+      '<p class="label muted">Your account</p>' +
+      '<h1 class="essay-name" style="font-size:clamp(1.8rem,4vw,2.4rem)">' + 'That link has expired.</h1>' +
+      '<p class="acc-alt" style="margin-top:var(--s3)">' +
+        (kind === 'recovery'
+          ? 'Password links last an hour. Ask for a new one and it will be with you in a minute.'
+          : 'Confirmation links do not last for ever. Ask for a new one and it will be with you in a minute.') +
+      '</p>' +
+      '<p class="acc-msg" id="accMsg"></p>' +
+      '<p class="acc-alt" style="margin-top:var(--s4)"><button class="cta cta--fill" id="startOver">' +
+        (kind === 'recovery' ? 'Send a new password link' : 'Send a new link') +
+      '</button></p>' +
+      (why ? '<p class="acc-alt">' + esc(why) + '</p>' : '');
+    document.getElementById('startOver').onclick = function () {
+      mode = kind === 'recovery' ? 'in' : 'up';
+      gate();
+      say(kind === 'recovery'
+        ? 'Type your address and press Forgotten your password.'
+        : 'Register again with the same address and we will send a fresh link.', true);
+    };
+  }
+
+  /* ---- back from the email to choose a new password ---- */
+  function newPassword() {
+    root.classList.remove('wide');
+    root.innerHTML =
+      '<p class="label muted">Your account</p>' +
+      '<h1 class="essay-name" style="font-size:clamp(1.8rem,4vw,2.4rem)">' + 'Choose a new password.</h1>' +
+      '<p class="acc-alt" style="margin-top:var(--s3)">Six characters or more. You will be signed in as ' +
+        'soon as it is saved.</p>' +
+      '<form id="pwForm" novalidate>' +
+        '<p class="f"><label for="np">New password</label>' +
+        '<input id="np" type="password" autocomplete="new-password" required></p>' +
+        '<button class="cta cta--fill" id="savePw" type="submit">Save it</button>' +
+      '</form>' +
+      '<p class="acc-msg" id="accMsg"></p>';
+
+    document.getElementById('pwForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var pw = document.getElementById('np').value || '';
+      if (pw.length < 6) return say('Use at least six characters.');
+      var b = document.getElementById('savePw');
+      b.disabled = true; b.textContent = 'Saving';
+      A.setPassword(pw).then(function () {
+        return A.whoami();
+      }).then(function () {
+        signedIn();
+      }).catch(function (err) {
+        b.disabled = false; b.textContent = 'Save it';
+        say(err.message);
+      });
+    });
   }
 
   /* ---- signed out: sign in, or register ------------------------------- */
@@ -289,10 +401,7 @@ p.innerHTML=h;f.appendChild(p);});})();
 
       var work = mode === 'in' ? A.signIn(em, pw) : A.register(em, pw, nm);
       work.then(function (r) {
-        if (r === 'confirm') {
-          go.disabled = false; go.textContent = label;
-          return say('Account made. Confirm it from the email we just sent, then sign in.', true);
-        }
+        if (r === 'confirm') return checkYourEmail(em);
         signedIn();
       }).catch(function (err) {
         go.disabled = false; go.textContent = label;
@@ -473,10 +582,38 @@ p.innerHTML=h;f.appendChild(p);});})();
         return;
       }
       box.innerHTML = rows.map(card).join('');
+    }, function (err) {
+      /* The session has run out. Saying so is the whole point: this used to
+         draw an empty orders list, so somebody who had ordered three times was
+         told they had never ordered at all. */
+      if (!err || !err.expired) return;
+      A.signOut(); mode = 'in'; gate();
+      say('You have been signed out. Sign in again to see your orders.', true);
     });
   }
 
-  if (A.restore()) signedIn(); else gate();
+  /* An email link arrives carrying its result in the address. Read that FIRST:
+     a customer coming back from their inbox must not be shown the sign-in form
+     they have just finished with. */
+  var back = A.fromEmail();
+  var midReset = /(^|[?&])recovery\b/.test(location.search);
+
+  if (back && !back.ok) {
+    linkSpent(back.why, back.kind);
+  } else if (back && back.kind === 'recovery') {
+    newPassword();
+  } else if (back) {
+    A.whoami().then(confirmed, confirmed);
+  } else if (midReset && A.restore()) {
+    /* Refreshed halfway through choosing a new password. fromEmail() has
+       already spent the hash, so without this they land in their account with
+       the old password still live and no idea the reset went unfinished. */
+    newPassword();
+  } else if (A.restore()) {
+    signedIn();
+  } else {
+    gate();
+  }
 }());
 </script>
 </body>

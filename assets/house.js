@@ -222,6 +222,22 @@
     try { bar(st.settings || {}); } catch (e) {}
     try { count(st); } catch (e) {}
 
+    /* Once more when the document is finished, because some pages draw their
+       own [data-cloths] AFTER this file has run — the product page's "not in
+       the range" state is one.
+
+       It only shows on a second visit, which is what makes it worth a comment.
+       Cold, the store has to fetch, S.ready settles late, and the span is long
+       since on the page. Warm, the cache answers from sessionStorage and
+       S.ready is ALREADY resolved, so this callback runs as a microtask the
+       moment this file ends — three script tags before the span exists. First
+       visit right, every visit after it stale. */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () {
+        try { count(st); } catch (e) {}
+      });
+    }
+
     if (document.querySelector('header.top nav.nav')) {
       get('nav_items?select=*&order=sort_order.asc')
         .then(function (rows) { try { menu(rows); } catch (e) {} })

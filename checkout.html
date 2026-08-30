@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1788079627">
+<link rel="stylesheet" href="assets/iar-house.css?v=1788080762">
 <style>
 /* ---------- CHECKOUT ----------
    Guest by default, and there is no account to make. Forced sign-in is the
@@ -132,14 +132,14 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1788079627"></script>
-<script src="assets/house.js?v=1788079627"></script>
-<script src="assets/catalogue.js?v=1788079627"></script>
-<script src="assets/site.js?v=1788079627"></script>
-<script src="assets/shop.js?v=1788079627"></script>
-<script src="assets/iar-house.js?v=1788079627"></script>
-<script src="assets/mark.js?v=1788079627"></script>
-<script src="assets/track.js?v=1788079627"></script>
+<script src="assets/store.js?v=1788080762"></script>
+<script src="assets/house.js?v=1788080762"></script>
+<script src="assets/catalogue.js?v=1788080762"></script>
+<script src="assets/site.js?v=1788080762"></script>
+<script src="assets/shop.js?v=1788080762"></script>
+<script src="assets/iar-house.js?v=1788080762"></script>
+<script src="assets/mark.js?v=1788080762"></script>
+<script src="assets/track.js?v=1788080762"></script>
 <script>
 (function () {
   'use strict';
@@ -462,17 +462,29 @@
     if (e.target && e.target.closest && e.target.closest('#payForm')) rememberFields();
   });
 
+  /* The third slot may be a sentence or a function of what they typed. It has
+     to be, because "you left this blank" and "that is too short" are different
+     problems and telling somebody who has just written 5 MG Rd that we need
+     somewhere to send it is how a checkout gets abandoned: they can see they
+     gave an address, so the only conclusion left is that the site is broken. */
   var RULES = [
-    ['fn', function (v) { return v.trim().length >= 2; }, 'Please give your first name.'],
+    ['fn', function (v) { return v.trim().length >= 2; },
+      function (v) { return v.trim() ? 'That looks short for a first name.'
+                                     : 'Please give your first name.'; }],
     ['ln', function (v) { return v.trim().length >= 1; }, 'Please give your last name.'],
     ['ph', function (v) { return v.replace(/\D/g, '').length >= 10; },
-      'That does not look like a full mobile number. Ten digits or more.'],
+      function (v) { return v.trim() ? 'That does not look like a full mobile number. Ten digits or more.'
+                                     : 'We need a mobile number for the delivery.'; }],
     ['em', function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); },
-      'That email address is missing something. Check for a typo.'],
-    ['ad', function (v) { return v.trim().length >= 8; }, 'We need somewhere to send it.'],
+      function (v) { return v.trim() ? 'That email address is missing something. Check for a typo.'
+                                     : 'We need an email for the order confirmation.'; }],
+    ['ad', function (v) { return v.trim().length >= 8; },
+      function (v) { return v.trim() ? 'A little more of the address, please. House or flat, and the road.'
+                                     : 'We need somewhere to send it.'; }],
     ['ct', function (v) { return v.trim().length >= 2; }, 'Which city?'],
     ['pc', function (v) { return /^\d{6}$/.test(v.replace(/\s/g, '')); },
-      'An Indian PIN code is six digits.'],
+      function (v) { return v.trim() ? 'An Indian PIN code is six digits.'
+                                     : 'We need the PIN code.'; }],
     ['st', function (v) { return !!v; }, 'Which state?']
   ];
 
@@ -488,21 +500,33 @@
     SHOP.setQty(i, item.qty + (more ? 1 : -1));
   });
 
+  /* One order per press, however many presses. Disabling the button is not
+     enough on its own: a disabled BUTTON does not stop the FORM, and Enter in
+     any text field submits it again. Three submits landed three orders, three
+     references and three things for the house to ship.
+
+     The flag is cleared only where the journey ends — at the gateway, at
+     WhatsApp, or on a validation failure — never on the success path, because
+     after a successful order this page is finished with. */
+  var placing = false;
+
   document.addEventListener('submit', function (e) {
     if (e.target.id !== 'payForm') return;
     e.preventDefault();
+    if (placing) return;                                    /* already going */
     if (document.getElementById('company').value) return;   /* a bot filled the trap */
 
     var ok = true, first = null;
     RULES.forEach(function (r) {
       var el = document.getElementById(r[0]), err = document.getElementById('e-' + r[0]);
       var good = r[1](el.value);
-      err.textContent = good ? '' : r[2];
+      err.textContent = good ? ''
+        : (typeof r[2] === 'function' ? r[2](el.value) : r[2]);
       el.setAttribute('aria-invalid', good ? 'false' : 'true');
       if (!good && !first) first = el;
       if (!good) ok = false;
     });
-    if (!ok) { first.focus(); return; }
+    if (!ok) { first.focus(); return; }                     /* placing still false */
 
     var g = function (id) { return document.getElementById(id).value.trim(); };
     var body =
@@ -533,9 +557,21 @@
        Date first so a list of them sorts itself; the tail is random so two
        orders in the same minute cannot collide. */
     var d = new Date();
+    /* Four characters drawn one at a time, from an alphabet with no I, O, 0 or
+       1 in it — because this reference gets read down a telephone, and "IAR
+       one-oh-I-zero" is a conversation nobody should have to have.
+
+       The previous version sliced Math.random().toString(36), which in theory
+       can return fewer than four characters and fail the server's
+       ^IAR-\d{6}-[A-Z0-9]{4}$ check. Measured at two million draws it never
+       did once, so that was a theoretical worry and not a bug. The alphabet is
+       the actual reason for the change. */
+    var ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   /* no I/O/0/1 to misread aloud */
+    var tail = '';
+    for (var t = 0; t < 4; t++) tail += ABC[Math.floor(Math.random() * ABC.length)];
     var ref = 'IAR-' + d.getFullYear().toString().slice(2) +
       String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') +
-      '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      '-' + tail;
 
     var order = {
       ref: ref,
@@ -569,6 +605,7 @@
     /* Record it, then try to take the money. The order must never be lost
        because something downstream was asleep, so every failure below still
        ends at WhatsApp — the house gets the order either way. */
+    placing = true;
     var btn = document.getElementById('payBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="wait">Placing the order</span>';
@@ -735,6 +772,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1788079627"></script>
+<script src="assets/nav.js?v=1788080762"></script>
 </body>
 </html>

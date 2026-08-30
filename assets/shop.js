@@ -21,7 +21,41 @@
     supportsVT: typeof doc.startViewTransition === 'function'
   };
 
-  try { Shop.bag = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { Shop.bag = []; }
+  /* The bag comes out of localStorage, which anybody can edit, so nothing that
+     comes back is trusted. The database is the thing that actually decides what
+     an order costs — see price_the_order() — but a basket holding minus five
+     shirts of a cloth that does not exist should never be drawn either: it
+     showed a total of ₹599,870,005 on the checkout page.
+
+     A line survives only if it names a real cloth and carries a whole quantity
+     between one and fifty. Everything else is dropped without comment; there is
+     nothing useful to tell somebody who has been editing their own storage. */
+  function clean(rows) {
+    if (!Array.isArray(rows)) return [];
+    return rows.filter(function (b) {
+      /* Shop.range, not Shop.find — find() is defined further down this file
+         and is not there yet when the bag is read. */
+      if (!b || typeof b.slug !== 'string') return false;
+      for (var i = 0; i < Shop.range.length; i++) {
+        if (Shop.range[i].slug === b.slug) return true;
+      }
+      return false;
+    }).map(function (b) {
+      var q = parseInt(b.qty, 10);
+      var sz = String(b.size == null ? '' : b.size);
+      return {
+        slug: b.slug,
+        /* a neck the house actually cuts, or the middle of the range. Anything
+           else would travel into the order and onto the WhatsApp message. */
+        size: ALL.indexOf(sz) > -1 ? sz : '40',
+        qty: (isFinite(q) && q > 0) ? Math.min(q, 50) : 1
+      };
+    });
+  }
+
+  try {
+    Shop.bag = clean(JSON.parse(localStorage.getItem(KEY) || '[]'));
+  } catch (e) { Shop.bag = []; }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(Shop.bag)); } catch (e) {} }
 
   Shop.find = function (slug) {

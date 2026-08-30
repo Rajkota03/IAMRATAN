@@ -659,6 +659,12 @@
     });
   }
 
+  /* one field's value, or an empty string if the form has gone */
+  function field(id) {
+    var el = document.getElementById(id);
+    return el ? String(el.value || '').trim() : '';
+  }
+
   function pay(ref, fallback) {
     return fetch('/api/pay/create', {
       method: 'POST',
@@ -696,7 +702,15 @@
       currency: intent.currency,
       name: 'I Am Ratan',
       description: 'Order ' + ref,
-      prefill: intent.prefill,
+      /* From the form on this page rather than from the server — see the note
+         in create.mjs. Read here rather than passed in, because g() belongs to
+         the submit handler and openModal is not inside it. The form is still on
+         the page at this point; paid() only replaces it afterwards. */
+      prefill: {
+        name: (field('fn') + ' ' + field('ln')).trim(),
+        email: field('em'),
+        contact: field('ph')
+      },
       notes: { ref: ref },
       theme: { color: '#0B0C0E' },
       handler: function (r) {

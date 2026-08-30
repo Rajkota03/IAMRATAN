@@ -5,6 +5,14 @@
 -- three tables the shop genuinely needs — orders, enquiries, carts — and two
 -- more that no page has ever written to.
 --
+-- A THIRD thing was found after this file was first written, and is fixed in
+-- the code rather than here: /api/pay/create was returning the customer's name,
+-- email and phone to anyone who posted an order reference at it. A reference is
+-- not a secret — it is quoted in emails, read out on the telephone, and since
+-- the confirmation screen was made refreshable it sits in the address bar. The
+-- endpoint now returns only what Razorpay needs to open its window, and the
+-- page prefills the customer's details from the form they have just filled in.
+--
 -- ONE · order_events. A stranger could POST a timeline row onto ANY order by
 -- guessing its id, which is a small integer. Confirmed against the live
 -- database: ids 3, 5 and 8 all accepted a row reading "SECURITY PROBE".
@@ -37,7 +45,8 @@ delete from public.order_events where note = 'SECURITY PROBE';
 delete from public.returns where note = 'SECURITY PROBE';
 delete from public.orders
  where payment_state is distinct from 'paid'
-   and lower(email) in ('security-test@example.com','t@e.co','c@e.co','customer@example.com');
+   and lower(email) in ('security-test@example.com','t@e.co','c@e.co',
+                        'customer@example.com','priya.sharma@example.com');
 
 -- ------------------------------------------------------------ did it work? --
 select 'a stranger can write a timeline row' as checked,

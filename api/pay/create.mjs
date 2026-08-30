@@ -64,15 +64,20 @@ export default handler(async function (request) {
       return fail(502, 'The payment provider did not answer. Please try again.', err);
     }
 
+    /* NO PREFILL. This used to return the customer's name, email and phone,
+       which made it an unauthenticated lookup: anybody holding an order
+       reference could ask this endpoint who placed it and how to contact them.
+       A reference is not a secret — it is quoted in emails, read out on the
+       telephone, and since the confirmation screen was made refreshable it sits
+       in the address bar and the browser history.
+
+       Razorpay's window is prefilled by the page instead, from the form the
+       customer has just this moment filled in. The details never leave and come
+       back; they were already there. */
     return ok({
       key_id: process.env.RAZORPAY_KEY_ID,
       order_id: order.id,
       amount: order.amount,
-      currency: order.currency,
-      prefill: {
-        name: intent.cust_name || '',
-        email: intent.cust_email || '',
-        contact: intent.cust_phone || ''
-      }
+      currency: order.currency
     });
 });

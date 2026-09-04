@@ -282,17 +282,36 @@
      first time a cloth was added */
   document.getElementById('total').textContent = R.length;
 
-  var cats = [];
-  R.forEach(function (p) { if (p.cat && cats.indexOf(p.cat) < 0) cats.push(p.cat); });
+  /* Built as a function, not once, because these counts are drawn before the
+     database has answered — and it is the database that decides which cloths
+     are on the shop. Left as a one-off it read "All 27" over a grid of nine.
 
-  chips.innerHTML =
-    '<button class="chip" type="button" data-c="all" aria-pressed="true">All ' +
-      R.length + '</button>' +
-    cats.map(function (c) {
-      var n = R.filter(function (p) { return p.cat === c; }).length;
-      return '<button class="chip" type="button" data-c="' + c + '" aria-pressed="false">' +
-        c + ' ' + n + '</button>';
-    }).join('');
+     The collections are recomputed too: taking eighteen cloths off the shop can
+     empty a collection entirely, and a chip that filters to nothing is a dead
+     control. */
+  function drawChips() {
+    var found = [];
+    R.forEach(function (p) { if (p.cat && found.indexOf(p.cat) < 0) found.push(p.cat); });
+    var was = filter;
+    chips.innerHTML =
+      '<button class="chip" type="button" data-c="all" aria-pressed="' +
+        (was === 'all') + '">All ' + R.length + '</button>' +
+      found.map(function (c) {
+        var n = R.filter(function (p) { return p.cat === c; }).length;
+        return '<button class="chip" type="button" data-c="' + c + '" aria-pressed="' +
+          (was === c) + '">' + c + ' ' + n + '</button>';
+      }).join('');
+    /* the collection they were looking at may no longer exist */
+    if (was !== 'all' && found.indexOf(was) < 0) filter = 'all';
+
+    /* With every cloth in one collection there is nothing to filter: "All 9"
+       and "Working hours 9" side by side are two buttons that do the same
+       thing. Hide the row rather than offer a choice that isn't one. */
+    var pointless = found.length < 2;
+    chips.hidden = pointless;
+    if (pointless) filter = 'all';
+  }
+  drawChips();
 
   /* A cloth that has been shot on the model leads with that frame; the rest
      keep their catalogue photograph, so the grid fills in one cloth at a time
@@ -301,8 +320,12 @@
      without a shot set has neither, and falls back to its catalogue photograph. */
   function card(p) {
     var s = (window.IAR_SHOTS || {})[p.slug];
-    return s ? 'images/set/' + p.slug + '/1-hero.webp'
-             : 'images/shirts/' + p.img;
+    if (s) return 'images/set/' + p.slug + '/1-hero.webp';
+    /* A cloth the house has just added has neither a shot set nor a catalogue
+       photograph, so there is nothing to point at. Returning '' rather than
+       images/shirts/undefined lets the card show the cloth's own colour, which
+       is honest; a broken image icon is not. */
+    return p.img ? 'images/shirts/' + p.img : '';
   }
   function cardAlt(p) {
     var s = (window.IAR_SHOTS || {})[p.slug];
@@ -364,9 +387,11 @@
         '" href="product.html?p=' + encodeURIComponent(p.slug) + '" ' +
         'style="--g:' + p.hex + '">' +
         '<span class="card-shot">' +
-          '<img src="' + card(p) + '"' +
-            (tiers(card(p)) ? ' srcset="' + tiers(card(p)) + '" sizes="' + CARD_SIZES + '"' : '') +
-            ' alt="' + p.name + '" loading="lazy" decoding="async">' +
+          (card(p)
+            ? '<img src="' + card(p) + '"' +
+              (tiers(card(p)) ? ' srcset="' + tiers(card(p)) + '" sizes="' + CARD_SIZES + '"' : '') +
+              ' alt="' + p.name + '" loading="lazy" decoding="async">'
+            : '') +
           /* the second frame carries no src until the card is hovered or
              touched, so a phone scrolling past twenty-seven cards downloads
              twenty-seven photographs rather than fifty-four */
@@ -453,15 +478,50 @@
       if (!S.live) return;
       /* the house may have hidden a cloth, or hidden the sold-out ones */
       R = R.filter(function (p) { return !S.hidden(p.slug); });
-      /* and their prices are the truth, not the ones bundled here */
+
+      var live = {};
+      (S.products || []).forEach(function (row) { live[row.slug] = row; });
+
+      /* The database is the truth about a cloth, not the copy bundled with this
+         page. Until now only the PRICE was taken from it, so renaming a cloth at
+         the desk changed the admin and the order and left the shop still calling
+         it by its old name. */
       R.forEach(function (p) {
-        var np = S.priceOf(p.slug);
-        if (np !== null && np !== p.price) {
-          p.price = np;
-          p.priceText = '₹' + np.toLocaleString('en-IN');
+        var row = live[p.slug];
+        if (!row) return;
+        if (row.name && row.name !== p.name) p.name = row.name;
+        if (row.collection && row.collection !== p.cat) p.cat = row.collection;
+        if (row.price != null && row.price !== p.price) {
+          p.price = row.price;
+          p.priceText = '₹' + Number(row.price).toLocaleString('en-IN');
         }
       });
+
+      /* And a cloth the house has ADDED since this page was built. The grid is
+         drawn from the bundled catalogue and then filtered by the database, so
+         a cloth created at the desk had a database row and no card to filter —
+         it never appeared on the shop at all. This is that cloth.
+
+         It shows as its own colour until photographs exist for it, because a
+         card carrying a broken image is worse than a card carrying none. */
+      (S.products || []).forEach(function (row) {
+        if (R.some(function (p) { return p.slug === row.slug; })) return;
+        R.push({
+          name: row.name || row.slug,
+          slug: row.slug,
+          hex: row.hex || '#8A8A8A',
+          price: row.price || 0,
+          priceText: '₹' + Number(row.price || 0).toLocaleString('en-IN'),
+          cat: row.collection || 'The range',
+          body: row.body || '',
+          img: '',
+          shot: false,
+          lum: 0.5                     /* only used to sort by tone */
+        });
+      });
+
       document.getElementById('total').textContent = R.length;
+      drawChips();
       draw();
     });
   }

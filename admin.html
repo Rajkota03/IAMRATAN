@@ -3637,14 +3637,16 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         '</tbody></table></div></div>' +
 
         '<div class="block"><h3>Photographs</h3>' +
-        '<p class="hint">These are what the product page and the shop grid ' +
-        'show, in this order — drag to rearrange, the first one leads. If a ' +
-        'cloth has none, the studio set built with the site is used instead. ' +
-        'Big files are shrunk on the way up, so photographs straight off a ' +
-        'phone are fine.</p>' +
+        '<p class="hint">Chosen files land HERE first, for a look — nothing ' +
+        'reaches the shop until you press <b>Put on the shop</b>. What is ' +
+        'below that line is live, in this order; drag to rearrange, the first ' +
+        'one leads. If a cloth has none, the studio set built with the site ' +
+        'is used. Big files are shrunk on the way up, so photographs straight ' +
+        'off a phone are fine.</p>' +
         '<p class="filters"><input type="file" id="clothfile" multiple ' +
           'accept="image/jpeg,image/png,image/webp,image/avif">' +
           '<span class="muted" id="upnote"></span></p>' +
+        '<div id="pendingBox"></div>' +
         (imgs.length
           ? '<div class="shots" id="shots">' + imgs.map(function (im, i) {
               return '<figure class="shot" draggable="true" data-img="' + im.id +
@@ -3661,39 +3663,89 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
           : '<p class="empty">No photographs on this cloth yet.</p>') +
         '</div>');
 
-      /* One file at a time, in order, so five photographs land as sort_order
-         0-4 rather than racing each other for positions. The note keeps the
-         house informed; a fault names the file it stopped at and keeps what
-         had already landed. */
+      /* Chosen files upload to the library and STOP THERE, staged for a look.
+         The row that puts a photograph on the shop is written only when the
+         house presses the button — because a slip in a file picker must never
+         be able to change the face of a live product. That happened: a wrong
+         image went straight onto the flagship cloth, on the live shop, from
+         one misclick. Never again.
+
+         One file at a time, in order, so five photographs stage as 0-4 rather
+         than racing each other for positions. */
+      var PENDING = [];
+
+      function drawPending() {
+        var box = document.getElementById('pendingBox');
+        if (!box) return;
+        if (!PENDING.length) { box.innerHTML = ''; return; }
+        box.innerHTML =
+          '<p class="hint" style="margin-top:var(--s3)"><b>' + PENDING.length +
+            ' waiting for your say-so.</b> Not on the shop yet.</p>' +
+          '<div class="shots">' + PENDING.map(function (m) {
+            return '<figure class="shot" style="opacity:.7">' +
+              '<img src="' + esc(m.url) + '" alt="" loading="lazy"></figure>';
+          }).join('') + '</div>' +
+          '<p class="filters" style="margin-top:var(--s2)">' +
+            '<button class="btn" id="pubShots">Put ' +
+              (PENDING.length === 1 ? 'it' : 'all ' + PENDING.length) +
+              ' on the shop</button>' +
+            '<button class="btn small" id="dropShots">Discard</button></p>';
+
+        document.getElementById('pubShots').onclick = function () {
+          var btn = this; btn.disabled = true;
+          var at = imgs.length, done = 0;
+          PENDING.reduce(function (chain, m) {
+            return chain.then(function () {
+              return A.addImage({
+                product_id: Number(id), url: m.url,
+                kind: SHOTS[Math.min(at + done, SHOTS.length - 1)] || 'front',
+                sort_order: at + done
+              }).then(function () { done++; });
+            });
+          }, Promise.resolve())
+            .then(function () {
+              toast(done + ' photograph' + (done === 1 ? '' : 's') + ' on the shop.');
+              openCloth(id);
+            })
+            .catch(function (err) {
+              btn.disabled = false;
+              toast('Stopped after ' + done + ' of ' + PENDING.length + '. ' +
+                    (err && err.message), true);
+            });
+        };
+        document.getElementById('dropShots').onclick = function () {
+          PENDING = [];
+          drawPending();
+          toast('Discarded. The files stay in Media if you want them later.');
+        };
+      }
+
       document.getElementById('clothfile').addEventListener('change', function (e) {
         var files = [].slice.call(e.target.files || []);
         if (!files.length) return;
         var note = document.getElementById('upnote');
-        var at = imgs.length, done = 0;
+        var done = 0;
         e.target.disabled = true;
 
         files.reduce(function (chain, f) {
           return chain.then(function () {
             note.textContent = 'Uploading ' + (done + 1) + ' of ' + files.length + '…';
             return A.upload(f, 'products/' + (p.slug || 'cloth'))
-              .then(function (m) {
-                return A.addImage({
-                  product_id: Number(id), url: m.url,
-                  kind: SHOTS[Math.min(at + done, SHOTS.length - 1)] || 'front',
-                  sort_order: at + done
-                });
-              })
-              .then(function () { done++; });
+              .then(function (m) { done++; PENDING.push(m); });
           });
         }, Promise.resolve())
           .then(function () {
-            toast(done + ' photograph' + (done === 1 ? '' : 's') + ' added.');
-            openCloth(id);
+            note.textContent = '';
+            e.target.disabled = false;
+            e.target.value = '';
+            drawPending();
           })
           .catch(function (err) {
-            toast('Stopped at photograph ' + (done + 1) + ' of ' + files.length +
-                  '. ' + (err && err.message), true);
-            openCloth(id);
+            note.textContent = '';
+            e.target.disabled = false;
+            drawPending();
+            toast('Stopped at file ' + (done + 1) + ' of ' + files.length + '. ' +
+                  (err && err.message), true);
           });
       });
 

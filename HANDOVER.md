@@ -253,8 +253,11 @@ The desk → **Catalogue → The range → Add a cloth.**
    product page will show, and fill in fabric, weave, fit and the rest — any
    left blank simply do not appear, they never show as empty rows.
 3. **Photographs.** Choose files straight off a phone or a camera — big ones
-   are shrunk on the way up. The order they sit in is the order the shop shows
-   them; drag to rearrange, the first one leads the page and the grid.
+   are shrunk on the way up. They land in a waiting row first, for a look:
+   **nothing reaches the shop until you press "Put on the shop."** A wrong
+   pick costs a click on Discard, never a wrong photograph on a live product.
+   Once published, the order they sit in is the order the shop shows them;
+   drag to rearrange, the first one leads the page and the grid.
 4. **Stock.** Catalogue → Inventory: type the count per neck. A neck left at
    zero shows as sold out; a neck you do not cut, leave alone.
 5. **Tick it onto the shop** back in The range.

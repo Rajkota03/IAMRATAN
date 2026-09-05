@@ -33,13 +33,14 @@
   function clean(rows) {
     if (!Array.isArray(rows)) return [];
     return rows.filter(function (b) {
-      /* Shop.range, not Shop.find — find() is defined further down this file
-         and is not there yet when the bag is read. */
-      if (!b || typeof b.slug !== 'string') return false;
-      for (var i = 0; i < Shop.range.length; i++) {
-        if (Shop.range[i].slug === b.slug) return true;
-      }
-      return false;
+      /* Only the SHAPE is judged here. Whether the slug is a real cloth cannot
+         be decided at parse: the catalogue is bundled, but the desk adds cloths
+         the bundle has never heard of, and the store cache that knows them is
+         per-tab while this bag is per-browser — a checkout opened in a fresh
+         tab would have thrown the customer's shirt away at this line. Unknown
+         slugs ride along (they draw unpriced and total nothing) and are
+         evicted below, once the store has actually said what exists. */
+      return !!(b && typeof b.slug === 'string' && b.slug);
     }).map(function (b) {
       var q = parseInt(b.qty, 10);
       var sz = String(b.size == null ? '' : b.size);
@@ -243,6 +244,69 @@
       }
     });
   };
+
+  /* ---------- the cloths the catalogue has never heard of ----------
+     The desk can add a cloth now, and it exists only in the database. Every
+     page that carries a bag resolves slugs through Shop.range, so without this
+     a desk-added cloth priced correctly ON ITS OWN PAGE showed as ₹0 the
+     moment it reached the checkout — SHOP.find could not see it, and the line
+     drew with no price. (The server reprices every order from the products
+     table, so no money was ever wrong; the screen was.)
+
+     Existing rows take the database's name and price too, so a rename or a
+     reprice made at the desk follows the shirt into the bag and the checkout
+     rather than stopping at the shop grid. */
+  if (root.IARSTORE) root.IARSTORE.ready.then(function (S) {
+    if (!S.live || !S.products) return;
+    S.products.forEach(function (row) {
+      var have = null;
+      for (var i = 0; i < Shop.range.length; i++) {
+        if (Shop.range[i].slug === row.slug) { have = Shop.range[i]; break; }
+      }
+      var price = Number(row.price);
+      if (have) {
+        if (row.name) have.name = row.name;
+        if (isFinite(price) && price > 0) {
+          have.price = price;
+          have.priceText = '₹' + price.toLocaleString('en-IN');
+        }
+        return;
+      }
+      var hex = /^#[0-9A-Fa-f]{6}$/.test(row.hex || '') ? row.hex : '#8A8A8A';
+      var photos = (row.photos || []).filter(function (u) {
+        return typeof u === 'string' && /^https:\/\//.test(u);
+      });
+      var sizes = Object.keys(row.stock || {}).sort();
+      var fresh = {
+        name: row.name || row.slug, slug: row.slug, url: '',
+        hex: hex, price: isFinite(price) ? price : 0,
+        priceText: '₹' + (isFinite(price) ? price : 0).toLocaleString('en-IN'),
+        cat: row.collection || 'The range', body: row.body || '',
+        sizes: sizes.length ? sizes : ['39', '40', '42', '44', '46'],
+        img: '', photo: photos[0] || '', photos: photos, shot: false,
+        ink: (root.IAR && root.IAR.inkOn) ? root.IAR.inkOn(hex) : '#F5F2EC',
+        edge: (root.IAR && root.IAR.edgeOn) ? root.IAR.edgeOn(hex, root.IAR.TABLE) : '',
+        lum: (root.IAR && root.IAR.lum) ? root.IAR.lum(hex) : 0.5
+      };
+      Shop.range.push(fresh);
+      fresh.n = Shop.range.length;
+      fresh.no = (root.IAR && root.IAR.pad) ? root.IAR.pad(fresh.n) : String(fresh.n);
+    });
+    /* NOW the truth is in the room: a bag line naming a cloth that neither
+       the catalogue nor the database sells is a leftover — a retired cloth,
+       or somebody's editing — and goes, with the change written back. */
+    var before = Shop.bag.length;
+    for (var k = Shop.bag.length - 1; k >= 0; k--) {
+      var known = false;
+      for (var j = 0; j < Shop.range.length; j++) {
+        if (Shop.range[j].slug === Shop.bag[k].slug) { known = true; break; }
+      }
+      if (!known) Shop.bag.splice(k, 1);
+    }
+    if (Shop.bag.length !== before) save();
+
+    Shop.emit();            /* an open bag or a drawn checkout redraws itself */
+  });
 
   root.SHOP = Shop;
 })(window, document);

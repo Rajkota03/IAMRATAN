@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1788081950">
+<link rel="stylesheet" href="assets/iar-house.css?v=1788595877">
 <style>
 /* ---------- the drench ----------
    The garment's own colour becomes the room, exactly as it does in the shop.
@@ -349,13 +349,13 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1788081950"></script>
-<script src="assets/house.js?v=1788081950"></script>
-<script src="assets/catalogue.js?v=1788081950"></script>
-<script src="assets/shots.js?v=1788081950"></script>
-<script src="assets/site.js?v=1788081950"></script>
-<script src="assets/shop.js?v=1788081950"></script>
-<script src="assets/iar-house.js?v=1788081950"></script>
+<script src="assets/store.js?v=1788595877"></script>
+<script src="assets/house.js?v=1788595877"></script>
+<script src="assets/catalogue.js?v=1788595877"></script>
+<script src="assets/shots.js?v=1788595877"></script>
+<script src="assets/site.js?v=1788595877"></script>
+<script src="assets/shop.js?v=1788595877"></script>
+<script src="assets/iar-house.js?v=1788595877"></script>
 <script>
 (function () {
   'use strict';
@@ -402,7 +402,7 @@
 
   /* a bad or missing ?p= is a real user path — a shared link that lost its query,
      a product retired from the range. It gets a door out, never a blank page. */
-  if (!p) {
+  function renderMissing() {
     main.innerHTML =
       '<section class="band"><div class="wrap missing">' +
         '<p class="label muted">Not in the range</p>' +
@@ -410,8 +410,68 @@
         '<p class="lede"><span data-cloths>Twenty-seven</span> are, and they\'re all one click away.</p>' +
         '<a class="cta" href="shop.html">See the range</a>' +
       '</div></section>';
-    return;
   }
+
+  /* ---------- the photographs, whoever took them ----------
+     One shape for the gallery to draw from, whichever of three places the
+     pictures come from, in order of authority:
+       1. what the house has uploaded at the desk (p.photos, from the shop view)
+       2. the studio set built with the site (IAR_SHOTS + images/set/…)
+       3. nothing — the cloth shows as its own colour
+     The desk's photographs win because the admin's editor shows exactly that
+     list, and what the editor shows must be what the shop shows. */
+  function buildShots(p) {
+    var db = (p.photos || []).filter(function (u) {
+      return typeof u === 'string' && /^https:\/\//.test(u);
+    });
+    if (db.length) {
+      return db.map(function (u, i) {
+        return { full: u, thumb: u, srcset: '', abs: u,
+                 alt: p.name + ', view ' + (i + 1) };
+      });
+    }
+    var st = (window.IAR_SHOTS || {})[p.slug];
+    if (!st || !st.shots || !st.shots.length) return null;
+    var base = 'images/set/' + p.slug + '/';
+    return st.shots.map(function (sh) {
+      var w = (window.IAR_WIDE || {})[sh.src];
+      return {
+        full: base + sh.src + '.webp',
+        thumb: base + sh.src + '-t.webp',
+        srcset: base + sh.src + '-320.webp 320w, ' + base + sh.src + '-512.webp 512w, ' +
+                base + sh.src + '.webp 768w' +
+                (w ? ', ' + base + sh.src + '-' + w + '.webp ' + w + 'w' : ''),
+        alt: sh.alt,
+        abs: location.origin + '/' + base + sh.src + '.webp'
+      };
+    });
+  }
+
+  /* ---------- a cloth the catalogue has never heard of ----------
+     Added at the desk, so it lives only in the database. Every field the page
+     reads is built here, shaped exactly like a catalogue row — the bag drawer,
+     the toast and the related rail all iterate the same objects and must not
+     be able to tell the two kinds apart. */
+  function fromRow(row) {
+    /* the hex goes into a style attribute unescaped, so it is validated, not
+       trusted — a bad value falls back rather than travelling */
+    var hex = /^#[0-9A-Fa-f]{6}$/.test(row.hex || '') ? row.hex : '#22262A';
+    var price = isFinite(Number(row.price)) ? Number(row.price) : 0;
+    var sizes = Object.keys(row.stock || {}).sort();
+    if (!sizes.length) sizes = ['39', '40', '42', '44', '46'];
+    return {
+      name: row.name || row.slug, slug: row.slug, url: '',
+      hex: hex, price: price, priceText: IAR.rupees(price),
+      cat: row.collection || 'The range', body: row.body || '',
+      sizes: sizes, img: '', shot: false,
+      ink: IAR.inkOn(hex), edge: IAR.edgeOn(hex, IAR.TABLE), lum: IAR.lum(hex),
+      photos: (row.photos || []).filter(function (u) {
+        return typeof u === 'string' && /^https:\/\//.test(u);
+      })
+    };
+  }
+
+  function render(p) {
 
   document.title = p.name + ' · I Am Ratan';
   document.querySelector('meta[name="description"]').setAttribute('content',
@@ -451,10 +511,8 @@
          `shot.src` is a FRAME NAME — "1-hero" — not a path; handing those to
          Google would have published a product with two images called 1-hero.
          Absolute because a crawler resolves this JSON against nothing. */
-      image: (SET && SET.shots && SET.shots.length)
-        ? SET.shots.slice(0, 3).map(function (s) {
-            return location.origin + '/images/set/' + p.slug + '/' + s.src + '.webp';
-          })
+      image: (shots && shots.length)
+        ? shots.slice(0, 3).map(function (s) { return s.abs; })
         : undefined,
       brand: { '@type': 'Brand', name: 'I Am Ratan' },
       offers: {
@@ -469,8 +527,8 @@
     document.head.appendChild(el);
   }
 
-  var SET = (window.IAR_SHOTS || {})[p.slug];
-  /* called after SET exists, or the first emission ships without photographs
+  var shots = buildShots(p);
+  /* called after shots exist, or the first emission ships without photographs
      and only the re-statement below would carry them */
   schema('InStock');
 
@@ -526,7 +584,8 @@
   }
 
   function sizeGuide(p) {
-    var cols = p.sizes.filter(function (z) { return SPEC[z]; });
+    var cols = (p.sizes || []).filter(function (z) { return SPEC[z]; });
+    if (!cols.length) return '';
     function row(label, key) {
       return '<tr><th scope="row">' + label + '</th>' + cols.map(function (z) {
         return '<td>' + SPEC[z][key] + '</td>';
@@ -539,34 +598,33 @@
       '</tbody></table>';
   }
 
+  /* The plate is 340px on a phone and 585px on a desktop. At 1x that made the
+     768px file two-thirds waste; at 2x the desktop wants 1170px and 768 is
+     simply all there is, so the top tier is the ceiling rather than a choice. */
+  var MAIN_SIZES = '(max-width:759px) 92vw, 46vw';
+
   function gallery(p) {
-    if (!SET) {
-      return '<figure class="g-shot">' +
-        '<img src="images/shirts/' + esc(p.img) + '" alt="' + esc(p.name) +
-        '" fetchpriority="high" decoding="async"></figure>';
+    if (!shots) {
+      if (p.img) {
+        return '<figure class="g-shot">' +
+          '<img src="images/shirts/' + esc(p.img) + '" alt="' + esc(p.name) +
+          '" fetchpriority="high" decoding="async"></figure>';
+      }
+      /* a cloth nobody has photographed yet shows as its own colour — honest,
+         and never a broken-image glyph */
+      return '<figure class="g-shot" style="background:var(--c)" aria-hidden="true"></figure>';
     }
-    var base = 'images/set/' + p.slug + '/';
-    /* The plate is 340px on a phone and 585px on a desktop. At 1x that made the
-       768px file two-thirds waste; at 2x the desktop wants 1170px and 768 is
-       simply all there is, so the top tier is the ceiling rather than a choice. */
-    var MAIN_SIZES = '(max-width:759px) 92vw, 46vw';
-    function tiers(stem) {
-      var w = (window.IAR_WIDE || {})[stem];
-      return base + stem + '-320.webp 320w, ' + base + stem + '-512.webp 512w, ' +
-             base + stem + '.webp 768w' +
-             (w ? ', ' + base + stem + '-' + w + '.webp ' + w + 'w' : '');
-    }
-    return '<div class="gal">' +
-      '<figure class="gal-main"><img id="galMain" src="' + base + SET.shots[0].src +
-        '.webp" srcset="' + tiers(SET.shots[0].src) + '" sizes="' + MAIN_SIZES +
-        '" alt="' + esc(SET.shots[0].alt) + '" fetchpriority="high" decoding="async">' +
-      '</figure>' +
+    var head = '<figure class="gal-main"><img id="galMain" src="' + esc(shots[0].full) + '"' +
+      (shots[0].srcset ? ' srcset="' + shots[0].srcset + '" sizes="' + MAIN_SIZES + '"' : '') +
+      ' alt="' + esc(shots[0].alt) + '" fetchpriority="high" decoding="async"></figure>';
+    if (shots.length === 1) return '<div class="gal">' + head + '</div>';
+    return '<div class="gal">' + head +
       '<div class="gal-strip" role="group" aria-label="Views of this shirt">' +
-        SET.shots.map(function (sh, i) {
+        shots.map(function (sh, i) {
           return '<button type="button" data-shot="' + i + '"' +
             (i === 0 ? ' aria-current="true"' : '') +
             ' aria-label="' + esc(sh.alt) + '">' +
-            '<img src="' + base + sh.src + '-t.webp" alt="" loading="lazy" decoding="async">' +
+            '<img src="' + esc(sh.thumb) + '" alt="" loading="lazy" decoding="async">' +
             '</button>';
         }).join('') +
       '</div></div>';
@@ -575,11 +633,11 @@
   main.innerHTML =
     '<section class="garment" style="--c:' + p.hex + ';--k:' + p.ink + '">' +
       '<div class="wrap g-grid">' +
-        gallery(p) +
+        '<div id="gGal">' + gallery(p) + '</div>' +
         '<div data-sizes>' +
           '<p class="crumb"><a href="shop.html">&larr; The range</a></p>' +
           '<p class="label soft"><span class="fig">' + p.no + '</span> / ' + R.length + ' &nbsp;·&nbsp; ' +
-            esc(p.cat || 'The range') + '</p>' +
+            '<span id="gCat">' + esc(p.cat || 'The range') + '</span></p>' +
           '<h1 class="g-name">' + esc(p.name) + '</h1>' +
           '<p class="g-price">' + p.priceText + '</p>' +
           '<p class="g-body">' + esc(p.body) + '</p>' +
@@ -637,30 +695,29 @@
      swatches rather than the photography, which read as unfinished. The nav
      carries Shop and Bespoke, so nothing became unreachable. */
 
-  /* the strip swaps the main plate; the room colour never changes, because the
-     room IS the garment and the garment has not changed */
-  if (SET) {
-    var strip = main.querySelector('.gal-strip');
-    var plate = main.querySelector('#galMain');
-    strip.addEventListener('click', function (e) {
-      var b = e.target.closest('button[data-shot]');
-      if (!b) return;
-      var sh = SET.shots[+b.dataset.shot];
-      var base = 'images/set/' + p.slug + '/';
-      /* srcset first, then src, so the swap fetches the tier it wants rather
-         than the 768 it would start on and immediately discard */
-      var wide = (window.IAR_WIDE || {})[sh.src];
-      plate.srcset = base + sh.src + '-320.webp 320w, ' +
-                     base + sh.src + '-512.webp 512w, ' + base + sh.src + '.webp 768w' +
-                     (wide ? ', ' + base + sh.src + '-' + wide + '.webp ' + wide + 'w' : '');
-      plate.src = base + sh.src + '.webp';
-      plate.alt = sh.alt;
-      strip.querySelectorAll('button').forEach(function (x) {
-        x.removeAttribute('aria-current');
-      });
-      b.setAttribute('aria-current', 'true');
+  /* The strip swaps the main plate; the room colour never changes, because the
+     room IS the garment and the garment has not changed. ONE delegated handler
+     on the box rather than a listener on the strip, so when the desk's
+     photographs arrive after the store answers and the box is redrawn, nothing
+     needs rewiring — the handler reads whatever `shots` is now. */
+  var galBox = document.getElementById('gGal');
+  if (galBox) galBox.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-shot]');
+    if (!b || !shots) return;
+    var sh = shots[+b.dataset.shot];
+    var plate = galBox.querySelector('#galMain');
+    if (!sh || !plate) return;
+    /* srcset first, then src, so the swap fetches the tier it wants — and the
+       attribute REMOVED for a desk photograph, or a stale srcset from the
+       previous frame quietly wins over the src */
+    if (sh.srcset) plate.srcset = sh.srcset; else plate.removeAttribute('srcset');
+    plate.src = sh.full;
+    plate.alt = sh.alt;
+    galBox.querySelectorAll('.gal-strip button').forEach(function (x) {
+      x.removeAttribute('aria-current');
     });
-  }
+    b.setAttribute('aria-current', 'true');
+  });
 
   SHOP.mountBag();
   SHOP.wireSizes(main, function () { return p.slug; });
@@ -674,11 +731,43 @@
   if (window.IARSTORE) window.IARSTORE.ready.then(function (S) {
     if (!S.live) return;
 
-    var np = S.priceOf(p.slug);
-    if (np !== null && np !== p.price) {
-      main.querySelector('.g-price').textContent = '₹' + np.toLocaleString('en-IN');
-      p.price = np;
+    /* The database's word beats the copy bundled with the page. The desk can
+       rename a cloth, rewrite it, reprice it, re-photograph it — this is where
+       the page catches up. Mutate p FIRST, because the toast, the bag and the
+       schema all read p; then repaint every surface that had already printed.
+       For a cloth built from the database a moment ago the values are already
+       equal and every write lands unchanged. */
+    var live = S.row ? S.row(p.slug) : null;
+    if (live) {
+      if (live.name) p.name = live.name;
+      if (live.body) p.body = live.body;
+      if (live.collection) p.cat = live.collection;
+      var lp = Number(live.price);
+      if (isFinite(lp) && lp > 0) p.price = lp;
+
+      /* photographs the desk has added since this page was built: redraw the
+         box; the delegated handler needs no rewiring */
+      var dbPhotos = (live.photos || []).filter(function (u) {
+        return typeof u === 'string' && /^https:\/\//.test(u);
+      });
+      if (dbPhotos.length && (!p.photos || !p.photos.length)) {
+        p.photos = dbPhotos;
+        shots = buildShots(p);
+        var box = document.getElementById('gGal');
+        if (box) box.innerHTML = gallery(p);
+      }
     }
+    p.priceText = IAR.rupees(p.price);
+
+    document.title = p.name + ' \u00B7 I Am Ratan';
+    document.querySelector('meta[name="description"]').setAttribute('content',
+      p.name + ', ' + p.priceText + '. ' + p.body);
+    var nm = main.querySelector('.g-name');   if (nm) nm.textContent = p.name;
+    var bd = main.querySelector('.g-body');   if (bd) bd.textContent = p.body;
+    var pr = main.querySelector('.g-price');  if (pr) pr.textContent = p.priceText;
+    var ct = document.getElementById('gCat'); if (ct) ct.textContent = p.cat || 'The range';
+    var bn = document.getElementById('gbarName');  if (bn) bn.textContent = p.name;
+    var bp = document.getElementById('gbarPrice'); if (bp) bp.textContent = p.priceText;
 
     /* Re-state the structured data now the database has answered, so the price
        and the availability Google reads are the ones a customer would be
@@ -743,8 +832,8 @@
     bar.style.setProperty('--c', p.hex);
     bar.style.setProperty('--k', p.ink);
     bar.innerHTML =
-      '<span class="gbar-nm"><b>' + esc(p.name) + '</b>' +
-      '<span>' + p.priceText + '</span></span>' +
+      '<span class="gbar-nm"><b id="gbarName">' + esc(p.name) + '</b>' +
+      '<span id="gbarPrice">' + p.priceText + '</span></span>' +
       '<button type="button">Add to Cart</button>';
     document.body.appendChild(bar);
     bar.querySelector('button').addEventListener('click', function () {
@@ -779,10 +868,50 @@
   document.querySelectorAll('.snap,.rise').forEach(function (el) {
     el.classList.add('in');
   });
+
+  }  /* end render(p) */
+
+  /* ---------- which cloth, and from where ----------
+     A catalogue cloth paints synchronously, exactly as it always has — no
+     regression, no waiting on the network. A cloth the catalogue has never
+     heard of — added at the desk — can only be drawn once the store answers,
+     so it waits behind a quiet line, with a way out: eight seconds and the
+     honest 404. A store that turns up late with the goods overwrites the 404,
+     because a slow answer is still an answer.
+
+     The pushed row joins IAR.RANGE itself — the SAME array shop.js holds as
+     Shop.range — which is what makes Add to Cart, the toast and the bag work
+     for a cloth shop.js has never seen in a file. */
+  if (p) {
+    render(p);
+  } else if (!window.IARSTORE) {
+    renderMissing();
+  } else {
+    main.innerHTML = '<section class="band"><div class="wrap missing">' +
+      '<p class="label muted">One moment</p></div></section>';
+    var t404 = setTimeout(renderMissing, 8000);
+    window.IARSTORE.ready.then(function (S) {
+      clearTimeout(t404);
+      var row = (S.live && S.row) ? S.row(slug) : null;
+      if (!row) { renderMissing(); return; }
+      /* shop.js merges desk cloths into the range on the same store answer,
+         and usually wins the race — reuse its row rather than pushing a twin */
+      for (var i = 0; i < R.length; i++) {
+        if (R[i].slug === slug) { p = R[i]; break; }
+      }
+      if (!p) {
+        p = fromRow(row);
+        R.push(p);
+        p.n = R.length;
+        p.no = IAR.pad(R.length);
+      }
+      render(p);
+    });
+  }
 })();
 </script>
-<script src="assets/mark.js?v=1788081950"></script>
-<script src="assets/track.js?v=1788081950"></script>
+<script src="assets/mark.js?v=1788595877"></script>
+<script src="assets/track.js?v=1788595877"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -793,6 +922,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1788081950"></script>
+<script src="assets/nav.js?v=1788595877"></script>
 </body>
 </html>

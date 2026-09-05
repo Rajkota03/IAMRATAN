@@ -210,8 +210,15 @@
     return api('products?id=eq.' + id, { method: 'PATCH', body: patch, prefer: 'return=minimal' });
   };
   A.setStock   = function (productId, size, qty) {
-    return api('inventory?product_id=eq.' + productId + '&size=eq.' + encodeURIComponent(size),
-      { method: 'PATCH', body: { qty: qty }, prefer: 'return=minimal' });
+    /* An UPSERT, not a PATCH. A cloth added at the desk has no inventory rows
+       yet, and a PATCH that matches nothing answers 204 exactly like one that
+       worked — so the field flashed "saved" while saving nothing at all. The
+       unique key on (product_id, size) makes the upsert honest either way. */
+    return api('inventory?on_conflict=product_id,size', {
+      method: 'POST',
+      prefer: 'return=minimal,resolution=merge-duplicates',
+      body: [{ product_id: Number(productId), size: size, qty: qty }]
+    });
   };
   A.setSetting = function (key, value) {
     return api('settings?key=eq.' + encodeURIComponent(key),
@@ -377,8 +384,52 @@
   /* The file goes to Storage; the row that says what the picture is OF goes to
      the table. Storage first — a catalogue entry pointing at a file that failed
      to upload is worse than a file nobody has catalogued. */
-  A.upload = function (file, folder) {
-    var clean = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-|-$/g, '');
+  /* A photograph straight off a phone or a camera is 4-8 MB, and the two
+     files already in the bucket prove the point — 3.6 and 4.5 MB of PNG for a
+     screen that will never show more than ~1600 pixels of it. Shrink raster
+     images in the browser before they travel. SVGs and PDFs pass untouched;
+     so does anything that fails to decode, because a failed shrink must never
+     lose the upload. */
+  function shrink(file) {
+    if (!/^image\/(jpeg|png|webp|avif)$/.test(file.type)) return Promise.resolve(file);
+    return new Promise(function (resolve) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (!w || (w <= 1600 && file.size < 400 * 1024)) return resolve(file);
+        var scale = Math.min(1, 1600 / w);
+        var c = document.createElement('canvas');
+        c.width = Math.round(w * scale); c.height = Math.round(h * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (webp) {
+          if (webp && webp.size) {
+            webp.name = file.name.replace(/\.[a-z0-9]+$/i, '') + '.webp';
+            return resolve(webp);
+          }
+          /* older Safari cannot encode webp */
+          c.toBlob(function (jpg) {
+            if (jpg && jpg.size) {
+              jpg.name = file.name.replace(/\.[a-z0-9]+$/i, '') + '.jpg';
+              return resolve(jpg);
+            }
+            resolve(file);
+          }, 'image/jpeg', 0.85);
+        }, 'image/webp', 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    });
+  }
+
+  A.upload = function (original, folder) {
+   return shrink(original).then(function (file) {
+    /* read, never assign: a File's name is a getter, and writing to it throws
+       in strict mode — which broke every upload small enough to skip the
+       shrink. A shrunk Blob carries the name shrink() gave it. */
+    var fname = file.name || original.name || 'photograph';
+    var clean = fname.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-|-$/g, '');
     /* the name is kept, because "cocoa-drift-cuff.jpg" is findable and a uuid is
        not, and a short stamp is enough to stop two uploads colliding */
     var path = (folder || 'uncategorised').toLowerCase().replace(/[^a-z0-9]+/g, '-') +
@@ -404,13 +455,14 @@
         body: [{
           path: path,
           url: URL_BASE + '/storage/v1/object/public/house/' + encodeURI(path),
-          name: file.name,
+          name: original.name || fname,
           folder: folder || 'Uncategorised',
           kind: file.type,
           bytes: file.size
         }]
       }).then(one);
     });
+   });
   };
 
   A.delMedia = function (row) {

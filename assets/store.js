@@ -193,6 +193,11 @@
     return Store.settings.hide_sold_out && Store.allGone(slug);
   };
 
+  /* The whole shop-view row for one cloth — name, price, hex, body, stock,
+     photographs — or null while nothing is known. The product page builds a
+     cloth the static catalogue has never heard of from exactly this. */
+  Store.row = function (slug) { return row(slug); };
+
   /* What a cloth IS, as the house has typed it at the desk.
 
      This has to come from here and not from assets/catalogue.js, because that

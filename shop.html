@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1788081950">
+<link rel="stylesheet" href="assets/iar-house.css?v=1788595877">
 <style>
 /* THE GRID
    The shoppable one. Nine garments on the first screen, filters that actually
@@ -263,14 +263,14 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1788081950"></script>
-<script src="assets/house.js?v=1788081950"></script>
-<script src="assets/catalogue.js?v=1788081950"></script>
-<script src="assets/shots.js?v=1788081950"></script>
-<script src="assets/site.js?v=1788081950"></script>
-<script src="assets/iar-house.js?v=1788081950"></script>
-<script src="assets/mark.js?v=1788081950"></script>
-<script src="assets/track.js?v=1788081950"></script>
+<script src="assets/store.js?v=1788595877"></script>
+<script src="assets/house.js?v=1788595877"></script>
+<script src="assets/catalogue.js?v=1788595877"></script>
+<script src="assets/shots.js?v=1788595877"></script>
+<script src="assets/site.js?v=1788595877"></script>
+<script src="assets/iar-house.js?v=1788595877"></script>
+<script src="assets/mark.js?v=1788595877"></script>
+<script src="assets/track.js?v=1788595877"></script>
 <script>
 (function () {
   'use strict';
@@ -321,10 +321,10 @@
   function card(p) {
     var s = (window.IAR_SHOTS || {})[p.slug];
     if (s) return 'images/set/' + p.slug + '/1-hero.webp';
-    /* A cloth the house has just added has neither a shot set nor a catalogue
-       photograph, so there is nothing to point at. Returning '' rather than
-       images/shirts/undefined lets the card show the cloth's own colour, which
-       is honest; a broken image icon is not. */
+    /* a cloth added at the desk leads with the first photograph the house
+       uploaded; failing that its catalogue frame; failing that its own colour
+       — never a broken-image glyph */
+    if (p.photo) return p.photo;
     return p.img ? 'images/shirts/' + p.img : '';
   }
   function cardAlt(p) {
@@ -506,15 +506,19 @@
          card carrying a broken image is worse than a card carrying none. */
       (S.products || []).forEach(function (row) {
         if (R.some(function (p) { return p.slug === row.slug; })) return;
+        var pic = (row.photos || []).filter(function (u) {
+          return typeof u === 'string' && /^https:\/\//.test(u);
+        })[0] || '';
         R.push({
           name: row.name || row.slug,
           slug: row.slug,
-          hex: row.hex || '#8A8A8A',
+          hex: /^#[0-9A-Fa-f]{6}$/.test(row.hex || '') ? row.hex : '#8A8A8A',
           price: row.price || 0,
           priceText: '₹' + Number(row.price || 0).toLocaleString('en-IN'),
           cat: row.collection || 'The range',
           body: row.body || '',
           img: '',
+          photo: pic,                  /* the desk's own photograph, if any */
           shot: false,
           lum: 0.5                     /* only used to sort by tone */
         });
@@ -537,6 +541,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1788081950"></script>
+<script src="assets/nav.js?v=1788595877"></script>
 </body>
 </html>

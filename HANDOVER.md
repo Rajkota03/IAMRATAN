@@ -3,7 +3,7 @@
 Everything needed to own, run and repair this website without the person who
 built it. Written for someone technical who has never seen it before.
 
-Last updated 27 Aug 2026.
+Last updated 5 Sep 2026.
 
 ---
 
@@ -240,6 +240,36 @@ One limitation worth knowing: an entry written at the desk is drawn by the
 browser, so a search engine that does not run JavaScript sees an empty page.
 The four flagship essays are real HTML and do not have this problem. If a new
 entry matters for search, it is worth turning into its own file.
+
+---
+
+## 4c · Adding a cloth, end to end — no developer needed
+
+The desk → **Catalogue → The range → Add a cloth.**
+
+1. **Name, price, colour, collection.** It arrives hidden — nothing shows on
+   the shop until you tick it on.
+2. **The cloth itself.** You land in its editor. Write the description the
+   product page will show, and fill in fabric, weave, fit and the rest — any
+   left blank simply do not appear, they never show as empty rows.
+3. **Photographs.** Choose files straight off a phone or a camera — big ones
+   are shrunk on the way up. The order they sit in is the order the shop shows
+   them; drag to rearrange, the first one leads the page and the grid.
+4. **Stock.** Catalogue → Inventory: type the count per neck. A neck left at
+   zero shows as sold out; a neck you do not cut, leave alone.
+5. **Tick it onto the shop** back in The range.
+
+Renaming, repricing or rewriting an existing cloth is the same editor, and
+changes appear everywhere — the shop grid, the product page, the orders.
+
+Two things worth knowing:
+
+- **Changes can take up to five minutes** to appear in a browser tab that was
+  already open (the shop keeps a short cache so browsing stays fast). A new
+  tab sees them at once. Nothing is wrong.
+- The photographs a cloth carries in its editor are exactly what the shop
+  shows. If a cloth has none, the studio set built with the site is used —
+  which is why the original range looks the same as always.
 
 ---
 

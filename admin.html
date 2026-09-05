@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1788081950">
+<link rel="stylesheet" href="assets/iar-house.css?v=1788595877">
 <style>
 /* ---------- THE DESK ----------
    A control room, not a dashboard. The first question it answers is "what
@@ -611,9 +611,9 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     <div class="over-card"></div></div>
 </main>
 
-<script src="assets/admin.js?v=1788081950"></script>
-<script src="assets/iar-house.js?v=1788081950"></script>
-<script src="assets/mark.js?v=1788081950"></script>
+<script src="assets/admin.js?v=1788595877"></script>
+<script src="assets/iar-house.js?v=1788595877"></script>
+<script src="assets/mark.js?v=1788595877"></script>
 <script>
 (function () {
   'use strict';
@@ -3258,6 +3258,9 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
           field(e, 'kicker', 'Kicker') +
           field(e, 'standfirst', 'The line under the title') +
           field(e, 'hero', 'Photograph') +
+          '<p class="filters" style="margin:0"><input type="file" id="herofile" ' +
+            'accept="image/jpeg,image/png,image/webp,image/avif">' +
+            '<span class="muted">…or upload one, and the field above fills itself</span></p>' +
           field(e, 'hero_alt', 'What the photograph shows') +
         '</div></div>' +
 
@@ -3277,6 +3280,18 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
                             : 'Not yet published.') + '</p>' +
           '<button class="btn warn small" data-entry-del="' + e.id + '">Delete this entry</button>' +
         '</div>');
+      var hf = document.getElementById('herofile');
+      if (hf) hf.addEventListener('change', function (ev) {
+        var f = (ev.target.files || [])[0];
+        if (!f) return;
+        ev.target.disabled = true;
+        A.upload(f, 'journal')
+          .then(function (m) {
+            return saving(A.setEntry(e.id, { hero: m.url }), null, 'the photograph');
+          })
+          .then(function () { toast('Photograph up.'); openEntry(e.id); },
+                function () { ev.target.disabled = false; });
+      });
     }).catch(function (err) { body(needsSQL(err)); });
   }
 
@@ -3582,6 +3597,33 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         '<p class="hint">' + esc(p.name) + ' · ' + rupees(p.price) +
           '. Every field saves as you leave it.</p>' +
 
+        '<div class="block"><h3>The cloth itself</h3>' +
+        '<p class="hint">The name and the words the shop shows. Renaming here ' +
+        'renames it everywhere — the shop, the product page, the orders.</p>' +
+        '<div class="scroll"><table><tbody>' +
+        '<tr><td style="width:12rem">Name</td><td>' +
+          '<input class="cell wide" value="' + esc(p.name || '') +
+          '" data-cloth="' + p.id + '" data-field="name"></td></tr>' +
+        '<tr><td>Description</td><td>' +
+          '<textarea class="cell wide" rows="5" style="max-width:34rem;' +
+          'font-family:inherit;font-size:.875rem;line-height:1.6" data-cloth="' +
+          p.id + '" data-field="body">' + esc(p.body || '') + '</textarea></td></tr>' +
+        '<tr><td>Colour</td><td><input class="cell" type="color" value="' +
+          esc(/^#[0-9A-Fa-f]{6}$/.test(p.hex || '') ? p.hex : '#8A8A8A') +
+          '" data-cloth="' + p.id + '" data-field="hex" ' +
+          'title="The swatch and the ground the photographs sit on"></td></tr>' +
+        '<tr><td>Collection</td><td>' +
+          '<input class="cell wide" value="' + esc(p.collection || '') +
+          '" data-cloth="' + p.id + '" data-field="collection" list="collist2">' +
+          '<datalist id="collist2">' + PRODUCTS.map(function (x) {
+            return x.collection;
+          }).filter(function (c, i, all) {
+            return c && all.indexOf(c) === i;
+          }).map(function (c) {
+            return '<option value="' + esc(c) + '">';
+          }).join('') + '</datalist></td></tr>' +
+        '</tbody></table></div></div>' +
+
         '<div class="block"><h3>The garment</h3><div class="scroll">' +
         '<table><tbody>' + GARMENT.map(function (g) {
           return '<tr><td style="width:12rem">' + g[1] + '</td><td>' +
@@ -3595,15 +3637,14 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         '</tbody></table></div></div>' +
 
         '<div class="block"><h3>Photographs</h3>' +
-        '<p class="hint">Drag to reorder — the first is the one the shop ' +
-        'leads with. Name each by what it shows so the product page can ask for ' +
-        'the cuff shot by name.</p>' +
-        '<form class="filters" id="newimg">' +
-          '<input class="cell wide" name="url" placeholder="images/cocoa-drift-cuff.jpg" required>' +
-          '<select class="cell" name="kind">' + SHOTS.map(function (s) {
-            return '<option value="' + s + '">' + s + '</option>';
-          }).join('') + '</select>' +
-          '<button class="btn small" type="submit">Add</button></form>' +
+        '<p class="hint">These are what the product page and the shop grid ' +
+        'show, in this order — drag to rearrange, the first one leads. If a ' +
+        'cloth has none, the studio set built with the site is used instead. ' +
+        'Big files are shrunk on the way up, so photographs straight off a ' +
+        'phone are fine.</p>' +
+        '<p class="filters"><input type="file" id="clothfile" multiple ' +
+          'accept="image/jpeg,image/png,image/webp,image/avif">' +
+          '<span class="muted" id="upnote"></span></p>' +
         (imgs.length
           ? '<div class="shots" id="shots">' + imgs.map(function (im, i) {
               return '<figure class="shot" draggable="true" data-img="' + im.id +
@@ -3620,13 +3661,40 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
           : '<p class="empty">No photographs on this cloth yet.</p>') +
         '</div>');
 
-      document.getElementById('newimg').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var f = e.target;
-        A.addImage({
-          product_id: Number(id), url: f.elements.url.value.trim(),
-          kind: f.elements.kind.value, sort_order: imgs.length
-        }).then(function () { openCloth(id); });
+      /* One file at a time, in order, so five photographs land as sort_order
+         0-4 rather than racing each other for positions. The note keeps the
+         house informed; a fault names the file it stopped at and keeps what
+         had already landed. */
+      document.getElementById('clothfile').addEventListener('change', function (e) {
+        var files = [].slice.call(e.target.files || []);
+        if (!files.length) return;
+        var note = document.getElementById('upnote');
+        var at = imgs.length, done = 0;
+        e.target.disabled = true;
+
+        files.reduce(function (chain, f) {
+          return chain.then(function () {
+            note.textContent = 'Uploading ' + (done + 1) + ' of ' + files.length + '…';
+            return A.upload(f, 'products/' + (p.slug || 'cloth'))
+              .then(function (m) {
+                return A.addImage({
+                  product_id: Number(id), url: m.url,
+                  kind: SHOTS[Math.min(at + done, SHOTS.length - 1)] || 'front',
+                  sort_order: at + done
+                });
+              })
+              .then(function () { done++; });
+          });
+        }, Promise.resolve())
+          .then(function () {
+            toast(done + ' photograph' + (done === 1 ? '' : 's') + ' added.');
+            openCloth(id);
+          })
+          .catch(function (err) {
+            toast('Stopped at photograph ' + (done + 1) + ' of ' + files.length +
+                  '. ' + (err && err.message), true);
+            openCloth(id);
+          });
       });
 
       dragShots(id);

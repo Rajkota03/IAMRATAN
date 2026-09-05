@@ -319,15 +319,21 @@
   /* the frame the card leads with, and the one it turns to on hover. A cloth
      without a shot set has neither, and falls back to its catalogue photograph. */
   function card(p) {
+    /* The desk's photograph FIRST, for every cloth — the same precedence the
+       product page uses, because the one rule the house can hold is: what the
+       cloth's editor shows is what the shop shows, both surfaces, no
+       exceptions. Then the studio set, then the catalogue frame, then the
+       cloth's own colour — never a broken-image glyph. */
+    if (p.photo) return p.photo;
     var s = (window.IAR_SHOTS || {})[p.slug];
     if (s) return 'images/set/' + p.slug + '/1-hero.webp';
-    /* a cloth added at the desk leads with the first photograph the house
-       uploaded; failing that its catalogue frame; failing that its own colour
-       — never a broken-image glyph */
-    if (p.photo) return p.photo;
     return p.img ? 'images/shirts/' + p.img : '';
   }
   function cardAlt(p) {
+    /* the second frame follows the same source as the first: a desk-led card
+       turns to the desk's second photograph or not at all — a studio frame
+       behind a desk lead reads as two different shirts */
+    if (p.photo) return (p.photos && p.photos[1]) || '';
     var s = (window.IAR_SHOTS || {})[p.slug];
     return s && s.shots[1] ? 'images/set/' + p.slug + '/' + s.shots[1].src + '.webp' : '';
   }
@@ -495,6 +501,11 @@
           p.price = row.price;
           p.priceText = '₹' + Number(row.price).toLocaleString('en-IN');
         }
+        /* the desk's photographs reach the grid for catalogue cloths too */
+        var ph = (row.photos || []).filter(function (u) {
+          return typeof u === 'string' && /^https:\/\//.test(u);
+        });
+        if (ph.length) { p.photo = ph[0]; p.photos = ph; }
       });
 
       /* And a cloth the house has ADDED since this page was built. The grid is

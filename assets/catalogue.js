@@ -169,7 +169,7 @@ window.IAR_CATALOGUE = [
  {
   "name": "Espresso",
   "slug": "espresso",
-  "price": 0,
+  "price": 3999,
   "cat": "Working hours",
   "sizes": [
    "39",

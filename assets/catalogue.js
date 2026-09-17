@@ -94,7 +94,7 @@ window.IAR_CATALOGUE = [
    "46"
   ],
   "hex": "#E6E4DE",
-  "body": "Crafted from premium cotton, Moonlight speckle features an intricate jacquard weave that adds subtle texture and depth. The tailored fit ensures a sharp, modern silhouette, while the breathable fabric offers all-day comfort.",
+  "body": "Crafted from premium cotton, Blanc Dewdrop features an intricate jacquard weave that adds subtle texture and depth. The tailored fit ensures a sharp, modern silhouette, while the breathable fabric offers all-day comfort.",
   "img": "moonlight-speckle.webp",
   "url": "https://iamratan.co.in/product/moonlight-speckle/"
  },
@@ -111,7 +111,7 @@ window.IAR_CATALOGUE = [
    "46"
   ],
   "hex": "#7FA3CC",
-  "body": "",
+  "body": "A mid blue that reads solid from across a room and shows its weave at arm's length. The texture is fine and even, enough to keep the colour from going flat under office light. Tonal buttons and a spread collar, on a shirt that does not announce itself and has no need to.",
   "img": "marina-stripe-3.webp",
   "url": "https://iamratan.co.in/product/marina-stripe-3/"
  },
@@ -128,7 +128,7 @@ window.IAR_CATALOGUE = [
    "46"
   ],
   "hex": "#9FB6D9",
-  "body": "pattern for a touch of texture. The tailored fit offers a sleek, flattering shape, while the premium fabric ensures comfort. Completed with mother-of-pearl buttons and expert craftsmanship, this shirt is both versatile and elegant",
+  "body": "Crafted from premium cotton in a clear sky blue, Ratan's Blue carries a fine woven pattern for a touch of texture. The tailored fit offers a sleek, flattering shape, while the premium fabric ensures comfort. Completed with mother-of-pearl buttons and expert craftsmanship, this shirt is both versatile and elegant.",
   "img": "azure-pearls.webp",
   "url": "https://iamratan.co.in/product/azure-pearls/"
  },
@@ -145,7 +145,7 @@ window.IAR_CATALOGUE = [
    "46"
   ],
   "hex": "#F0F0EC",
-  "body": "dotted pattern for a touch of texture. The tailored fit offers a sleek, flattering shape, while the premium fabric ensures comfort. Completed with mother-of-pearl buttons and expert craftsmanship, this shirt is both versatile and elegant.",
+  "body": "Crafted from premium cotton in a soft ivory, Moonlight Speckle carries a fine dotted pattern for a touch of texture. The tailored fit offers a sleek, flattering shape, while the premium fabric ensures comfort. Completed with mother-of-pearl buttons and expert craftsmanship, this shirt is both versatile and elegant.",
   "img": "blanc-dewdrop.webp",
   "url": "https://iamratan.co.in/product/blanc-dewdrop/"
  },
@@ -179,7 +179,7 @@ window.IAR_CATALOGUE = [
    "46"
   ],
   "hex": "#503B39",
-  "body": "",
+  "body": "A deep coffee brown, close-woven and finished soft, with a quiet sheen where the light falls across it. Tonal buttons and a cutaway collar keep the weight of the colour from reading heavy. It sits as easily over stone chinos at noon as it does under a jacket after dark.",
   "img": "",
   "url": "https://www.iamratan.co.in/shop.html"
  }

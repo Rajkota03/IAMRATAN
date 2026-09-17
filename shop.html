@@ -72,13 +72,57 @@
   background-size:.5rem auto}
 /* This carries the page's only remaining choice, so its focus ring has to be
    visible. An underline rather than a box: it belongs to the type. */
-.sortwrap select:focus-visible{outline:0;
+.sortwrap select:focus-visible,.sortpick:focus-visible{outline:0;
   text-decoration:underline;text-underline-offset:4px;
   text-decoration-thickness:1px}
-/* The open dropdown is the operating system's and cannot be styled, but the
-   options can at least carry the page's ground rather than a white sheet. */
-.sortwrap select option{font-family:var(--mono);text-transform:none;
-  letter-spacing:0;font-size:.8125rem;color:var(--ink);background:var(--room)}
+
+/* ---------- the open menu ----------
+   A native select's dropdown is drawn by the operating system and cannot be
+   styled at all: on this page it arrived as a white sheet with a rounded
+   shadow and a tick, which is macOS talking over a shop built from hairlines.
+
+   So the panel is ours. What a select gives away for free, and what the script
+   below therefore has to earn back, is the keyboard: arrows, Home and End,
+   Enter, Escape, type-ahead, and a screen reader that knows what is selected.
+
+   ON A PHONE THE NATIVE PICKER WINS and is kept. iOS and Android render a
+   select as a wheel or a sheet at the bottom of the screen, sized for a thumb;
+   nothing built in a div beats that. So the custom control appears only where
+   there is a real pointer, and touch keeps the native one. */
+.sortpick{display:none}
+@media (hover:hover) and (pointer:fine){
+  .sortwrap select{display:none}
+  .sortpick{display:inline-flex;align-items:center;gap:var(--s2);
+    position:relative;
+    appearance:none;background:none;border:0;border-radius:0;margin:0;
+    padding:var(--s0) 0;color:var(--ink);cursor:pointer;
+    font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+    text-transform:uppercase;line-height:1.5}
+}
+.sortpick svg{flex:none;transition:transform .3s var(--settle)}
+.sortpick[aria-expanded="true"] svg{transform:rotate(180deg)}
+
+.sortmenu{position:absolute;top:calc(100% + var(--s2));right:0;z-index:40;
+  min-width:max-content;margin:0;padding:var(--s1) 0;list-style:none;
+  background:var(--room);border:1px solid var(--hair);
+  box-shadow:0 .6rem 1.6rem rgba(26,28,30,.10);
+  opacity:0;transform:translateY(-.25rem);pointer-events:none;
+  transition:opacity .2s var(--settle),transform .2s var(--settle)}
+.sortmenu.on{opacity:1;transform:none;pointer-events:auto}
+.sortmenu li{margin:0}
+.sortmenu button{display:block;width:100%;text-align:left;
+  appearance:none;background:none;border:0;cursor:pointer;
+  padding:var(--s2) var(--s4) var(--s2) var(--s3);
+  font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+  text-transform:uppercase;line-height:1.5;color:var(--muted);
+  transition:color .18s var(--settle),background .18s var(--settle)}
+.sortmenu button:hover,.sortmenu button.here{color:var(--ink);background:var(--under)}
+/* the chosen one is marked by weight and ink, not by a tick: a glyph in the
+   gutter would push every label across and break the left edge */
+.sortmenu button[aria-selected="true"]{color:var(--ink)}
+@media (prefers-reduced-motion:reduce){
+  .sortpick svg,.sortmenu{transition:none}
+}
 
 @media(max-width:759px){
   /* one line, edge to edge. Without the capsule padding the three labels fit
@@ -209,6 +253,14 @@
             <option value="low">Price, low to high</option>
             <option value="high">Price, high to low</option>
           </select>
+          <button type="button" class="sortpick" id="sortpick"
+                  aria-haspopup="listbox" aria-expanded="false">
+            <span id="sortpickLabel">By the range</span>
+            <svg width="9" height="6" viewBox="0 0 9 6" aria-hidden="true">
+              <path d="M1 1l3.5 3.5L8 1" fill="none" stroke="currentColor"
+                    stroke-width="1.1" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -393,9 +445,123 @@
     }).join('');
   }
 
-  document.getElementById('sort').addEventListener('change', function (e) {
-    order = e.target.value; draw();
-  });
+  var sortSel = document.getElementById('sort');
+  sortSel.addEventListener('change', function (e) { order = e.target.value; draw(); });
+
+  /* ---------- the sort menu ----------
+     The native select stays in the DOM and stays the source of truth: this
+     builds a panel from its options and writes back to it, so the change
+     handler above is the only thing that ever sorts the grid. On a phone the
+     CSS hides this and the native picker is used instead.
+
+     A select hands you the keyboard for nothing. Replacing one means earning
+     it back, so: arrows move, Home and End jump, Enter and Space choose,
+     Escape closes and returns focus, Tab closes, typing jumps to a label, and
+     the roles tell a screen reader what this is and which option is current. */
+  (function () {
+    var pick  = document.getElementById('sortpick');
+    var label = document.getElementById('sortpickLabel');
+    if (!pick) return;
+
+    var opts = [].slice.call(sortSel.options);
+    var menu = document.createElement('ul');
+    menu.className = 'sortmenu';
+    menu.setAttribute('role', 'listbox');
+    menu.setAttribute('aria-label', 'Order the range');
+    menu.hidden = true;
+
+    var items = opts.map(function (o, i) {
+      var li = document.createElement('li');
+      var b  = document.createElement('button');
+      b.type = 'button';
+      b.textContent = o.textContent;
+      b.setAttribute('role', 'option');
+      b.setAttribute('aria-selected', String(o.value === sortSel.value));
+      b.dataset.value = o.value;
+      b.dataset.i = i;
+      li.appendChild(b); menu.appendChild(li);
+      return b;
+    });
+    pick.appendChild(menu);
+
+    var open = false, at = Math.max(0, sortSel.selectedIndex);
+
+    function mark() {
+      items.forEach(function (b, i) {
+        b.classList.toggle('here', i === at);
+        b.setAttribute('aria-selected', String(b.dataset.value === sortSel.value));
+      });
+    }
+    function show() {
+      open = true; menu.hidden = false;
+      /* The transition needs a painted start state, so the element has to be
+         laid out before the class lands. Reading offsetHeight forces that
+         synchronously. requestAnimationFrame would also work on a visible tab
+         and NOT on a hidden one, where the callback is never scheduled and the
+         menu would sit at opacity 0 with its aria-expanded already true. */
+      void menu.offsetHeight;
+      menu.classList.add('on');
+      pick.setAttribute('aria-expanded', 'true');
+      at = Math.max(0, sortSel.selectedIndex); mark();
+      items[at].focus();
+    }
+    function hide(back) {
+      open = false; menu.classList.remove('on');
+      pick.setAttribute('aria-expanded', 'false');
+      setTimeout(function () { if (!open) menu.hidden = true; }, 200);
+      if (back) pick.focus();
+    }
+    function choose(b) {
+      sortSel.value = b.dataset.value;
+      label.textContent = b.textContent;
+      sortSel.dispatchEvent(new Event('change'));
+      mark(); hide(true);
+    }
+
+    pick.addEventListener('click', function (e) {
+      if (e.target.closest('.sortmenu')) return;   /* a click on an option */
+      open ? hide(true) : show();
+    });
+    menu.addEventListener('click', function (e) {
+      var b = e.target.closest('button[role=option]');
+      if (b) choose(b);
+    });
+
+    pick.addEventListener('keydown', function (e) {
+      if (!open && (e.key === 'ArrowDown' || e.key === 'ArrowUp' ||
+                    e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault(); show(); return;
+      }
+      if (!open) return;
+
+      if (e.key === 'Escape')    { e.preventDefault(); hide(true); return; }
+      if (e.key === 'Tab')       { hide(false); return; }
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault(); choose(items[at]); return;
+      }
+      var to = null;
+      if (e.key === 'ArrowDown') to = Math.min(items.length - 1, at + 1);
+      if (e.key === 'ArrowUp')   to = Math.max(0, at - 1);
+      if (e.key === 'Home')      to = 0;
+      if (e.key === 'End')       to = items.length - 1;
+      if (to === null && e.key.length === 1 && /\S/.test(e.key)) {
+        /* type-ahead, the one select behaviour people use without noticing */
+        var k = e.key.toLowerCase();
+        for (var n = 1; n <= items.length; n++) {
+          var j = (at + n) % items.length;
+          if (items[j].textContent.toLowerCase().indexOf(k) === 0) { to = j; break; }
+        }
+      }
+      if (to !== null) { e.preventDefault(); at = to; mark(); items[at].focus(); }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (open && !pick.contains(e.target)) hide(false);
+    });
+
+    label.textContent = opts[sortSel.selectedIndex].textContent;
+    mark();
+  }());
 
   /* The second frame is fetched the first time a card is approached — hovered on
      a desktop, touched on a phone — so scrolling past twenty-seven cards costs

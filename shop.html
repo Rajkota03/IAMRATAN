@@ -29,44 +29,24 @@
    filter, and a card that shows the cloth colour even before its photograph
    loads — so the range reads as colour at a glance and as product on approach. */
 .head{padding:var(--clear) 0 0}
-/* ---------- the filter row ----------
-   With the heading gone this IS the top of the page, so it carries the weight:
-   three filters, all of them on screen at once, at every width.
-
-   Text and a rule, not pills. A bordered capsule draws a box around every
-   option including the ones you did not choose, so three filters cost three
-   boxes of chrome to say one thing. The label is the control; the chosen one
-   goes to full ink and takes an underline, the rest sit at muted. Same
-   hairline-and-mono language as the rest of the house, and it reads as
-   editorial rather than as a storefront widget. */
+/* ---------- the tool row ----------
+   With the heading gone this IS the top of the page. It used to carry a
+   collection filter as well; the house cuts one kind of shirt, so "All 10"
+   beside "Working hours 8" was asking a customer to choose between the shop
+   and most of the shop. What is left is the sort, and a rule under it. */
 .tools{display:grid;gap:var(--s2) var(--s4);align-items:center;
   margin:0;padding-bottom:var(--s2);
   border-bottom:1px solid var(--hair)}
-@media(min-width:1020px){
-  /* the empty first column is what actually centres the chips: with the sort
-     control alone on the right, space-between would push them off-centre by
-     exactly its width. The threshold is measured, not guessed — see the note
-     in the mobile block. */
-  .tools{grid-template-columns:1fr auto 1fr}
-  .chips{grid-column:2}
-  .sortwrap{grid-column:3;justify-self:end}
-}
+/* One row, one control. The collection filter used to sit centre with an empty
+   first column balancing the sort against it; with the filter gone the sort
+   simply keeps to the right at every width. */
+.tools{grid-template-columns:1fr}
+.sortwrap{justify-self:end}
 @media(min-width:760px) and (max-width:1019px){
-  /* the tablet band: give the filters the whole width so they stay on one line,
-     and drop the sort control underneath rather than stealing from them */
   .sortwrap{justify-content:center}
 }
-.chips{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);justify-content:center}
-.chip{font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
-  text-transform:uppercase;padding:var(--s2) 0;border:0;background:none;
-  cursor:pointer;color:var(--muted);text-align:center;
-  min-height:2.75rem;display:inline-flex;align-items:center;justify-content:center;
-  transition:color .3s var(--settle)}
-.chip:hover{color:var(--ink)}
 /* underline rather than a drawn box: it hugs the label at whatever width the
    label happens to be, and survives the label wrapping to two lines */
-.chip[aria-pressed="true"]{color:var(--ink);text-decoration:underline;
-  text-decoration-thickness:1px;text-underline-offset:6px}
 .sortwrap{display:flex;align-items:center;gap:var(--s2)}
 .sortwrap select{background:none;border:0;padding:var(--s0) 0;color:inherit;
   font-family:var(--mono);font-size:.75rem;cursor:pointer}
@@ -77,11 +57,9 @@
      went: the pills forced "Working hours 11" onto two lines and then held a
      44px tap target around it. The tap target stays — it is just no longer
      drawn. */
-  .chips{flex-wrap:nowrap;justify-content:space-between;gap:var(--s2)}
   /* 10px, not smaller: measured at 320px the three labels come to 257px of the
      285px available, so the height never needed the type to shrink — it needed
      the capsules gone. */
-  .chip{font-size:.625rem;letter-spacing:.06em;white-space:nowrap}
   .sortwrap{justify-content:space-between}
 }
 
@@ -193,7 +171,6 @@
       <h1 class="visually-hidden">The range</h1>
 
       <div class="tools">
-        <div class="chips" id="chips" role="group" aria-label="Filter by collection"></div>
         <div class="sortwrap">
           <label class="label muted" for="sort">Order</label>
           <select id="sort">
@@ -275,43 +252,13 @@
 (function () {
   'use strict';
   var R = IAR.RANGE, grid = document.getElementById('grid'),
-      chips = document.getElementById('chips'), empty = document.getElementById('empty');
-  var filter = 'all', order = 'range';
+      empty = document.getElementById('empty');
+  var order = 'range';
 
   /* the total is counted, not typed — it was hardcoded at 25 and went stale the
      first time a cloth was added */
   document.getElementById('total').textContent = R.length;
 
-  /* Built as a function, not once, because these counts are drawn before the
-     database has answered — and it is the database that decides which cloths
-     are on the shop. Left as a one-off it read "All 27" over a grid of nine.
-
-     The collections are recomputed too: taking eighteen cloths off the shop can
-     empty a collection entirely, and a chip that filters to nothing is a dead
-     control. */
-  function drawChips() {
-    var found = [];
-    R.forEach(function (p) { if (p.cat && found.indexOf(p.cat) < 0) found.push(p.cat); });
-    var was = filter;
-    chips.innerHTML =
-      '<button class="chip" type="button" data-c="all" aria-pressed="' +
-        (was === 'all') + '">All ' + R.length + '</button>' +
-      found.map(function (c) {
-        var n = R.filter(function (p) { return p.cat === c; }).length;
-        return '<button class="chip" type="button" data-c="' + c + '" aria-pressed="' +
-          (was === c) + '">' + c + ' ' + n + '</button>';
-      }).join('');
-    /* the collection they were looking at may no longer exist */
-    if (was !== 'all' && found.indexOf(was) < 0) filter = 'all';
-
-    /* With every cloth in one collection there is nothing to filter: "All 9"
-       and "Working hours 9" side by side are two buttons that do the same
-       thing. Hide the row rather than offer a choice that isn't one. */
-    var pointless = found.length < 2;
-    chips.hidden = pointless;
-    if (pointless) filter = 'all';
-  }
-  drawChips();
 
   /* A cloth that has been shot on the model leads with that frame; the rest
      keep their catalogue photograph, so the grid fills in one cloth at a time
@@ -368,8 +315,10 @@
   }
 
   function draw() {
-    var list = filter === 'all' ? R : R.filter(function (p) { return p.cat === filter; });
-    list = sorted(list);
+    /* The whole range, always. The collection filter is gone: the house cuts
+       one kind of shirt, and "All 10" beside "Working hours 8" was asking a
+       customer to choose between the shop and most of the shop. */
+    var list = sorted(R);
     document.getElementById('shown').textContent = list.length;
     empty.hidden = list.length > 0;
     grid.innerHTML = list.map(function (p) {
@@ -415,14 +364,6 @@
     }).join('');
   }
 
-  chips.addEventListener('click', function (e) {
-    var b = e.target.closest('.chip'); if (!b) return;
-    filter = b.dataset.c;
-    chips.querySelectorAll('.chip').forEach(function (c) {
-      c.setAttribute('aria-pressed', String(c === b));
-    });
-    draw();
-  });
   document.getElementById('sort').addEventListener('change', function (e) {
     order = e.target.value; draw();
   });
@@ -536,7 +477,6 @@
       });
 
       document.getElementById('total').textContent = R.length;
-      drawChips();
       draw();
     });
   }

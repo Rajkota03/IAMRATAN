@@ -532,16 +532,26 @@
      and only the re-statement below would carry them */
   schema('InStock');
 
-  /* Indicative garment measurements per neck size, inches, flat. The columns
-     come from the sizes this cloth is actually cut in, so the table never
-     promises a 41 the rack does not hold. Bracket-marked as indicative until
-     the house confirms its block. */
+  /* The house's own measurement chart, in inches, taken flat on the garment.
+     Six rows now, not three: the chart the house works to gives waist, bottom
+     and length as well, and a customer deciding between a 42 and a 44 is
+     usually deciding on the length or the waist rather than the chest.
+
+     Written as the house writes them — 21¾ rather than 21.75 — because that is
+     how a tailor reads a chart and how the client's own sheet is set out. The
+     columns still come from the sizes the cloth is actually cut in, so the
+     table never promises a 41 the rack does not hold. */
   var SPEC = {
-    '39': { chest: 41,   shoulder: 17.5, sleeve: 24.5 },
-    '40': { chest: 42.5, shoulder: 18,   sleeve: 25   },
-    '42': { chest: 44.5, shoulder: 18.5, sleeve: 25   },
-    '44': { chest: 46.5, shoulder: 19,   sleeve: 25.5 },
-    '46': { chest: 48.5, shoulder: 19.5, sleeve: 25.5 }
+    '39': { chest: '21\u00BE', waist: '21',      bottom: '21',
+            shoulder: '18',     length: '28\u00BD', sleeve: '24\u00BE' },
+    '40': { chest: '22\u00BE', waist: '22',      bottom: '22',
+            shoulder: '18\u00BE', length: '29',   sleeve: '24\u00BE' },
+    '42': { chest: '23\u00BE', waist: '23',      bottom: '23',
+            shoulder: '19\u00BD', length: '30',   sleeve: '25' },
+    '44': { chest: '24\u00BE', waist: '24',      bottom: '24',
+            shoulder: '20',     length: '30\u00BE', sleeve: '25\u00BD' },
+    '46': { chest: '25\u00BE', waist: '25\u00BD', bottom: '25\u00BD',
+            shoulder: '21',     length: '31',   sleeve: '25\u00BD' }
   };
   /* Nothing followed the buy button. A visitor who did not want this cloth had
      the back button and nothing else, on a shop where the next cloth is the
@@ -594,7 +604,8 @@
     return '<table><thead><tr><th scope="col">Neck</th>' +
       cols.map(function (z) { return '<th scope="col">' + z + '</th>'; }).join('') +
       '</tr></thead><tbody>' +
-      row('Chest', 'chest') + row('Shoulder', 'shoulder') + row('Sleeve', 'sleeve') +
+      row('Chest', 'chest') + row('Waist', 'waist') + row('Bottom', 'bottom') +
+      row('Shoulder', 'shoulder') + row('Length', 'length') + row('Sleeve', 'sleeve') +
       '</tbody></table>';
   }
 
@@ -674,7 +685,7 @@
             '<details name="pdp"><summary>Size guide</summary><div class="fx">' +
               sizeGuide(p) +
               '<p class="fine">Measurements in inches, taken flat on the garment. ' +
-              'Indicative until the house confirms its block. Between sizes, or ' +
+              'Between sizes, or ' +
               'past them, <a href="bespoke.html" style="text-decoration:underline;text-underline-offset:3px">bespoke</a> ' +
               'is the answer.</p>' +
             '</div></details>' +

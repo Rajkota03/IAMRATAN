@@ -48,8 +48,37 @@
 /* underline rather than a drawn box: it hugs the label at whatever width the
    label happens to be, and survives the label wrapping to two lines */
 .sortwrap{display:flex;align-items:center;gap:var(--s2)}
-.sortwrap select{background:none;border:0;padding:var(--s0) 0;color:inherit;
-  font-family:var(--mono);font-size:.75rem;cursor:pointer}
+/* background:none and border:0 were never enough. Safari and Chrome draw a
+   select's own chrome over any styling unless `appearance` is reset, so this
+   sat on the page as a grey capsule with system stepper arrows: the one piece
+   of operating system on a page built from hairlines and small caps.
+
+   Reset first, then dress it in the site's own control language — the same
+   mono, size and letter-spacing as the ORDER label beside it, so the two read
+   as one phrase rather than a label and a widget.
+
+   The chevron is drawn here rather than left to the browser. Inlined as a data
+   URI because a background-image is the only way to mark inside a select, and
+   currentColor cannot reach into one. */
+.sortwrap select{
+  appearance:none;-webkit-appearance:none;
+  background:none;border:0;border-radius:0;margin:0;
+  padding:var(--s0) calc(var(--s3) + .1rem) var(--s0) 0;
+  color:var(--ink);cursor:pointer;
+  font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+  text-transform:uppercase;line-height:1.5;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' viewBox='0 0 9 6'%3E%3Cpath d='M1 1l3.5 3.5L8 1' fill='none' stroke='%231A1C1E' stroke-opacity='.7' stroke-width='1.1' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right center;
+  background-size:.5rem auto}
+/* This carries the page's only remaining choice, so its focus ring has to be
+   visible. An underline rather than a box: it belongs to the type. */
+.sortwrap select:focus-visible{outline:0;
+  text-decoration:underline;text-underline-offset:4px;
+  text-decoration-thickness:1px}
+/* The open dropdown is the operating system's and cannot be styled, but the
+   options can at least carry the page's ground rather than a white sheet. */
+.sortwrap select option{font-family:var(--mono);text-transform:none;
+  letter-spacing:0;font-size:.8125rem;color:var(--ink);background:var(--room)}
 
 @media(max-width:759px){
   /* one line, edge to edge. Without the capsule padding the three labels fit

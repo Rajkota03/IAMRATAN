@@ -286,9 +286,15 @@ Two things worth knowing:
 
 ## 4d · What the house changes itself, and what needs a developer
 
-Everything below is done at the desk, lands on the live site within five
-minutes (a browser keeps the shop's data for five minutes; a fresh tab sees it
-at once), and needs no deploy and nobody technical.
+Everything below is done at the desk and needs no deploy and nobody technical.
+
+**Nothing changes until Save is pressed.** A changed field turns amber and a bar
+appears at the foot of the screen: *N changes not on the shop yet · Discard ·
+Save to the shop*. Leaving the screen with changes waiting asks first. Once
+saved, a change lands on the live site within five minutes (a browser keeps the
+shop's data for five minutes; a fresh tab sees it at once). Buttons that name
+their action, such as *Put on the shop*, *Remove* and *Delete*, act when pressed;
+they are the save.
 
 | the house changes | where at the desk |
 |---|---|
@@ -309,8 +315,9 @@ at once), and needs no deploy and nobody technical.
 
 **Photographs on a cloth are staged.** A chosen file uploads and waits; nothing
 reaches the shop until **Put on the shop** is pressed. A slip in the file picker
-cannot change the face of a live product. On the home page a picture goes live
-the moment it lands, because **Back to the original** is one press away.
+cannot change the face of a live product. A home page picture is staged the
+same way: it previews at once and reaches the page only on Save, and **Back to
+the original** undoes it.
 
 **Delete is deliberately narrow.** Only a cloth that is already off the shop
 can be deleted, and the house types its name to confirm. Orders already placed

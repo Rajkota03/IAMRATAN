@@ -207,6 +207,28 @@ input.cell.saved{border-color:var(--ink);background:var(--under)}
    the field simply did not flash, which is indistinguishable from not having
    looked at it. */
 input.cell.failed,select.cell.failed{border-color:#8C2F2F;background:#F6ECEC}
+/* Changed and not yet saved. Amber, so a field that is only typed cannot be
+   mistaken for one that has reached the shop. */
+input.cell.pending,select.cell.pending,textarea.cell.pending,
+input.pending,select.pending,textarea.pending{border-color:#B8860B;background:#FBF6E7}
+label.tick.pending{outline:2px solid #B8860B;outline-offset:2px;border-radius:.3rem}
+
+/* ---------- the save bar ----------
+   Nothing typed or ticked at the desk reaches the shop until this is pressed.
+   It sits above the toast and stays until every change is saved or thrown
+   away, on every screen, so it can never be scrolled out of mind. */
+.savebar{position:fixed;left:50%;bottom:var(--s4);transform:translateX(-50%) translateY(150%);
+  z-index:70;display:flex;align-items:center;gap:var(--s3);
+  padding:var(--s2) var(--s3) var(--s2) var(--s4);
+  background:var(--ink);color:var(--room);border-radius:.4rem;
+  box-shadow:0 .8rem 2rem rgba(26,28,30,.25);
+  font-size:.875rem;white-space:nowrap;max-width:calc(100vw - 2*var(--s3));
+  transition:transform .25s ease}
+.savebar.on{transform:translateX(-50%) translateY(0)}
+.savebar b{font-weight:500}
+.savebar .btn{border-color:rgba(255,255,255,.35);color:var(--room);background:none}
+.savebar .btn.fill{background:var(--room);color:var(--ink);border-color:var(--room)}
+.savebar .btn[disabled]{opacity:.5}
 
 /* a name you can click. A button, because it acts rather than navigates. */
 .linky{appearance:none;background:none;border:0;padding:0;font:inherit;
@@ -770,6 +792,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-go]');
     if (!b) return;
+    if (!leaving()) return;
     here = b.getAttribute('data-go');
     /* arriving at the offer form through the nav means a NEW offer; the edit
        button reaches the same screen by setting CODE_EDIT first and rendering
@@ -818,6 +841,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     pages:'Every page that exists, and where it is.'
   };
   function shell(inner) {
+    PENDING = []; drawSavebar();
     work.innerHTML =
       '<div class="topbar"><div><h1>' + (TITLES[here] || '') + '</h1>' +
         '<p class="sub">' + (SUBS[here] || '') + '</p></div></div>' +
@@ -2941,21 +2965,24 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         '<div class="block"><h3>The words and the photographs</h3>' +
         '<p class="hint">Every line and picture on the home page. A box left ' +
         'empty keeps what the page was built with, shown here in grey, so ' +
-        'nothing you do not touch can change. Words save as you leave the ' +
-        'field; a photograph goes on the page the moment it finishes ' +
-        'uploading, and <b>Back to the original</b> undoes it. In a headline, ' +
-        'a slash is where the line breaks.</p>' +
+        'nothing you do not touch can change. Nothing here reaches the page ' +
+        'until you press <b>Save to the shop</b>; <b>Back to the original</b> ' +
+        'undoes a photograph. In a headline, a slash is where the line ' +
+        'breaks.</p>' +
         '<div class="homegrid">' + HOME.map(function (g) {
           var pk = g[0] + '.picture', cur = slots[pk] || '';
           return '<div class="card"><h3>' + esc(g[1]) + '</h3>' +
             '<figure class="homepic"><img src="' +
-              esc(cur || (SITE + '/' + g[2])) + '" alt="" loading="lazy">' +
-              '<figcaption>' + (cur ? 'Your photograph' : 'The site\'s own') +
+              esc(cur || (SITE + '/' + g[2])) + '" alt="" loading="lazy" data-picimg="' + pk + '">' +
+              '<figcaption data-piccap="' + pk + '">' + (cur ? 'Your photograph' : 'The site\'s own') +
               '</figcaption></figure>' +
+            /* the slot's value travels in a hidden field, so a new photograph
+               is staged and saved exactly like a line of words */
+            '<input type="hidden" data-slot="' + pk + '" value="' + esc(cur) + '">' +
             '<p class="filters"><input type="file" data-picfile="' + pk + '" ' +
               'accept="image/jpeg,image/png,image/webp,image/avif">' +
-              (cur ? '<button class="btn small" data-picclear="' + pk +
-                     '">Back to the original</button>' : '') +
+              '<button class="btn small" data-picclear="' + pk + '"' +
+                (cur ? '' : ' style="display:none"') + '>Back to the original</button>' +
               '<span class="muted" data-picnote="' + pk + '"></span></p>' +
             '<div class="f2">' + g[3].map(function (w) {
               var k = g[0] + '.' + w[0];
@@ -2970,10 +2997,21 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         'no photographs and no words — a switch for it would be a switch wired ' +
         'to nothing. A new band is a change to the site, and that is me.</p>');
 
-      /* A photograph replaces the built-in one the moment it lands. There is
-         no staging step here as there is on a cloth, because the previous
-         picture is never lost: Back to the original is one press away, and
-         the file itself stays in Media. */
+      /* A chosen photograph goes to Media straight away, because the file has
+         to exist somewhere before it can be named; but the page is not told
+         about it until Save. Until then it is a preview with an amber note. */
+      function pictureStaged(slot, url) {
+        var hid = document.querySelector('input[data-slot="' + slot + '"]');
+        var img = document.querySelector('[data-picimg="' + slot + '"]');
+        var cap = document.querySelector('[data-piccap="' + slot + '"]');
+        var clr = document.querySelector('[data-picclear="' + slot + '"]');
+        var g = HOME.filter(function (x) { return x[0] + '.picture' === slot; })[0];
+        hid.value = url;
+        img.src = url || (SITE + '/' + g[2]);
+        cap.textContent = (url ? 'Your photograph' : 'The site\'s own') + ' · not saved yet';
+        clr.style.display = url ? '' : 'none';
+        stage(hid);
+      }
       [].forEach.call(document.querySelectorAll('[data-picfile]'), function (inp) {
         inp.addEventListener('change', function () {
           var f = inp.files && inp.files[0];
@@ -2983,10 +3021,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
           inp.disabled = true;
           note.textContent = 'Uploading…';
           A.upload(f, 'home').then(function (m) {
-            return A.setContent(slot, m.url);
-          }).then(function () {
-            toast('On the home page.');
-            homepage();
+            inp.disabled = false; inp.value = ''; note.textContent = '';
+            pictureStaged(slot, m.url);
           }).catch(function (err) {
             inp.disabled = false; note.textContent = '';
             toast('The photograph did not go up. ' + (err && err.message), true);
@@ -2995,14 +3031,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       });
       [].forEach.call(document.querySelectorAll('[data-picclear]'), function (b) {
         b.addEventListener('click', function () {
-          b.disabled = true;
-          A.setContent(b.getAttribute('data-picclear'), '').then(function () {
-            toast('Back to the site\'s own photograph.');
-            homepage();
-          }, function (err) {
-            b.disabled = false;
-            toast('Could not undo that. ' + (err && err.message), true);
-          });
+          pictureStaged(b.getAttribute('data-picclear'), '');
         });
       });
     }).catch(function (e) { body(needsSQL(e)); });
@@ -3189,8 +3218,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
                   '<option value="home"' + (v('bar_where') === 'home' ? ' selected' : '') +
                     '>The home page only</option></select></p>' +
             '</div>' +
-            '<p class="hint" style="margin-top:var(--s4)">Saved the moment you ' +
-            'leave a field. An empty line hides the bar even when the switch is ' +
+            '<p class="hint" style="margin-top:var(--s4)">Nothing changes until ' +
+            'you press Save. An empty line hides the bar even when the switch is ' +
             'on, so a half-written sentence can never reach a customer.</p>' +
           '</div>' +
 
@@ -3366,7 +3395,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
           '&larr; The journal</button>' +
           '<a class="btn small" target="_blank" rel="noopener" href="' + SITE +
             '/' + esc(entryHref(e)) + '">View on the site</a></div>' +
-        '<p class="hint">' + esc(e.title) + '. Every field saves as you leave it.' +
+        '<p class="hint">' + esc(e.title) + '. Nothing changes until you press Save.' +
           (e.path ? ' This entry has its own hand-built page, so the words below ' +
                     'are what the journal index shows, not the essay itself.' : '') +
         '</p>' +
@@ -3713,7 +3742,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       body('<div class="filters"><button class="btn small" data-go="products">' +
           '&larr; The range</button></div>' +
         '<p class="hint">' + esc(p.name) + ' · ' + rupees(p.price) +
-          '. Every field saves as you leave it.</p>' +
+          '. Nothing changes until you press Save.</p>' +
 
         '<div class="block"><h3>The cloth itself</h3>' +
         '<p class="hint">The name and the words the shop shows. Renaming here ' +
@@ -3918,11 +3947,99 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   }
 
   /* ---------- saving ----------
-     Every edit saves on change and the field flashes. No Save button anywhere:
-     a Save button is a thing to forget, and the failure it causes is silent. */
+     A change is STAGED, not saved. The field turns amber and a bar appears
+     with a Save button; nothing reaches the database, and so the shop, until
+     it is pressed. The first version of this desk saved every field the
+     moment it was left, on the argument that a Save button is a thing to
+     forget. The client's answer was better: a shop cannot change under a
+     customer because somebody's cursor left a box. Forgetting to save costs
+     a minute. A wrong price on the live shop costs more than that. */
+
+  var PENDING = [];      /* the changed elements, in the order they changed */
+  var BATCH   = null;    /* while Save runs, every saving() promise lands here */
+  var savebar = null;
+
+  function stage(t) {
+    if (PENDING.indexOf(t) < 0) PENDING.push(t);
+    t.classList.remove('saved', 'failed');
+    t.classList.add('pending');
+    var lab = t.closest && t.closest('label.tick');
+    if (lab) lab.classList.add('pending');
+    drawSavebar();
+  }
+  function unstage(t) {
+    var i = PENDING.indexOf(t);
+    if (i > -1) PENDING.splice(i, 1);
+    t.classList.remove('pending');
+    var lab = t.closest && t.closest('label.tick');
+    if (lab) lab.classList.remove('pending');
+  }
+  function clearPending() {
+    PENDING.slice().forEach(unstage);
+    drawSavebar();
+  }
+  function drawSavebar() {
+    if (!savebar) {
+      savebar = document.createElement('div');
+      savebar.className = 'savebar';
+      savebar.setAttribute('role', 'status');
+      document.body.appendChild(savebar);
+    }
+    var n = PENDING.length;
+    if (!n) { savebar.classList.remove('on'); return; }
+    savebar.innerHTML =
+      '<span><b>' + n + ' change' + (n === 1 ? '' : 's') + '</b> not on the shop yet</span>' +
+      '<button class="btn small" id="discardAll" type="button">Discard</button>' +
+      '<button class="btn small fill" id="saveAll" type="button">Save to the shop</button>';
+    savebar.classList.add('on');
+    document.getElementById('saveAll').onclick = saveAll;
+    document.getElementById('discardAll').onclick = function () {
+      if (!confirm('Throw away ' + n + ' unsaved change' + (n === 1 ? '' : 's') + '?')) return;
+      PENDING = [];
+      drawSavebar();
+      render();                       /* re-read the screen from the database */
+    };
+  }
+
+  /* Every staged element is applied in the order it was changed, and every
+     promise the handlers start is collected so the bar can say, truthfully,
+     whether all of it landed. A field that fails stays red with its value in
+     it, exactly as before; the ones that worked flash and clear. */
+  function saveAll() {
+    if (!PENDING.length || BATCH) return;
+    var btn = document.getElementById('saveAll'); if (btn) btn.disabled = true;
+    var els = PENDING.slice();
+    BATCH = [];
+    els.forEach(function (t) { try { apply(t); } catch (e) { console.error(e); } });
+    var all = BATCH; BATCH = null;
+    var failed = 0, done = 0;
+    function settle() {
+      if (done < all.length) return;
+      els.forEach(function (t) { if (!t.classList.contains('failed')) unstage(t); });
+      PENDING = els.filter(function (t) { return t.classList.contains('failed'); });
+      drawSavebar();
+      if (failed) toast(failed + ' of ' + all.length + ' did not save. The red fields say why.', true);
+      else toast('Saved. ' + all.length + ' change' + (all.length === 1 ? ' is' : 's are') + ' on the shop.');
+      refreshKpis();
+    }
+    if (!all.length) { done = 0; settle(); return; }
+    all.forEach(function (pr) {
+      pr.then(function () { done++; settle(); }, function () { failed++; done++; settle(); });
+    });
+  }
+
+  /* leaving a screen with changes staged asks first */
+  function leaving() {
+    if (!PENDING.length) return true;
+    return confirm(PENDING.length + ' change' + (PENDING.length === 1 ? ' is' : 's are') +
+                   ' not saved. Leave and lose ' + (PENDING.length === 1 ? 'it' : 'them') + '?');
+  }
+  window.addEventListener('beforeunload', function (e) {
+    if (PENDING.length) { e.preventDefault(); e.returnValue = ''; }
+  });
 
   function flash(el) {
-    el.classList.remove('failed');
+    el.classList.remove('failed', 'pending');
     el.classList.add('saved');
     setTimeout(function () { el.classList.remove('saved'); }, 900);
   }
@@ -3954,6 +4071,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   /* Wraps a save so the two outcomes are both visible. Every write in the
      change listener goes through this. */
   function saving(promise, el, what) {
+    if (BATCH) BATCH.push(promise);
     return promise.then(function (r) {
       if (el) flash(el);
       return r;
@@ -4014,9 +4132,10 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     var sh = e.target.closest('[data-sheet]');
     if (sh) openSheet(sh.getAttribute('data-sheet'));
     var cl = e.target.closest('[data-cloth-open]');
-    if (cl) openCloth(cl.getAttribute('data-cloth-open'));
+    if (cl && leaving()) openCloth(cl.getAttribute('data-cloth-open'));
 
     var eo = e.target.closest('[data-entry-open]');
+    if (eo && !leaving()) eo = null;
     if (eo) openEntry(eo.getAttribute('data-entry-open'));
 
     var ed = e.target.closest('[data-entry-del]');
@@ -4120,8 +4239,22 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     }
   });
 
+  /* A change on a field with a data-* hook is staged. Files are not: every
+     file input has its own handler and its own explicit button. */
   document.addEventListener('change', function (e) {
-    var t = e.target, has = function (a) { return t.hasAttribute && t.hasAttribute(a); };
+    var t = e.target;
+    if (!t.hasAttribute || t.type === 'file') return;
+    var hooked = false;
+    for (var i = 0; i < t.attributes.length; i++) {
+      if (t.attributes[i].name.indexOf('data-') === 0) { hooked = true; break; }
+    }
+    if (hooked) stage(t);
+  });
+
+  /* What a change means, per field. Called by Save for each staged element,
+     never by the change event itself. */
+  function apply(t) {
+    var has = function (a) { return t.hasAttribute && t.hasAttribute(a); };
 
     if (has('data-stock')) {
       var q = parseInt(t.value, 10);
@@ -4230,7 +4363,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       var cp = {}; cp[cf] = cv;
       saving(A.setProduct(t.getAttribute('data-cloth'), cp), t, cf);
     }
-  });
+  }
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeOver();

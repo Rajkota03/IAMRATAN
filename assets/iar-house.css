@@ -237,8 +237,8 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
   -webkit-mask-position:center;mask-position:center;
   -webkit-mask-size:contain;mask-size:contain}
 .mk-badger{background:none}
-.mk-letters{-webkit-mask-image:url('mark-letters.png');mask-image:url('mark-letters.png')}
-.mk-body{-webkit-mask-image:url('mark-body.png');mask-image:url('mark-body.png')}
+.mk-letters{-webkit-mask-image:url('mark-letters.webp');mask-image:url('mark-letters.webp')}
+.mk-body{-webkit-mask-image:url('mark-body.webp');mask-image:url('mark-body.webp')}
 .mk-head{-webkit-mask-image:url('mark-head.png');mask-image:url('mark-head.png');
   transform-origin:73.6% 50.2%}
 
@@ -479,8 +479,8 @@ a.shot:hover img{transform:scale(1.03)}
 @media(min-width:860px){.foot-grid{grid-template-columns:1.5fr 1fr 1fr 1fr}}
 .mark--monogram{width:min(200px,56vw);aspect-ratio:1430/620;display:block;
   background:currentColor;margin-bottom:var(--s4);
-  -webkit-mask:url('mark-monogram.png') no-repeat center/contain;
-  mask:url('mark-monogram.png') no-repeat center/contain}
+  -webkit-mask:url('mark-monogram.webp') no-repeat center/contain;
+  mask:url('mark-monogram.webp') no-repeat center/contain}
 
 /* Sign in sits apart from the four navigation words: it is an action, not a
    place on the site, and lining it up with Home and Shop invites a visitor to

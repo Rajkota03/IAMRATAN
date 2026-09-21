@@ -392,19 +392,26 @@
       img.onload = function () {
         URL.revokeObjectURL(url);
         var w = img.naturalWidth, h = img.naturalHeight;
-        if (!w || (w <= 1600 && file.size < 400 * 1024)) return resolve(file);
+        if (!w || (w <= 1600 && file.size < 400 * 1024 && file.type !== 'image/png')) {
+          return resolve(file);
+        }
         var scale = Math.min(1, 1600 / w);
         var c = document.createElement('canvas');
         c.width = Math.round(w * scale); c.height = Math.round(h * scale);
         c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        /* Check the TYPE of what comes back, not just that something did.
+           Safari cannot encode WebP from a canvas and says so by quietly
+           returning a PNG instead. The first version accepted any blob and
+           named it .webp, so every photograph uploaded from Safari went up as
+           a 2-4 MB PNG wearing a .webp name: nine of them, 5.9 MB of the
+           shop page's 6 MB. JPEG is the fallback every browser can write. */
         c.toBlob(function (webp) {
-          if (webp && webp.size) {
+          if (webp && webp.size && webp.type === 'image/webp') {
             webp.name = file.name.replace(/\.[a-z0-9]+$/i, '') + '.webp';
             return resolve(webp);
           }
-          /* older Safari cannot encode webp */
           c.toBlob(function (jpg) {
-            if (jpg && jpg.size) {
+            if (jpg && jpg.size && jpg.type === 'image/jpeg') {
               jpg.name = file.name.replace(/\.[a-z0-9]+$/i, '') + '.jpg';
               return resolve(jpg);
             }

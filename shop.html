@@ -19,10 +19,9 @@
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
 <link rel="icon" href="assets/favicon-16.png" sizes="16x16">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1790012422">
+<link rel="preload" href="assets/fonts/anek-latin-100-800-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=1790013320">
+<link rel="stylesheet" href="assets/iar-house.css?v=1790013320">
 <style>
 /* THE GRID
    The shoppable one. Nine garments on the first screen, filters that actually
@@ -136,6 +135,10 @@
   .sortwrap{justify-content:space-between}
 }
 
+/* the grid is drawn by script; until then it holds its space, so the
+   footer is never painted under the filters and then shoved away (a layout
+   shift of 0.73 on a phone) */
+.grid:empty{min-height:100vh;min-height:100svh}
 .grid{display:grid;gap:var(--s4);grid-template-columns:repeat(2,1fr);
   margin:var(--sy) 0 0}
 @media(min-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}
@@ -321,14 +324,14 @@
   </div>
 </footer>
 
-<script src="assets/store.js?v=1790012422"></script>
-<script src="assets/house.js?v=1790012422"></script>
-<script src="assets/catalogue.js?v=1790012422"></script>
-<script src="assets/shots.js?v=1790012422"></script>
-<script src="assets/site.js?v=1790012422"></script>
-<script src="assets/iar-house.js?v=1790012422"></script>
-<script src="assets/mark.js?v=1790012422"></script>
-<script src="assets/track.js?v=1790012422"></script>
+<script src="assets/store.js?v=1790013320"></script>
+<script src="assets/house.js?v=1790013320"></script>
+<script src="assets/catalogue.js?v=1790013320"></script>
+<script src="assets/shots.js?v=1790013320"></script>
+<script src="assets/site.js?v=1790013320"></script>
+<script src="assets/iar-house.js?v=1790013320"></script>
+<script defer src="assets/mark.js?v=1790013320"></script>
+<script defer src="assets/track.js?v=1790013320"></script>
 <script>
 (function () {
   'use strict';
@@ -402,7 +405,11 @@
     var list = sorted(R);
     document.getElementById('shown').textContent = list.length;
     empty.hidden = list.length > 0;
-    grid.innerHTML = list.map(function (p) {
+    /* The first row is on screen the moment the page opens, so it is not
+       lazy: loading="lazy" on every card made a phone wait 3.2 s before it
+       even asked for the first photograph. Four covers the first row at every
+       width; the first of them is asked for ahead of everything else. */
+    grid.innerHTML = list.map(function (p, i) {
       var alt = cardAlt(p);
       /* the house's stock, if the house is keeping any */
       var S = window.IARSTORE, gone = S && S.allGone(p.slug), note = '';
@@ -426,7 +433,8 @@
           (card(p)
             ? '<img src="' + card(p) + '"' +
               (tiers(card(p)) ? ' srcset="' + tiers(card(p)) + '" sizes="' + CARD_SIZES + '"' : '') +
-              ' alt="' + p.name + '" loading="lazy" decoding="async">'
+              ' alt="' + p.name + '"' + (i < 4 ? (i === 0 ? ' fetchpriority="high"' : '') +
+                ' loading="eager"' : ' loading="lazy"') + ' decoding="async">'
             : '') +
           /* the second frame carries no src until the card is hovered or
              touched, so a phone scrolling past twenty-seven cards downloads
@@ -697,6 +705,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1790012422"></script>
+<script src="assets/nav.js?v=1790013320"></script>
 </body>
 </html>

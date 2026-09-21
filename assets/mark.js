@@ -176,16 +176,27 @@
 
   /* ---------- arrival ---------- */
 
-  play(ENTRY, ENTRY_MS, true);
+  /* The walk-in is the arrival, so it plays on the first page of a visit
+     and not again. It used to play on every page, re-downloaded each time
+     (the cache-busting above), which on a phone meant 211 KB and four
+     seconds of the same walk for every page turned. Later pages open on the
+     resting mark; the reactions below still come. */
+  var WALKED = 'iar.mark.walked', walked = false;
+  try { walked = sessionStorage.getItem(WALKED) === '1'; } catch (e) {}
+  var arrive = walked ? 0 : ENTRY_MS;
+  if (!walked) {
+    try { sessionStorage.setItem(WALKED, '1'); } catch (e) {}
+    play(ENTRY, ENTRY_MS, true);
+  }
   /* the idle glance starts when the walk hands over, not underneath it */
-  win.setTimeout(function () { mk.classList.add('mk--idle'); }, ENTRY_MS);
+  win.setTimeout(function () { mk.classList.add('mk--idle'); }, arrive);
 
   /* The walk-in owns the first four seconds, so the reactions are fetched only
      once it is over — the first hover is then not a blank frame while 130KB
      arrives, and the load is not competing with the hero. */
   win.setTimeout(function () {
     CLIPS.forEach(function (c) { (new win.Image()).src = c.src; });
-  }, ENTRY_MS + 600);
+  }, arrive + 600);
 
   win.setTimeout(function () { spontaneous(); later(); }, FIRST_MS);
 

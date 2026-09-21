@@ -76,8 +76,8 @@ img{display:block;max-width:100%}
   mask:url('mark-badger.png') no-repeat center/contain;
 }
 .mark--monogram{
-  -webkit-mask-image:url('mark-monogram.png');
-  mask-image:url('mark-monogram.png');
+  -webkit-mask-image:url('mark-monogram.webp');
+  mask-image:url('mark-monogram.webp');
 }
 
 /* ---------- nav ---------- */

@@ -90,8 +90,8 @@ p{margin:0 0 1.05em;max-width:64ch}
   -webkit-mask:url('mark-badger.png') no-repeat center/contain;
   mask:url('mark-badger.png') no-repeat center/contain;
   width:clamp(32px,2.8vw,42px);aspect-ratio:716/478}
-.mark--monogram{-webkit-mask-image:url('mark-monogram.png');
-  mask-image:url('mark-monogram.png');aspect-ratio:1430/620}
+.mark--monogram{-webkit-mask-image:url('mark-monogram.webp');
+  mask-image:url('mark-monogram.webp');aspect-ratio:1430/620}
 .nav{display:flex;gap:var(--s5);align-items:center}
 .nav a{position:relative;padding-block:var(--s0)}
 /* the chalk line: snapped along its length, never faded */

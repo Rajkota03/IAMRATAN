@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1790010719">
+<link rel="stylesheet" href="assets/iar-house.css?v=1790011466">
 <style>
 /* ---------- THE DESK ----------
    A control room, not a dashboard. The first question it answers is "what
@@ -540,6 +540,14 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 .strip .warn b{color:#8A6A18}
 
 /* the little photograph in a list row */
+.relpick{display:grid;gap:var(--s2);grid-template-columns:repeat(auto-fill,minmax(11rem,1fr))}
+.relitem{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s2);
+  border:1px solid var(--hair);border-radius:.4rem;background:var(--room);cursor:pointer;font-size:.875rem}
+.relitem.on{border-color:var(--ink)}
+.relitem img{width:2rem;height:2.5rem;object-fit:cover;border-radius:.2rem}
+.relitem span{flex:1}
+.relitem b{font-family:var(--mono);font-size:.75rem;font-weight:500}
+.relitem input[disabled]+img{opacity:.4}
 .gripcell{white-space:nowrap;width:2rem}
 .grip{cursor:grab;color:var(--muted);font-size:.9rem;letter-spacing:-.2em}
 .sorted .grip{visibility:hidden}
@@ -664,10 +672,10 @@ tr.lift{opacity:.4}
     <div class="over-card"></div></div>
 </main>
 
-<script src="assets/shots.js?v=1790010719"></script>
-<script src="assets/admin.js?v=1790010719"></script>
-<script src="assets/iar-house.js?v=1790010719"></script>
-<script src="assets/mark.js?v=1790010719"></script>
+<script src="assets/shots.js?v=1790011466"></script>
+<script src="assets/admin.js?v=1790011466"></script>
+<script src="assets/iar-house.js?v=1790011466"></script>
+<script src="assets/mark.js?v=1790011466"></script>
 <script>
 (function () {
   'use strict';
@@ -3348,7 +3356,10 @@ tr.lift{opacity:.4}
   function openCloth(id) {
     here = 'cloth'; REOPEN = function () { openCloth(id); }; REOPEN.at = 'cloth';
     drawNav(); shell(waiting());
-    Promise.all([A.product(id), A.images(id)]).then(function (r) {
+    /* the companions list needs the range; a cloth opened straight after a
+       reload has not read it yet */
+    Promise.all([A.product(id), A.images(id),
+                 PRODUCTS.length ? null : loadRange()]).then(function (r) {
       var p = r[0], imgs = r[1] || [];
       body('<div class="filters"><button class="btn small" data-go="products">' +
           '&larr; The range</button></div>' +
@@ -3409,6 +3420,19 @@ tr.lift{opacity:.4}
         '<div id="shotsBox"></div>' +
         '</div>' +
 
+        /* The rail under the cloth's page. Ticking chooses; ticking nothing
+           leaves the choice to the shop, which shows the other cloths on sale
+           in shop order. Only cloths on the shop are offered, because a hidden
+           one would never be drawn there anyway. */
+        '<div class="block"><h3>Shown under this cloth</h3>' +
+        '<p class="hint">The row of other cloths at the foot of its page. Tick up ' +
+        'to four, in the order you want them. Tick none and the shop shows the ' +
+        'first four cloths on sale, in shop order. The whole row can be turned ' +
+        'off in Settings.</p>' +
+        '<input type="hidden" id="relPlan" data-related="' + p.id + '">' +
+        '<div class="relpick" id="relPick"></div>' +
+        '</div>' +
+
         /* Only a hidden cloth may be deleted, so the button that removes a
            product from the world cannot be pressed on one a customer is
            looking at. Untick it on The range first; that is the pause. */
@@ -3423,6 +3447,45 @@ tr.lift{opacity:.4}
             p.id + '" data-clothname="' + esc(p.name) + '">Delete ' + esc(p.name) +
             '</button></p>') +
         '</div>');
+
+      /* ---------- companions, held here until Save ----------
+         `chosen` is the order the house ticked them in. */
+      var chosen = (p.related || []).slice();
+      var relPlan = document.getElementById('relPlan');
+      function drawRel() {
+        var box = document.getElementById('relPick');
+        if (!box) return;
+        var others = (PRODUCTS || []).filter(function (x) {
+          return x.visible && x.slug !== p.slug;
+        });
+        chosen = chosen.filter(function (sl) {
+          return others.some(function (x) { return x.slug === sl; });
+        });
+        box.innerHTML = others.length ? others.map(function (x) {
+          var n = chosen.indexOf(x.slug);
+          return '<label class="relitem' + (n > -1 ? ' on' : '') + '">' +
+            '<input type="checkbox" data-relslug="' + esc(x.slug) + '"' +
+              (n > -1 ? ' checked' : '') + (n < 0 && chosen.length >= 4 ? ' disabled' : '') + '>' +
+            '<img src="' + thumbFor(x.slug) + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+            '<span>' + esc(x.name) + '</span>' +
+            (n > -1 ? '<b>' + (n + 1) + '</b>' : '') + '</label>';
+          }).join('')
+          : '<p class="empty">No other cloth is on the shop yet.</p>';
+        [].forEach.call(box.querySelectorAll('[data-relslug]'), function (cb) {
+          cb.addEventListener('change', function (e) {
+            e.stopPropagation();          /* the plan field carries this change */
+            var sl = cb.getAttribute('data-relslug');
+            var i = chosen.indexOf(sl);
+            if (cb.checked && i < 0) chosen.push(sl);
+            if (!cb.checked && i > -1) chosen.splice(i, 1);
+            stage(relPlan); drawRel();
+          });
+        });
+      }
+      relPlan.__save = function () {
+        return A.setProduct(id, { related: chosen.length ? chosen : null });
+      };
+      drawRel();
 
       /* ---------- the set, held here until Save ----------
          `list` is the set as the house wants it: rows from the database,
@@ -4007,6 +4070,8 @@ tr.lift{opacity:.4}
       saving(t.__save(), t, 'the photographs');
     if (has('data-rangeorder'))
       saving(t.__save(), t, 'the order');
+    if (has('data-related'))
+      saving(t.__save(), t, 'what is shown under it');
 
     /* ---- the journal ---- */
     if (has('data-entry')) {

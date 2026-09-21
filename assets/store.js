@@ -84,6 +84,7 @@
       /* False while the seller details are stand-ins. See sellerHTML. */
       facts_are_real:    bool(s.facts_are_real, false),
       show_stock_counts: bool(s.show_stock_counts, true),
+      show_related:      bool(s.show_related, true),
       low_stock_at:      num(s.low_stock_at, 3),
       hide_sold_out:     bool(s.hide_sold_out, false),
       shop_open:         bool(s.shop_open, true),

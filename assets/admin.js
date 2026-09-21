@@ -25,15 +25,47 @@
 
   /* ---------- talking to the database ---------- */
 
+  /* A sign-in lasts an hour. Left open over lunch, the desk used to fail
+     every save after that with "JWT expired", which is a sentence for a
+     developer. Every authenticated request goes through here instead: on a
+     401 the sign-in is renewed with the refresh token from the original
+     sign-in and the request is sent once more. If the renewal itself fails,
+     the desk is signed out and says so in plain words. */
+  var renewing = null;
+  function renew() {
+    if (!A.refresh) return Promise.reject(new Error('no refresh token'));
+    if (renewing) return renewing;
+    renewing = auth('token?grant_type=refresh_token', { refresh_token: A.refresh })
+      .then(function (j) { remember(j.access_token, A.email, j.refresh_token); return true; })
+      .then(function (ok) { renewing = null; return ok; },
+            function (err) { renewing = null; throw err; });
+    return renewing;
+  }
+  function expired() {
+    forget();
+    var e = new Error('Your sign-in has expired. Sign in again to carry on.');
+    e.expired = true;
+    try { window.dispatchEvent(new CustomEvent('iar:expired')); } catch (x) {}
+    return e;
+  }
+  function authed(url, init, retried) {
+    init = init || {};
+    init.headers = Object.assign({}, init.headers || {}, {
+      apikey: ANON_KEY,
+      Authorization: 'Bearer ' + (A.token || ANON_KEY)
+    });
+    return fetch(url, init).then(function (r) {
+      if (r.status !== 401 || !A.token || retried) return r;
+      return renew().then(function () { return authed(url, init, true); },
+                          function () { throw expired(); });
+    });
+  }
+
   function api(path, opts) {
     opts = opts || {};
-    var h = {
-      apikey: ANON_KEY,
-      Authorization: 'Bearer ' + (A.token || ANON_KEY),
-      'Content-Type': 'application/json'
-    };
+    var h = { 'Content-Type': 'application/json' };
     if (opts.prefer) h.Prefer = opts.prefer;
-    return fetch(URL_BASE + '/rest/v1/' + path, {
+    return authed(URL_BASE + '/rest/v1/' + path, {
       method: opts.method || 'GET',
       headers: h,
       body: opts.body ? JSON.stringify(opts.body) : undefined
@@ -68,18 +100,21 @@
 
   /* ---------- who is at the desk ---------- */
 
-  function remember(tok, email) {
+  function remember(tok, email, refresh) {
     A.token = tok; A.email = email;
-    try { sessionStorage.setItem(SESSION, JSON.stringify({ t: tok, e: email })); } catch (e) {}
+    if (refresh) A.refresh = refresh;
+    try {
+      sessionStorage.setItem(SESSION, JSON.stringify({ t: tok, e: email, r: A.refresh }));
+    } catch (e) {}
   }
   function forget() {
-    A.token = A.email = null;
+    A.token = A.email = A.refresh = null;
     try { sessionStorage.removeItem(SESSION); } catch (e) {}
   }
   function restore() {
     try {
       var s = JSON.parse(sessionStorage.getItem(SESSION) || 'null');
-      if (s && s.t) { A.token = s.t; A.email = s.e; return true; }
+      if (s && s.t) { A.token = s.t; A.email = s.e; A.refresh = s.r || null; return true; }
     } catch (e) {}
     return false;
   }
@@ -95,7 +130,7 @@
 
   A.signIn = function (email, password) {
     return auth('token?grant_type=password', { email: email, password: password })
-      .then(function (j) { remember(j.access_token, email); return isAdmin(); });
+      .then(function (j) { remember(j.access_token, email, j.refresh_token); return isAdmin(); });
   };
 
   /* First-time setup: an allowlisted person who has no Supabase account yet.
@@ -103,7 +138,7 @@
   A.signUp = function (email, password) {
     return auth('signup', { email: email, password: password })
       .then(function (j) {
-        if (j.access_token) { remember(j.access_token, email); return isAdmin(); }
+        if (j.access_token) { remember(j.access_token, email, j.refresh_token); return isAdmin(); }
         /* the project asks for email confirmation */
         return 'confirm';
       });
@@ -160,9 +195,8 @@
       q += '&or=(ref.ilike.' + f + ',name.ilike.' + f + ',phone.ilike.' + f + ')';
     }
     var from = (opts.page || 0) * (opts.size || 10);
-    return fetch(URL_BASE + '/rest/v1/' + q, {
+    return authed(URL_BASE + '/rest/v1/' + q, {
       headers: {
-        apikey: ANON_KEY, Authorization: 'Bearer ' + (A.token || ANON_KEY),
         Range: from + '-' + (from + (opts.size || 10) - 1),
         Prefer: 'count=exact'
       }
@@ -441,11 +475,9 @@
     var path = (folder || 'uncategorised').toLowerCase().replace(/[^a-z0-9]+/g, '-') +
                '/' + Date.now().toString(36) + '-' + clean;
 
-    return fetch(URL_BASE + '/storage/v1/object/house/' + encodeURI(path), {
+    return authed(URL_BASE + '/storage/v1/object/house/' + encodeURI(path), {
       method: 'POST',
       headers: {
-        apikey: ANON_KEY,
-        Authorization: 'Bearer ' + (A.token || ANON_KEY),
         'Content-Type': file.type || 'application/octet-stream',
         'x-upsert': 'false'
       },
@@ -474,9 +506,8 @@
   A.delMedia = function (row) {
     /* the file goes first: a catalogue row pointing at nothing is recoverable,
        an orphaned file nobody can see or delete is not */
-    return fetch(URL_BASE + '/storage/v1/object/house/' + encodeURI(row.path), {
-      method: 'DELETE',
-      headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + (A.token || ANON_KEY) }
+    return authed(URL_BASE + '/storage/v1/object/house/' + encodeURI(row.path), {
+      method: 'DELETE'
     }).then(function () {
       return api('media?id=eq.' + row.id, { method: 'DELETE', prefer: 'return=minimal' });
     });

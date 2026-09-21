@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1789629444">
+<link rel="stylesheet" href="assets/iar-house.css?v=1789977174">
 <style>
 /* the cross-document crossfade now lives in iar-house.css, on every page */
 
@@ -878,21 +878,21 @@ html:not(.js) .hero-act{opacity:1}
   <section class="hero" data-band="hero" data-ink="light" aria-label="Autumn winter 2025">
     <div class="hero-stage">
       <figure class="hero-frame is-on" style="--objy:top">
-        <picture>
+        <picture data-pic="hero1.picture">
           <source media="(min-width:820px)" srcset="images/hero/conv-wide.webp">
           <img src="images/hero/conv-tall.webp" alt="A cream shirt, worn open, in a parked convertible"
             fetchpriority="high" decoding="async">
         </picture>
       </figure>
       <figure class="hero-frame" style="--objy:top">
-        <picture>
+        <picture data-pic="hero2.picture">
           <source media="(min-width:820px)" srcset="images/hero/jet-wide.webp">
           <img src="images/hero/jet-tall.webp" alt="A navy shirt folded into the house box, engraved buttons suspended above it"
             loading="lazy" decoding="async">
         </picture>
       </figure>
       <figure class="hero-frame">
-        <picture>
+        <picture data-pic="hero3.picture">
           <source media="(min-width:820px)" srcset="images/hero/news-wide.webp">
           <img src="images/hero/news-tall.webp" alt="A blue striped shirt, the house signature embroidered at the cuff"
             loading="lazy" decoding="async">
@@ -907,7 +907,7 @@ html:not(.js) .hero-act{opacity:1}
            cuff, and the garment-forward answer to "the eye goes to the model"
            still stands — the face here is cropped at the lips by design. -->
       <figure class="hero-frame">
-        <picture>
+        <picture data-pic="hero4.picture">
           <source media="(min-width:820px)" srcset="images/hero/campaign-wide.webp">
           <img src="images/hero/campaign-tall.webp" alt="A claret shirt with cloth swatches and engraved buttons set before it"
             loading="lazy" decoding="async">
@@ -938,45 +938,45 @@ html:not(.js) .hero-act{opacity:1}
          thirty measurements are all on the product and bespoke pages. -->
 
     <div class="hero-copy is-right is-on" data-copy="0" style="--veil:19 17 16;--copyx:12%;--copyw:26vw">
-      <p class="hero-kicker"><span>Autumn winter 2025</span></p>
-      <h1 class="hero-line">
+      <p class="hero-kicker"><span data-slot="hero1.kicker">Autumn winter 2025</span></p>
+      <h1 class="hero-line" data-slot="hero1.line">
         <span class="ln"><span>Shirts that</span></span>
         <span class="ln"><span>speak silence.</span></span>
       </h1>
-      <p class="hero-sub"><span><span data-cloths>Twenty-seven</span> cloths, cut in five sizes,
+      <p class="hero-sub"><span data-slot="hero1.note"><span data-cloths>Twenty-seven</span> cloths, cut in five sizes,
         finished by hand.</span></p>
       <p class="hero-act"><a class="cta" href="shop.html">See the range</a></p>
     </div>
 
     <div class="hero-copy" data-copy="1" aria-hidden="true" style="--veil:10 15 26;--copyx:9%;--copyw:46vw">
-      <p class="hero-kicker"><span>The house box</span></p>
-      <h1 class="hero-line">
+      <p class="hero-kicker"><span data-slot="hero2.kicker">The house box</span></p>
+      <h1 class="hero-line" data-slot="hero2.line">
         <span class="ln"><span>It arrives with</span></span>
         <span class="ln"><span>our name on it.</span></span>
       </h1>
-      <p class="hero-sub"><span>Every button engraved around its rim, every box
+      <p class="hero-sub"><span data-slot="hero2.note">Every button engraved around its rim, every box
         packed by the house that made the shirt.</span></p>
       <p class="hero-act"><a class="cta" href="house.html">The house</a></p>
     </div>
 
     <div class="hero-copy" data-copy="2" aria-hidden="true" style="--veil:1 17 33;--copyx:9%;--copyy:-18%;--copyw:36vw">
-      <p class="hero-kicker"><span>The signature</span></p>
-      <h1 class="hero-line">
+      <p class="hero-kicker"><span data-slot="hero3.kicker">The signature</span></p>
+      <h1 class="hero-line" data-slot="hero3.line">
         <span class="ln"><span>Embroidered</span></span>
         <span class="ln"><span>tone on tone.</span></span>
       </h1>
-      <p class="hero-sub"><span>At the cuff, in its own colour, where only the
+      <p class="hero-sub"><span data-slot="hero3.note">At the cuff, in its own colour, where only the
         person wearing it will ever look.</span></p>
       <p class="hero-act"><a class="cta" href="shop.html">See the range</a></p>
     </div>
 
     <div class="hero-copy" data-copy="3" aria-hidden="true" style="--veil:37 6 8;--copyx:9%;--copyy:-5%;--copyw:30vw">
-      <p class="hero-kicker"><span>The cloth</span></p>
-      <h1 class="hero-line">
+      <p class="hero-kicker"><span data-slot="hero4.kicker">The cloth</span></p>
+      <h1 class="hero-line" data-slot="hero4.line">
         <span class="ln"><span>By weight,</span></span>
         <span class="ln"><span>not by eye.</span></span>
       </h1>
-      <p class="hero-sub"><span>Weave, weight and drape are settled long before
+      <p class="hero-sub"><span data-slot="hero4.note">Weave, weight and drape are settled long before
         a single shirt is cut.</span></p>
       <p class="hero-act"><a class="cta" href="shop.html">See the cloths</a></p>
     </div>
@@ -1016,24 +1016,24 @@ html:not(.js) .hero-act{opacity:1}
            cut so that slice lands on the subject, the rail for one and the
            hands for the other. The wide files keep the whole scene. -->
       <a class="dr" href="shop.html" style="--pos:center 40%">
-        <picture>
+        <picture data-pic="door1.picture">
           <source media="(min-width:820px)" srcset="images/hero/rtw-wide.webp">
           <img src="images/hero/rtw-tall.webp" alt="" loading="lazy" decoding="async">
         </picture>
-        <p class="dr-kicker">Ready to order</p>
-        <h2 class="dr-name">Ready to Wear</h2>
-        <p class="dr-note">The house's own cloths, cut in five sizes and finished
+        <p class="dr-kicker" data-slot="door1.kicker">Ready to order</p>
+        <h2 class="dr-name" data-slot="door1.name">Ready to Wear</h2>
+        <p class="dr-note" data-slot="door1.note">The house's own cloths, cut in five sizes and finished
         by the same hands. Choose one and it ships.</p>
         <span class="dr-go"><span>See the range</span><i aria-hidden="true">&rarr;</i></span>
       </a>
       <a class="dr" href="bespoke.html" style="--pos:center 34%">
-        <picture>
+        <picture data-pic="door2.picture">
           <source media="(min-width:820px)" srcset="images/hero/bespoke-wide.webp">
           <img src="images/hero/bespoke-tall.webp" alt="" loading="lazy" decoding="async">
         </picture>
-        <p class="dr-kicker">By appointment</p>
-        <h2 class="dr-name">Bespoke</h2>
-        <p class="dr-note">A pattern cut for one person alone, from a fit taken
+        <p class="dr-kicker" data-slot="door2.kicker">By appointment</p>
+        <h2 class="dr-name" data-slot="door2.name">Bespoke</h2>
+        <p class="dr-note" data-slot="door2.note">A pattern cut for one person alone, from a fit taken
         once. Every commission begins with a conversation.</p>
         <span class="dr-go"><span>Explore bespoke</span><i aria-hidden="true">&rarr;</i></span>
       </a>
@@ -1094,16 +1094,16 @@ html:not(.js) .hero-act{opacity:1}
        PENDING-FROM-CLIENT.md, before touching the caption text. -->
   <section data-band="circle" aria-labelledby="circle-h">
     <figure class="circle-band" style="--pos:center 74%">
-      <picture>
+      <picture data-pic="circle.picture">
         <source media="(min-width:820px)" srcset="images/hero/circle-wide.webp">
         <img src="images/hero/circle-tall.webp"
              alt="A private circular room, seven shirts on a brass rail and a round ottoman at its centre"
              loading="lazy" decoding="async">
       </picture>
       <figcaption>
-        <p class="circle-kicker">By invitation</p>
-        <h2 class="circle-name" id="circle-h">Ratan's Circle</h2>
-        <p class="circle-note">A small, invited group of the house's closest
+        <p class="circle-kicker" data-slot="circle.kicker">By invitation</p>
+        <h2 class="circle-name" id="circle-h" data-slot="circle.name">Ratan's Circle</h2>
+        <p class="circle-note" data-slot="circle.note">A small, invited group of the house's closest
         clients, with personalised access, experiences and privileges.
         Membership is not open. The house extends it.</p>
       </figcaption>
@@ -1157,10 +1157,10 @@ html:not(.js) .hero-act{opacity:1}
   </div>
 </footer>
 
-<script src="assets/store.js?v=1789629444"></script>
-<script src="assets/house.js?v=1789629444"></script>
-<script src="assets/catalogue.js?v=1789629444"></script>
-<script src="assets/site.js?v=1789629444"></script>
+<script src="assets/store.js?v=1789977174"></script>
+<script src="assets/house.js?v=1789977174"></script>
+<script src="assets/catalogue.js?v=1789977174"></script>
+<script src="assets/site.js?v=1789977174"></script>
 <script>
 (function(){
   'use strict';
@@ -1293,8 +1293,8 @@ html:not(.js) .hero-act{opacity:1}
   document.getElementById('year').textContent=new Date().getFullYear();
 })();
 </script>
-<script src="assets/mark.js?v=1789629444"></script>
-<script src="assets/track.js?v=1789629444"></script>
+<script src="assets/mark.js?v=1789977174"></script>
+<script src="assets/track.js?v=1789977174"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 /* the seller details the e-commerce rules require, printed only once the house
@@ -1305,6 +1305,6 @@ var p=document.createElement('p');p.className='label muted';
 p.style.cssText='grid-column:1/-1;margin:var(--s2) 0 0;line-height:1.7;text-transform:none;letter-spacing:.04em';
 p.innerHTML=h;f.appendChild(p);});})();
 </script>
-<script src="assets/nav.js?v=1789629444"></script>
+<script src="assets/nav.js?v=1789977174"></script>
 </body>
 </html>

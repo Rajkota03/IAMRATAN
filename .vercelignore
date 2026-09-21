@@ -89,3 +89,8 @@ images/journal/*.jpg
 images/journal/lobby.webp
 images/journal/night.webp
 images/journal/road.webp
+
+# the September photography as it arrived from the client: full-size PNGs.
+# The served frames are derived into images/set/<slug>/ with their tiers.
+new-shots
+new-photography

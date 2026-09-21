@@ -212,6 +212,49 @@
     });
   }
 
+  /* ---------- the words and the pictures ----------
+     The home page's own lines and photographs, as the house has typed and
+     uploaded them at the desk. Each element that may change carries the name
+     of its slot: data-slot for words, data-pic for a photograph. A row with an
+     empty value is skipped, so the page keeps what it was built with, and a
+     slot the page has no element for is ignored, so a stale row can never
+     put words somewhere they were not designed to go.
+
+     The hero's headline is two lines of type that rise one after the other,
+     so a slash in the house's sentence is where the line breaks. */
+
+  function words(rows) {
+    if (!rows || !rows.length) return;
+    rows.forEach(function (r) {
+      var v = (r.value || '').trim();
+      if (!v) return;
+
+      var el = document.querySelector('[data-slot="' + r.slot + '"]');
+      if (el) {
+        if (el.querySelector('.ln')) {
+          el.innerHTML = v.split('/').map(function (line) {
+            return '<span class="ln"><span>' + esc(line.trim()) + '</span></span>';
+          }).join('');
+        } else {
+          el.textContent = v;
+        }
+        return;
+      }
+
+      var pic = document.querySelector('[data-pic="' + r.slot + '"]');
+      if (pic && /^https:\/\//.test(v)) {
+        /* one uploaded photograph for every width: the wide and tall crops
+           were cut by hand for the built-in frames, and the house's own
+           picture is shown whole rather than guessed at */
+        [].forEach.call(pic.querySelectorAll('source'), function (src) {
+          src.setAttribute('srcset', v);
+        });
+        var img = pic.querySelector('img');
+        if (img) { img.removeAttribute('srcset'); img.src = v; }
+      }
+    });
+  }
+
   /* ---------- go ----------
      Settings arrive with the shop's own single call, so the bar costs no extra
      request. The menu and the bands are asked for only on a page that has them,
@@ -246,6 +289,11 @@
     if (document.querySelector('main [data-band]')) {
       get('home_sections?select=*&order=sort_order.asc')
         .then(function (rows) { try { bands(rows); } catch (e) {} })
+        .catch(function () {});
+    }
+    if (document.querySelector('[data-slot],[data-pic]')) {
+      get('content?select=slot,value')
+        .then(function (rows) { try { words(rows); } catch (e) {} })
         .catch(function () {});
     }
   });

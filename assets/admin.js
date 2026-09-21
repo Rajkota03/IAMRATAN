@@ -315,9 +315,15 @@
   };
 
   A.content     = function () { return api('content?select=*&order=slot.asc'); };
+  /* An upsert, for the same reason setStock is one: the slots are named by
+     the page, not seeded in the table, so the first save of a slot has no row
+     to PATCH and would report "saved" over nothing. */
   A.setContent  = function (slot, value) {
-    return api('content?slot=eq.' + encodeURIComponent(slot),
-      { method: 'PATCH', body: { value: String(value) }, prefer: 'return=minimal' });
+    return api('content?on_conflict=slot', {
+      method: 'POST',
+      prefer: 'return=minimal,resolution=merge-duplicates',
+      body: [{ slot: slot, value: String(value == null ? '' : value) }]
+    });
   };
 
   A.delDiscount = function (code) {
@@ -494,10 +500,6 @@
   };
 
   A.pages    = function () { return api('pages?select=*&order=title.asc'); };
-  A.setPage  = function (slug, patch) {
-    return api('pages?slug=eq.' + encodeURIComponent(slug),
-      { method: 'PATCH', body: patch, prefer: 'return=minimal' });
-  };
 
   /* Which of the statutory facts are still stand-ins. The desk refuses to be
      quiet about this: a shop that goes live with an invented GSTIN and a

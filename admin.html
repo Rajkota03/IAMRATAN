@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1789629444">
+<link rel="stylesheet" href="assets/iar-house.css?v=1789977174">
 <style>
 /* ---------- THE DESK ----------
    A control room, not a dashboard. The first question it answers is "what
@@ -389,6 +389,13 @@ tr.done td{opacity:.5}
   white-space:pre-wrap;word-break:break-word}
 
 /* ---------- media ---------- */
+.homegrid{display:grid;gap:var(--s3);grid-template-columns:1fr}
+@media (min-width:900px){.homegrid{grid-template-columns:1fr 1fr}}
+.homegrid .card{margin:0}
+.homepic{margin:0 0 var(--s3);display:grid;gap:var(--s1)}
+.homepic img{width:100%;max-width:14rem;aspect-ratio:4/5;object-fit:cover;
+  display:block;border:1px solid var(--hair);background:var(--under)}
+.homepic figcaption{font-size:.75rem;color:var(--muted)}
 .files{display:grid;gap:var(--s2);margin-top:var(--s3);
   grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));align-items:start}
 .file{margin:0;background:var(--room);border:1px solid var(--hair);
@@ -611,9 +618,9 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     <div class="over-card"></div></div>
 </main>
 
-<script src="assets/admin.js?v=1789629444"></script>
-<script src="assets/iar-house.js?v=1789629444"></script>
-<script src="assets/mark.js?v=1789629444"></script>
+<script src="assets/admin.js?v=1789977174"></script>
+<script src="assets/iar-house.js?v=1789977174"></script>
+<script src="assets/mark.js?v=1789977174"></script>
 <script>
 (function () {
   'use strict';
@@ -804,11 +811,11 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     newcode:'The database decides what it is worth, not the browser.',
     newcamp:'Build the list first. Then decide what to say.',
     website:'What the house can change without me.',
-    homepage:'The three bands, in the order they are read.',
+    homepage:'Its bands, its words and its photographs.',
     navigation:'Four links that ship in the HTML of every page.',
     media:'Photographs and files, without a deploy.',
     bar:'The line across the top of the shop.',
-    pages:'Every page that exists, and what it is called.'
+    pages:'Every page that exists, and where it is.'
   };
   function shell(inner) {
     work.innerHTML =
@@ -2831,22 +2838,30 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
                 '<span>Straight to the shop, with no deploy</span></button>' +
               '<button data-go="bar"><b>Change the announcement bar</b>' +
                 '<span>The line across the top of every page</span></button>' +
-              '<button data-go="homepage"><b>Reorder the home page</b>' +
-                '<span>Hide a band, or move one up</span></button>' +
+              '<button data-go="homepage"><b>Change the home page</b>' +
+                '<span>Its words, its photographs, its bands</span></button>' +
             '</div>' +
           '</div>' +
 
-          '<div class="card"><h3>Words the house owns</h3>' +
-            '<p class="hint">Each of these replaces a line already on the site. ' +
-            'Leave one empty and the page keeps what it was built with — so a ' +
-            'blank box is never a blank page.</p>' + (slots.length
-            ? '<div class="scroll"><table><tbody>' + slots.map(function (s) {
-                return '<tr><td style="width:45%">' + esc(s.note || s.slot) + '<br>' +
-                  '<span class="muted">' + esc(s.slot) + '</span></td>' +
-                  '<td><input class="cell" style="width:100%" value="' +
-                  esc(s.value || '') + '" data-slot="' + esc(s.slot) + '"></td></tr>';
-              }).join('') + '</tbody></table></div>'
-            : '<p class="empty">No slots yet.</p>') + '</div>' +
+          '<div class="card"><h3>What the house changes itself</h3>' +
+            '<p class="hint">None of these needs a developer or a deploy. ' +
+            'Each lands on the live site within five minutes, sooner in a ' +
+            'fresh tab.</p>' +
+            '<div class="quick">' +
+              '<button data-go="products"><b>The range</b>' +
+                '<span>Add a cloth, its name, price, words and photographs</span></button>' +
+              '<button data-go="inventory"><b>Inventory</b>' +
+                '<span>What is left of every cloth in every neck</span></button>' +
+              '<button data-go="homepage"><b>The home page</b>' +
+                '<span>Every line and picture, and which bands show</span></button>' +
+              '<button data-go="journal"><b>The journal</b>' +
+                '<span>Write, publish and take down entries</span></button>' +
+              '<button data-go="navigation"><b>The menu</b>' +
+                '<span>The links across the top of every page</span></button>' +
+              '<button data-go="settings"><b>Settings</b>' +
+                '<span>Delivery days, returns, the shop open or closed, the legal facts</span></button>' +
+            '</div>' +
+          '</div>' +
         '</div>');
     }).catch(function (e) { body(needsSQL(e)); });
   }
@@ -2860,9 +2875,50 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 
   /* ---------- the home page ---------- */
 
+  /* Every line and photograph on the home page the house may change, in
+     the order the page reads. The names match data-slot / data-pic in
+     index.html and nothing else: a slot with no element on the page is
+     ignored there, so nothing typed here can land anywhere it was not
+     designed to go. The placeholders are the page's own words, so the house
+     can see what it is replacing without opening the site. */
+  var HOME = [
+    ['hero1', 'The hero, frame 1', 'images/hero/conv-tall.webp', [
+      ['kicker', 'Small line above', 'Autumn winter 2025'],
+      ['line',   'The headline',     'Shirts that / speak silence.'],
+      ['note',   'The line under it','Twenty-seven cloths, cut in five sizes, finished by hand.']]],
+    ['hero2', 'The hero, frame 2', 'images/hero/jet-tall.webp', [
+      ['kicker', 'Small line above', 'The house box'],
+      ['line',   'The headline',     'It arrives with / our name on it.'],
+      ['note',   'The line under it','Every button engraved around its rim, every box packed by the house that made the shirt.']]],
+    ['hero3', 'The hero, frame 3', 'images/hero/news-tall.webp', [
+      ['kicker', 'Small line above', 'The signature'],
+      ['line',   'The headline',     'Embroidered / tone on tone.'],
+      ['note',   'The line under it','At the cuff, in its own colour, where only the person wearing it will ever look.']]],
+    ['hero4', 'The hero, frame 4', 'images/hero/campaign-tall.webp', [
+      ['kicker', 'Small line above', 'The cloth'],
+      ['line',   'The headline',     'By weight, / not by eye.'],
+      ['note',   'The line under it','Weave, weight and drape are settled long before a single shirt is cut.']]],
+    ['door1', 'The first door: the shop', 'images/hero/rtw-tall.webp', [
+      ['kicker', 'Small line above', 'Ready to order'],
+      ['name',   'Name',             'Ready to Wear'],
+      ['note',   'The note',         'The house\'s own cloths, cut in five sizes and finished by the same hands. Choose one and it ships.']]],
+    ['door2', 'The second door: bespoke', 'images/hero/bespoke-tall.webp', [
+      ['kicker', 'Small line above', 'By appointment'],
+      ['name',   'Name',             'Bespoke'],
+      ['note',   'The note',         'A pattern cut for one person alone, from a fit taken once. Every commission begins with a conversation.']]],
+    ['circle', 'Ratan\'s Circle', 'images/hero/circle-tall.webp', [
+      ['kicker', 'Small line above', 'By invitation'],
+      ['name',   'Name',             'Ratan\'s Circle'],
+      ['note',   'The note',         'A small, invited group of the house\'s closest clients, with personalised access, experiences and privileges. Membership is not open. The house extends it.']]]
+  ];
+
   function homepage() {
-    A.bands().then(function (rows) {
-      body('<p class="hint">The three bands the home page is built from, in the ' +
+    Promise.all([A.bands(), A.content()]).then(function (r) {
+      var rows = r[0] || [], slots = {};
+      (r[1] || []).forEach(function (c) { slots[c.slot] = (c.value || '').trim(); });
+
+      body('<div class="block"><h3>The bands</h3>' +
+        '<p class="hint">The bands the home page is built from, in the ' +
         'order they are read. Turning one off removes it from the page ' +
         'altogether — not hidden with the screen reader still announcing it.</p>' +
         (rows.length
@@ -2880,11 +2936,75 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
               '<td><label class="tick"><input type="checkbox" data-bandlive="' +
                 esc(b.key) + '"' + (b.live ? ' checked' : '') + '></label></td></tr>';
           }).join('') + '</tbody></table></div>'
-        : '<p class="empty">No bands recorded.</p>') +
+        : '<p class="empty">No bands recorded.</p>') + '</div>' +
+
+        '<div class="block"><h3>The words and the photographs</h3>' +
+        '<p class="hint">Every line and picture on the home page. A box left ' +
+        'empty keeps what the page was built with, shown here in grey, so ' +
+        'nothing you do not touch can change. Words save as you leave the ' +
+        'field; a photograph goes on the page the moment it finishes ' +
+        'uploading, and <b>Back to the original</b> undoes it. In a headline, ' +
+        'a slash is where the line breaks.</p>' +
+        '<div class="homegrid">' + HOME.map(function (g) {
+          var pk = g[0] + '.picture', cur = slots[pk] || '';
+          return '<div class="card"><h3>' + esc(g[1]) + '</h3>' +
+            '<figure class="homepic"><img src="' +
+              esc(cur || (SITE + '/' + g[2])) + '" alt="" loading="lazy">' +
+              '<figcaption>' + (cur ? 'Your photograph' : 'The site\'s own') +
+              '</figcaption></figure>' +
+            '<p class="filters"><input type="file" data-picfile="' + pk + '" ' +
+              'accept="image/jpeg,image/png,image/webp,image/avif">' +
+              (cur ? '<button class="btn small" data-picclear="' + pk +
+                     '">Back to the original</button>' : '') +
+              '<span class="muted" data-picnote="' + pk + '"></span></p>' +
+            '<div class="f2">' + g[3].map(function (w) {
+              var k = g[0] + '.' + w[0];
+              return '<p><label for="' + k + '">' + esc(w[1]) + '</label>' +
+                '<input id="' + k + '" class="cell wide" data-slot="' + k + '" value="' +
+                esc(slots[k] || '') + '" placeholder="' + esc(w[2]) + '"></p>';
+            }).join('') + '</div></div>';
+        }).join('') + '</div></div>' +
+
         '<p class="hint" style="margin-top:var(--s4)">There is no "add a band" ' +
         'here on purpose. A band that is not already in the page has no design, ' +
         'no photographs and no words — a switch for it would be a switch wired ' +
         'to nothing. A new band is a change to the site, and that is me.</p>');
+
+      /* A photograph replaces the built-in one the moment it lands. There is
+         no staging step here as there is on a cloth, because the previous
+         picture is never lost: Back to the original is one press away, and
+         the file itself stays in Media. */
+      [].forEach.call(document.querySelectorAll('[data-picfile]'), function (inp) {
+        inp.addEventListener('change', function () {
+          var f = inp.files && inp.files[0];
+          if (!f) return;
+          var slot = inp.getAttribute('data-picfile');
+          var note = document.querySelector('[data-picnote="' + slot + '"]');
+          inp.disabled = true;
+          note.textContent = 'Uploading…';
+          A.upload(f, 'home').then(function (m) {
+            return A.setContent(slot, m.url);
+          }).then(function () {
+            toast('On the home page.');
+            homepage();
+          }).catch(function (err) {
+            inp.disabled = false; note.textContent = '';
+            toast('The photograph did not go up. ' + (err && err.message), true);
+          });
+        });
+      });
+      [].forEach.call(document.querySelectorAll('[data-picclear]'), function (b) {
+        b.addEventListener('click', function () {
+          b.disabled = true;
+          A.setContent(b.getAttribute('data-picclear'), '').then(function () {
+            toast('Back to the site\'s own photograph.');
+            homepage();
+          }, function (err) {
+            b.disabled = false;
+            toast('Could not undo that. ' + (err && err.message), true);
+          });
+        });
+      });
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
@@ -3114,14 +3234,12 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         'layout and its own words.</p>' +
         (rows.length
         ? '<div class="scroll"><table><thead><tr><th>Page</th><th>Address</th>' +
-          '<th>Last touched</th><th>In the footer</th><th></th></tr></thead><tbody>' +
+          '<th>Last touched</th><th></th></tr></thead><tbody>' +
           rows.map(function (p) {
             return '<tr><td><b>' + esc(p.title) + '</b><br>' +
                 '<span class="muted">' + esc(p.slug) + '</span></td>' +
               '<td class="num">/' + esc(p.path) + '</td>' +
               '<td class="num">' + day(p.updated_at) + '</td>' +
-              '<td><label class="tick"><input type="checkbox" data-pagefoot="' +
-                esc(p.slug) + '"' + (p.in_footer ? ' checked' : '') + '></label></td>' +
               '<td><a class="btn small" target="_blank" rel="noopener" ' +
                 'href="' + SITE + '/' + esc(p.path) + '">View</a></td>' +
               '</tr>';
@@ -3129,8 +3247,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         : '<p class="empty">No pages recorded.</p>') +
         '<p class="hint" style="margin-top:var(--s4)">A brand new page — its ' +
         'layout, its photographs, its words — is a change to the site itself, ' +
-        'and that is me. What you can change here is what an existing page is ' +
-        'called and whether it appears in the footer.</p>');
+        'and that is me. The words and pictures on the home page, the menu ' +
+        'and the journal each have their own screen.</p>');
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
@@ -4043,9 +4161,6 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       saving(A.setMedia(t.getAttribute('data-alt'), { alt: t.value.trim() || null }),
              t, 'the description');
 
-    if (has('data-pagefoot'))
-      saving(A.setPage(t.getAttribute('data-pagefoot'), { in_footer: t.checked }),
-             null, 'the footer');
     if (has('data-col')) {
       var fld = t.getAttribute('data-field');
       var val = fld === 'sort_order' ? (parseInt(t.value, 10) || 0) : t.value;

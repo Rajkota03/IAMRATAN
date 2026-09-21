@@ -261,11 +261,14 @@ The desk → **Catalogue → The range → Add a cloth.**
    product page will show, and fill in fabric, weave, fit and the rest — any
    left blank simply do not appear, they never show as empty rows.
 3. **Photographs.** Choose files straight off a phone or a camera — big ones
-   are shrunk on the way up. They land in a waiting row first, for a look:
-   **nothing reaches the shop until you press "Put on the shop."** A wrong
-   pick costs a click on Discard, never a wrong photograph on a live product.
-   Once published, the order they sit in is the order the shop shows them;
-   drag to rearrange, the first one leads the page and the grid.
+   are shrunk on the way up. They join the set marked *new*, and **nothing
+   reaches the shop until you press Save to the shop.** A wrong pick costs a
+   click on Remove or Discard, never a wrong photograph on a live product.
+   The order they sit in is the order the shop shows them; drag to rearrange,
+   the first one leads the page and the grid. A cloth photographed with the
+   site shows its studio frames here as *the site's own photographs*; press
+   **Edit these photographs** and they become an ordinary set you can
+   reorder, remove from or add to.
 4. **Stock.** Catalogue → Inventory: type the count per neck. A neck left at
    zero shows as sold out; a neck you do not cut, leave alone.
 5. **Tick it onto the shop** back in The range.
@@ -293,8 +296,8 @@ appears at the foot of the screen: *N changes not on the shop yet · Discard ·
 Save to the shop*. Leaving the screen with changes waiting asks first. Once
 saved, a change lands on the live site within five minutes (a browser keeps the
 shop's data for five minutes; a fresh tab sees it at once). Buttons that name
-their action, such as *Put on the shop*, *Remove* and *Delete*, act when pressed;
-they are the save.
+their action, such as *Delete* and *Publish*, act when pressed; they are the
+save. After every Save a box confirms it and says when the site will show it.
 
 | the house changes | where at the desk |
 |---|---|
@@ -313,9 +316,10 @@ they are the save.
 | Discount codes, campaigns, abandoned carts | Marketing |
 | Orders, returns, invoices, the measurement book | Commerce |
 
-**Photographs on a cloth are staged.** A chosen file uploads and waits; nothing
-reaches the shop until **Put on the shop** is pressed. A slip in the file picker
-cannot change the face of a live product. A home page picture is staged the
+**Photographs on a cloth are staged like everything else.** A chosen file
+uploads to Media and joins the set as *new*; Remove and reorder are staged too;
+nothing reaches the shop until **Save to the shop** is pressed. A slip in the
+file picker cannot change the face of a live product. A home page picture is staged the
 same way: it previews at once and reaches the page only on Save, and **Back to
 the original** undoes it.
 

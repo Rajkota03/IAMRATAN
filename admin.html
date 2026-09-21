@@ -226,6 +226,13 @@ label.tick.pending{outline:2px solid #B8860B;outline-offset:2px;border-radius:.3
   transition:transform .25s ease}
 .savebar.on{transform:translateX(-50%) translateY(0)}
 .savebar b{font-weight:500}
+.said{border:1px solid var(--hair);border-radius:.5rem;background:var(--room);color:var(--ink);
+  padding:var(--s4) var(--s5);max-width:26rem;box-shadow:0 1rem 3rem rgba(26,28,30,.25)}
+.said::backdrop{background:rgba(26,28,30,.45)}
+.said h3{margin:0 0 var(--s2);font-weight:500}
+.said p{margin:0 0 var(--s3);line-height:1.6;color:var(--muted)}
+.said .filters{margin:0;justify-content:flex-end}
+.shot.fresh{outline:2px solid #B8860B;outline-offset:2px}
 .savebar .btn{border-color:rgba(255,255,255,.35);color:var(--room);background:none}
 .savebar .btn.fill{background:var(--room);color:var(--ink);border-color:var(--room)}
 .savebar .btn[disabled]{opacity:.5}
@@ -640,6 +647,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     <div class="over-card"></div></div>
 </main>
 
+<script src="assets/shots.js?v=1789983665"></script>
 <script src="assets/admin.js?v=1789983665"></script>
 <script src="assets/iar-house.js?v=1789983665"></script>
 <script src="assets/mark.js?v=1789983665"></script>
@@ -793,6 +801,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     var b = e.target.closest('[data-go]');
     if (!b) return;
     if (!leaving()) return;
+    REOPEN = null;
     here = b.getAttribute('data-go');
     /* arriving at the offer form through the nav means a NEW offer; the edit
        button reaches the same screen by setting CODE_EDIT first and rendering
@@ -855,7 +864,9 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       '<span class="muted">' + esc(e && e.message) + '</span></p>';
   }
 
+  var REOPEN = null;     /* how to redraw a detail screen: set by the openers */
   function render() {
+    if (REOPEN && REOPEN.at === here) { REOPEN(); return; }
     shell(waiting());
     ({ dashboard:dashboard, orders:orders, returns:returns, customers:customers,
        products:products, inventory:inventory, analytics:analytics,
@@ -2037,7 +2048,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   }
 
   function openSheet(phone) {
-    here = 'sheet'; drawNav(); shell(waiting());
+    here = 'sheet'; REOPEN = function () { openSheet(phone); }; REOPEN.at = 'sheet';
+    drawNav(); shell(waiting());
     var isNew = phone === 'new';
     (isNew ? Promise.resolve([]) : A.sittings(phone)).then(function (hist) {
       var latest = hist[0] || {};
@@ -2665,7 +2677,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   }
 
   function openCampaign(id) {
-    here = 'campaign'; drawNav(); shell(waiting());
+    here = 'campaign'; REOPEN = function () { openCampaign(id); }; REOPEN.at = 'campaign';
+    drawNav(); shell(waiting());
     Promise.all([A.campaign(id), A.recipients(id)]).then(function (r) {
       var c = r[0] || {}, list = r[1] || [];
       var sent = list.filter(function (x) { return x.sent_at; }).length;
@@ -3389,7 +3402,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   }
 
   function openEntry(id) {
-    here = 'journal'; drawNav(); shell(waiting());
+    here = 'journal'; REOPEN = function () { openEntry(id); }; REOPEN.at = 'journal';
+    drawNav(); shell(waiting());
     A.entry(id).then(function (e) {
       body('<div class="filters"><button class="btn small" data-go="journal">' +
           '&larr; The journal</button>' +
@@ -3736,7 +3750,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
   var SHOTS = ['thumbnail','front','back','collar','buttons','cuff','fabric','lifestyle'];
 
   function openCloth(id) {
-    here = 'cloth'; drawNav(); shell(waiting());
+    here = 'cloth'; REOPEN = function () { openCloth(id); }; REOPEN.at = 'cloth';
+    drawNav(); shell(waiting());
     Promise.all([A.product(id), A.images(id)]).then(function (r) {
       var p = r[0], imgs = r[1] || [];
       body('<div class="filters"><button class="btn small" data-go="products">' +
@@ -3784,30 +3799,18 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
         '</tbody></table></div></div>' +
 
         '<div class="block"><h3>Photographs</h3>' +
-        '<p class="hint">Chosen files land HERE first, for a look — nothing ' +
-        'reaches the shop until you press <b>Put on the shop</b>. What is ' +
-        'below that line is live, in this order; drag to rearrange, the first ' +
-        'one leads. If a cloth has none, the studio set built with the site ' +
-        'is used. Big files are shrunk on the way up, so photographs straight ' +
-        'off a phone are fine.</p>' +
+        '<p class="hint">What the product page shows, in this order; the first ' +
+        'one leads. Drag to rearrange, <b>Remove</b> to take one off, choose ' +
+        'files to add more. <b>Nothing here changes on the shop until you press ' +
+        'Save to the shop.</b> Big files are shrunk on the way up, so ' +
+        'photographs straight off a phone are fine.</p>' +
         '<p class="filters"><input type="file" id="clothfile" multiple ' +
           'accept="image/jpeg,image/png,image/webp,image/avif">' +
           '<span class="muted" id="upnote"></span></p>' +
-        '<div id="pendingBox"></div>' +
-        (imgs.length
-          ? '<div class="shots" id="shots">' + imgs.map(function (im, i) {
-              return '<figure class="shot" draggable="true" data-img="' + im.id +
-                '" data-i="' + i + '">' +
-                '<img src="' + esc(im.url) + '" alt="" loading="lazy">' +
-                '<figcaption><select class="cell" data-imgkind="' + im.id + '">' +
-                  SHOTS.map(function (s) {
-                    return '<option value="' + s + '"' +
-                      (s === im.kind ? ' selected' : '') + '>' + s + '</option>';
-                  }).join('') + '</select>' +
-                '<button class="btn small" data-delimg="' + im.id + '">Remove</button>' +
-                '</figcaption></figure>';
-            }).join('') + '</div>'
-          : '<p class="empty">No photographs on this cloth yet.</p>') +
+        /* the whole set travels as one staged change: this hidden field is
+           what the save bar counts, and its __save writes the set out */
+        '<input type="hidden" id="photoPlan" data-photos="' + p.id + '">' +
+        '<div id="shotsBox"></div>' +
         '</div>' +
 
         /* Only a hidden cloth may be deleted, so the button that removes a
@@ -3825,126 +3828,192 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
             '</button></p>') +
         '</div>');
 
-      /* Chosen files upload to the library and STOP THERE, staged for a look.
-         The row that puts a photograph on the shop is written only when the
-         house presses the button — because a slip in a file picker must never
-         be able to change the face of a live product. That happened: a wrong
-         image went straight onto the flagship cloth, on the live shop, from
-         one misclick. Never again.
+      /* ---------- the set, held here until Save ----------
+         `list` is the set as the house wants it: rows from the database,
+         files uploaded this sitting (id null), and rows marked for removal
+         (kept, flagged, so the delete can be written). Every edit redraws
+         from it and stages the hidden field; Save writes the deletes, the
+         inserts and every position in one pass, then re-reads.
 
-         One file at a time, in order, so five photographs stage as 0-4 rather
-         than racing each other for positions. */
-      var PENDING = [];
+         A cloth photographed with the site has no rows: the shop shows the
+         studio set in images/set/. Those frames are shown here as what the
+         page shows today, and one press brings them into the list as rows
+         pointing at the same files, so they can be reordered, removed or
+         added to like any other. */
+      var STUDIO = (window.IAR_SHOTS || {})[p.slug];
+      var KIND_OF = { '1-hero': 'front', '2-back': 'back', '2-view': 'lifestyle',
+                      '3-view': 'lifestyle', '3-collar': 'collar', '4-cuff': 'cuff',
+                      '5-button': 'buttons' };
+      var list = imgs.map(function (im) {
+        return { id: im.id, url: im.url, kind: im.kind || 'front', del: false };
+      });
+      var usingStudio = !list.length && !!(STUDIO && STUDIO.shots && STUDIO.shots.length);
+      var plan = document.getElementById('photoPlan');
 
-      function drawPending() {
-        var box = document.getElementById('pendingBox');
+      function studioUrl(sh, tier) {
+        return SITE + '/images/set/' + p.slug + '/' + sh.src + (tier || '') + '.webp';
+      }
+      function adoptStudio() {
+        list = STUDIO.shots.map(function (sh) {
+          return { id: null, url: studioUrl(sh), kind: KIND_OF[sh.src] || 'front', del: false };
+        });
+        usingStudio = false;
+      }
+      function touched() { stage(plan); drawShots(); }
+
+      function drawShots() {
+        var box = document.getElementById('shotsBox');
         if (!box) return;
-        if (!PENDING.length) { box.innerHTML = ''; return; }
-        box.innerHTML =
-          '<p class="hint" style="margin-top:var(--s3)"><b>' + PENDING.length +
-            ' waiting for your say-so.</b> Not on the shop yet.</p>' +
-          '<div class="shots">' + PENDING.map(function (m) {
-            return '<figure class="shot" style="opacity:.7">' +
-              '<img src="' + esc(m.url) + '" alt="" loading="lazy"></figure>';
-          }).join('') + '</div>' +
-          '<p class="filters" style="margin-top:var(--s2)">' +
-            '<button class="btn" id="pubShots">Put ' +
-              (PENDING.length === 1 ? 'it' : 'all ' + PENDING.length) +
-              ' on the shop</button>' +
-            '<button class="btn small" id="dropShots">Discard</button></p>';
+        if (usingStudio) {
+          box.innerHTML =
+            '<p class="hint"><b>The site\'s own photographs.</b> This is what the ' +
+            'page shows today. Press <b>Edit these</b> to bring them here, where ' +
+            'they can be reordered, removed or added to.</p>' +
+            '<div class="shots">' + STUDIO.shots.map(function (sh) {
+              return '<figure class="shot" style="opacity:.85"><img src="' +
+                esc(studioUrl(sh, '-t')) + '" alt="" loading="lazy">' +
+                '<figcaption><span class="muted">' + esc(sh.alt) + '</span></figcaption></figure>';
+            }).join('') + '</div>' +
+            '<p class="filters" style="margin-top:var(--s2)"><button class="btn small" ' +
+              'type="button" id="adoptStudio">Edit these photographs</button></p>';
+          document.getElementById('adoptStudio').onclick = function () {
+            adoptStudio(); touched();
+          };
+          return;
+        }
+        var live = list.filter(function (x) { return !x.del; });
+        var gone = list.filter(function (x) { return x.del; }).length;
+        box.innerHTML = (live.length
+          ? '<div class="shots" id="shots">' + live.map(function (x, i) {
+              return '<figure class="shot' + (x.id ? '' : ' fresh') + '" draggable="true" data-i="' + i + '">' +
+                '<img src="' + esc(x.url) + '" alt="" loading="lazy">' +
+                '<figcaption><select class="cell" data-kindof="' + i + '">' +
+                  SHOTS.map(function (k) {
+                    return '<option value="' + k + '"' + (k === x.kind ? ' selected' : '') +
+                      '>' + k + '</option>';
+                  }).join('') + '</select>' +
+                '<button class="btn small" type="button" data-rm="' + i + '">Remove</button>' +
+                (x.id ? '' : '<span class="muted">new</span>') +
+                '</figcaption></figure>';
+            }).join('') + '</div>'
+          : '<p class="empty">No photographs on this cloth. ' +
+            (STUDIO ? 'The studio set built with the site shows until some are added.'
+                    : 'The cloth shows as its own colour until some are added.') + '</p>') +
+          (gone ? '<p class="hint" style="margin-top:var(--s2)">' + gone + ' marked for ' +
+                  'removal. <button class="linky" type="button" id="unRemove">Put ' +
+                  (gone === 1 ? 'it' : 'them') + ' back</button></p>' : '');
 
-        document.getElementById('pubShots').onclick = function () {
-          var btn = this; btn.disabled = true;
-          var at = imgs.length, done = 0;
-          PENDING.reduce(function (chain, m) {
-            return chain.then(function () {
-              return A.addImage({
-                product_id: Number(id), url: m.url,
-                kind: SHOTS[Math.min(at + done, SHOTS.length - 1)] || 'front',
-                sort_order: at + done
-              }).then(function () { done++; });
-            });
-          }, Promise.resolve())
-            .then(function () {
-              toast(done + ' photograph' + (done === 1 ? '' : 's') + ' on the shop.');
-              openCloth(id);
-            })
-            .catch(function (err) {
-              btn.disabled = false;
-              toast('Stopped after ' + done + ' of ' + PENDING.length + '. ' +
-                    (err && err.message), true);
-            });
+        var ur = document.getElementById('unRemove');
+        if (ur) ur.onclick = function () {
+          list.forEach(function (x) { x.del = false; }); touched();
         };
-        document.getElementById('dropShots').onclick = function () {
-          PENDING = [];
-          drawPending();
-          toast('Discarded. The files stay in Media if you want them later.');
-        };
+        [].forEach.call(box.querySelectorAll('[data-rm]'), function (b) {
+          b.onclick = function () {
+            var x = live[Number(b.getAttribute('data-rm'))];
+            if (x.id) x.del = true; else list.splice(list.indexOf(x), 1);
+            touched();
+          };
+        });
+        [].forEach.call(box.querySelectorAll('[data-kindof]'), function (sel) {
+          /* stopPropagation: the desk-wide change listener would otherwise
+             stage the select itself; the plan field is what carries this */
+          sel.addEventListener('change', function (e) {
+            e.stopPropagation();
+            live[Number(sel.getAttribute('data-kindof'))].kind = sel.value;
+            stage(plan);
+          });
+        });
+
+        var grid = document.getElementById('shots'), from = null;
+        if (!grid) return;
+        grid.addEventListener('dragstart', function (e) {
+          var f = e.target.closest('.shot'); if (!f) return;
+          from = f; f.classList.add('lift'); e.dataTransfer.effectAllowed = 'move';
+        });
+        grid.addEventListener('dragend', function () {
+          if (from) from.classList.remove('lift'); from = null;
+        });
+        grid.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          var over = e.target.closest('.shot');
+          if (!over || !from || over === from) return;
+          var after = over.compareDocumentPosition(from) & Node.DOCUMENT_POSITION_PRECEDING;
+          grid.insertBefore(from, after ? over.nextSibling : over);
+        });
+        grid.addEventListener('drop', function (e) {
+          e.preventDefault();
+          var order = [].map.call(grid.querySelectorAll('.shot'), function (f) {
+            return live[Number(f.getAttribute('data-i'))];
+          });
+          list = order.concat(list.filter(function (x) { return x.del; }));
+          touched();
+        });
       }
 
+      /* what Save does with the set: removals, then every survivor written
+         with its position and kind, new ones inserted; then read back */
+      plan.__save = function () {
+        var chain = Promise.resolve();
+        list.filter(function (x) { return x.del && x.id; }).forEach(function (x) {
+          chain = chain.then(function () { return A.delImage(x.id); });
+        });
+        list.filter(function (x) { return !x.del; }).forEach(function (x, i) {
+          chain = chain.then(function () {
+            return x.id
+              ? A.setImage(x.id, { kind: x.kind, sort_order: i })
+              : A.addImage({ product_id: Number(id), url: x.url, kind: x.kind, sort_order: i });
+          });
+        });
+        return chain.then(function () { return A.images(id); }).then(function (rows) {
+          list = rows.map(function (im) {
+            return { id: im.id, url: im.url, kind: im.kind || 'front', del: false };
+          });
+          usingStudio = false;
+          drawShots();
+        });
+      };
+
+      /* Files upload to the library at once, because a file has to exist
+         before it can be named, and join the list as new; nothing is written
+         against the cloth until Save. Adding to a cloth that still shows the
+         studio set brings that set in first, so "add one" does not silently
+         mean "replace them all". */
       document.getElementById('clothfile').addEventListener('change', function (e) {
         var files = [].slice.call(e.target.files || []);
         if (!files.length) return;
         var note = document.getElementById('upnote');
         var done = 0;
         e.target.disabled = true;
-
+        if (usingStudio) adoptStudio();
         files.reduce(function (chain, f) {
           return chain.then(function () {
             note.textContent = 'Uploading ' + (done + 1) + ' of ' + files.length + '…';
             return A.upload(f, 'products/' + (p.slug || 'cloth'))
-              .then(function (m) { done++; PENDING.push(m); });
+              .then(function (m) {
+                done++;
+                list.push({ id: null, url: m.url, kind: 'front', del: false });
+              });
           });
         }, Promise.resolve())
           .then(function () {
             note.textContent = '';
             e.target.disabled = false;
             e.target.value = '';
-            drawPending();
+            touched();
           })
           .catch(function (err) {
             note.textContent = '';
             e.target.disabled = false;
-            drawPending();
+            touched();
             toast('Stopped at file ' + (done + 1) + ' of ' + files.length + '. ' +
                   (err && err.message), true);
           });
       });
 
-      dragShots(id);
+      drawShots();
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
-  /* Reordering writes every card's new position, because a single swap leaves
-     the rest of the row wrong the moment two are moved. */
-  function dragShots(productId) {
-    var box = document.getElementById('shots');
-    if (!box) return;
-    var from = null;
-    box.addEventListener('dragstart', function (e) {
-      var s = e.target.closest('.shot'); if (!s) return;
-      from = s; s.classList.add('lift');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    box.addEventListener('dragend', function () {
-      if (from) from.classList.remove('lift');
-      from = null;
-    });
-    box.addEventListener('dragover', function (e) {
-      e.preventDefault();
-      var over = e.target.closest('.shot');
-      if (!over || !from || over === from) return;
-      var after = over.compareDocumentPosition(from) & Node.DOCUMENT_POSITION_PRECEDING;
-      box.insertBefore(from, after ? over.nextSibling : over);
-    });
-    box.addEventListener('drop', function (e) {
-      e.preventDefault();
-      var order = [].slice.call(box.querySelectorAll('.shot'));
-      Promise.all(order.map(function (s, i) {
-        return A.setImage(s.getAttribute('data-img'), { sort_order: i });
-      })).then(function () { openCloth(productId); });
-    });
-  }
 
   /* ---------- saving ----------
      A change is STAGED, not saved. The field turns amber and a bar appears
@@ -4019,13 +4088,31 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
       PENDING = els.filter(function (t) { return t.classList.contains('failed'); });
       drawSavebar();
       if (failed) toast(failed + ' of ' + all.length + ' did not save. The red fields say why.', true);
-      else toast('Saved. ' + all.length + ' change' + (all.length === 1 ? ' is' : 's are') + ' on the shop.');
+      else said('Saved.', all.length + ' change' + (all.length === 1 ? ' is' : 's are') +
+                ' on the way to the live site. ' +
+                (all.length === 1 ? 'It shows' : 'They show') + ' within five minutes; ' +
+                'a fresh browser tab shows ' + (all.length === 1 ? 'it' : 'them') + ' at once.');
       refreshKpis();
     }
     if (!all.length) { done = 0; settle(); return; }
     all.forEach(function (pr) {
       pr.then(function () { done++; settle(); }, function () { failed++; done++; settle(); });
     });
+  }
+
+  /* A box that has to be dismissed, for the one message that must not be
+     missed: that a save went through, and when the shop will show it. */
+  var saidBox = null;
+  function said(title, text) {
+    if (!saidBox) {
+      saidBox = document.createElement('dialog');
+      saidBox.className = 'said';
+      document.body.appendChild(saidBox);
+    }
+    saidBox.innerHTML = '<h3>' + esc(title) + '</h3><p>' + esc(text) + '</p>' +
+      '<p class="filters"><button class="btn" type="button" id="saidOk">All right</button></p>';
+    document.getElementById('saidOk').onclick = function () { saidBox.close(); };
+    if (saidBox.showModal) saidBox.showModal(); else saidBox.setAttribute('open', '');
   }
 
   /* leaving a screen with changes staged asks first */
@@ -4153,14 +4240,6 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
             toast(nm + ' is gone.'); here = 'products'; drawNav(); render();
           }, function () { dc.disabled = false; });
       }
-    }
-    var di = e.target.closest('[data-delimg]');
-    if (di) {
-      e.preventDefault();
-      var fig = di.closest('.shot');
-      A.delImage(di.getAttribute('data-delimg')).then(function () {
-        if (fig) fig.remove();
-      });
     }
 
     /* ---- marketing ---- */
@@ -4337,8 +4416,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
              null, 'the collection');
     if (has('data-code'))
       saving(A.setDiscount(t.getAttribute('data-code'), { live: t.checked }), null, 'the offer');
-    if (has('data-imgkind'))
-      saving(A.setImage(t.getAttribute('data-imgkind'), { kind: t.value }), t, 'the photograph');
+    if (has('data-photos'))
+      saving(t.__save(), t, 'the photographs');
 
     /* ---- the journal ---- */
     if (has('data-entry')) {

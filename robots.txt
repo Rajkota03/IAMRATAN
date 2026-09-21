@@ -37,3 +37,5 @@ Disallow: /variant-3-nuancier.html
 
 # Sitemap: added when the domain is decided — it must carry absolute URLs, and
 # pointing it at a working link would teach Google the wrong home.
+
+Sitemap: https://www.iamratan.co.in/sitemap.xml

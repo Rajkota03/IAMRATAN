@@ -3779,6 +3779,21 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
                 '</figcaption></figure>';
             }).join('') + '</div>'
           : '<p class="empty">No photographs on this cloth yet.</p>') +
+        '</div>' +
+
+        /* Only a hidden cloth may be deleted, so the button that removes a
+           product from the world cannot be pressed on one a customer is
+           looking at. Untick it on The range first; that is the pause. */
+        '<div class="block"><h3>Taking it off the books</h3>' +
+        (p.visible
+          ? '<p class="hint">This cloth is on the shop. Untick it on The range ' +
+            'first; a cloth that is hidden can be deleted from here.</p>'
+          : '<p class="hint">Deleting removes the cloth, its stock and its place ' +
+            'on the shop for good. Orders already placed keep their own record of ' +
+            'it, and its photographs stay in Media.</p>' +
+            '<p class="filters"><button class="btn small danger" data-delcloth="' +
+            p.id + '" data-clothname="' + esc(p.name) + '">Delete ' + esc(p.name) +
+            '</button></p>') +
         '</div>');
 
       /* Chosen files upload to the library and STOP THERE, staged for a look.
@@ -4002,6 +4017,17 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
     if (ed && confirm('Delete this entry for good? It cannot be undone.')) {
       saving(A.delEntry(ed.getAttribute('data-entry-del')), null, 'the entry')
         .then(function () { toast('Deleted.'); here = 'journal'; drawNav(); render(); });
+    }
+    var dc = e.target.closest('[data-delcloth]');
+    if (dc) {
+      var nm = dc.getAttribute('data-clothname');
+      if (prompt('Type the cloth\'s name to delete it for good: ' + nm) === nm) {
+        dc.disabled = true;
+        saving(A.delProduct(dc.getAttribute('data-delcloth')), null, 'the cloth')
+          .then(function () {
+            toast(nm + ' is gone.'); here = 'products'; drawNav(); render();
+          }, function () { dc.disabled = false; });
+      }
     }
     var di = e.target.closest('[data-delimg]');
     if (di) {

@@ -427,14 +427,15 @@
       if (el) el.textContent = ' ' + st.deliveryLine() + '.';
     });
 
-    /* Until Razorpay is live the order is completed in writing — the same
-       handoff the house already uses. The button says exactly what it does, so
-       nobody taps expecting a card form. When the gateway is wired this
-       function is the only thing that changes. */
+    /* This line said "Card and UPI payment is being connected" for weeks
+       after the gateway went live, so a customer read that payment was not
+       ready and then met a card form. It now says what the button does. The
+       WhatsApp path still exists below for the day the gateway is unreachable,
+       and rewrites this line only when it is actually taken. */
     var trust = document.getElementById('trust');
     trust.innerHTML = 'The house confirms every order before it is made. ' +
-      'Card and UPI payment is being connected. Until then your order reaches ' +
-      'the house directly and payment is arranged with you.';
+      'Pay by card, UPI or net banking on the next screen; nothing is charged ' +
+      'until you confirm there.';
 
     /* The form is rebuilt whenever the bag changes, so anything typed has to be
        put back each time, not only on first load. */
@@ -659,6 +660,10 @@
                  network gone — still ends at WhatsApp. The order is already
                  saved and an order by chat beats one lost to a timeout. */
               console.error('[checkout] could not reach the gateway ·', err);
+              var tr = document.getElementById('trust');
+              if (tr) tr.textContent = 'The payment screen could not be reached, ' +
+                'so your order goes to the house on WhatsApp and payment is ' +
+                'arranged with you.';
               return go();
             });
   });

@@ -313,7 +313,7 @@ save. After every Save a box confirms it and says when the site will show it.
 | Photographs and files, with a permanent public link | Shop front → Media |
 | Delivery days, returns window, shipping note, shop open or closed | System → Settings |
 | The legal facts: GSTIN, registered address, Grievance Officer | System → Settings |
-| Discount codes, campaigns, abandoned carts | Marketing |
+| Discount codes, abandoned carts | Marketing |
 | Orders, returns, invoices, the measurement book | Commerce |
 
 **Photographs on a cloth are staged like everything else.** A chosen file

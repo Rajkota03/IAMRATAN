@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1789983665">
+<link rel="stylesheet" href="assets/iar-house.css?v=1790010719">
 <style>
 /* ---------- THE DESK ----------
    A control room, not a dashboard. The first question it answers is "what
@@ -664,10 +664,10 @@ tr.lift{opacity:.4}
     <div class="over-card"></div></div>
 </main>
 
-<script src="assets/shots.js?v=1789983665"></script>
-<script src="assets/admin.js?v=1789983665"></script>
-<script src="assets/iar-house.js?v=1789983665"></script>
-<script src="assets/mark.js?v=1789983665"></script>
+<script src="assets/shots.js?v=1790010719"></script>
+<script src="assets/admin.js?v=1790010719"></script>
+<script src="assets/iar-house.js?v=1790010719"></script>
+<script src="assets/mark.js?v=1790010719"></script>
 <script>
 (function () {
   'use strict';
@@ -766,14 +766,11 @@ tr.lift{opacity:.4}
     ['', 'Dashboard', [['dashboard','Dashboard']]],
     ['Commerce', null, [['orders','Orders'],['returns','Returns'],
                         ['customers','Customers'],['book','Measurement book']]],
-    ['Catalogue', null, [['products','The range'],['inventory','Inventory'],
-                         ['collections','Collections']]],
-    ['Marketing', null, [['marketing','Overview'],['discounts','Offers'],
-                         ['campaigns','Campaigns'],['carts','Abandoned carts']]],
-    ['Shop front', null, [['website','Website'],['homepage','Home page'],
-                          ['navigation','Menu'],['media','Media'],
-                          ['bar','Announcement bar'],['journal','Journal'],
-                          ['pages','Pages']]],
+    ['Catalogue', null, [['products','The range'],['inventory','Inventory']]],
+    ['Marketing', null, [['discounts','Offers'],['carts','Abandoned carts']]],
+    ['Shop front', null, [['homepage','Home page'],['navigation','Menu'],
+                          ['media','Media'],['bar','Announcement bar'],
+                          ['journal','Journal']]],
     ['Insights', null, [['analytics','Analytics'],['reports','Reports'],
                         ['demand','Bespoke demand'],['enquiries','Enquiries']]],
     ['System', null, [['settings','Settings']]]
@@ -834,12 +831,10 @@ tr.lift{opacity:.4}
     customers:'Customers.', products:'The range.', inventory:'Inventory.',
     analytics:'Analytics.', demand:'Bespoke demand.', enquiries:'Enquiries.',
     settings:'Settings.', book:'The measurement book.', sheet:'The sheet.',
-    collections:'Collections.', discounts:'Offers.', website:'The shop windows.',
-    reports:'Reports.', cloth:'The cloth.',
-    marketing:'Marketing.', campaigns:'Campaigns.', campaign:'The campaign.',
-    newcode:'A new offer.', newcamp:'A new campaign.', carts:'Abandoned carts.',
+    discounts:'Offers.', reports:'Reports.', cloth:'The cloth.',
+    newcode:'A new offer.', carts:'Abandoned carts.',
     homepage:'The home page.', navigation:'The menu.', media:'Media.',
-    bar:'The announcement bar.', pages:'Pages.'
+    bar:'The announcement bar.', journal:'The journal.', newentry:'A new entry.'
   };
 
   var SUBS = {
@@ -853,18 +848,14 @@ tr.lift{opacity:.4}
     demand:'Necks the house does not cut, that people asked for anyway.',
     enquiries:'Bespoke and wardrobe leads.',
     settings:'What the house controls without a deploy.',
-    marketing:'What the money spent on getting people here actually did.',
     discounts:'Every code, and what it gave away to earn what it earned.',
-    campaigns:'A message, and the real people it is going to.',
     carts:'People who got as far as the checkout and stopped.',
     newcode:'The database decides what it is worth, not the browser.',
-    newcamp:'Build the list first. Then decide what to say.',
-    website:'What the house can change without me.',
     homepage:'Its bands, its words and its photographs.',
     navigation:'Four links that ship in the HTML of every page.',
     media:'Photographs and files, without a deploy.',
     bar:'The line across the top of the shop.',
-    pages:'Every page that exists, and where it is.'
+    journal:'Write, publish and take down entries.'
   };
   function shell(inner) {
     PENDING = []; drawSavebar();
@@ -888,12 +879,9 @@ tr.lift{opacity:.4}
     ({ dashboard:dashboard, orders:orders, returns:returns, customers:customers,
        products:products, inventory:inventory, analytics:analytics,
        demand:demand, enquiries:enquiries, settings:settings,
-       book:book, collections:collections, discounts:discounts,
-       website:website, reports:reports,
-       marketing:marketing, campaigns:campaigns, carts:carts,
-       newcode:newcode, newcamp:newcamp, homepage:homepage,
-       navigation:navigation, media:media, bar:bar, pages:pages,
-       journal:journal, newentry:newentry }[here] || dashboard)();
+       book:book, discounts:discounts, reports:reports, carts:carts,
+       newcode:newcode, homepage:homepage, navigation:navigation,
+       media:media, bar:bar, journal:journal, newentry:newentry }[here] || dashboard)();
   }
 
   /* ---------- dashboard ----------
@@ -1827,12 +1815,12 @@ tr.lift{opacity:.4}
   function analytics() {
     Promise.all([
       A.aKpis(), A.aSeries(A_RANGE), A.traffic(), A.best().catch(nil),
-      A.campaignResults().catch(nil), A.insights().catch(function () { return {}; }),
+      A.insights().catch(function () { return {}; }),
       A.locations().catch(nil), A.devices().catch(nil), A.funnel()
     ]).then(function (r) {
       var k = r[0] || {}, series = r[1] || [], chans = r[2] || [], best = r[3] || [],
-          camps = r[4] || [], ins = r[5] || {}, locs = r[6] || [], devs = r[7] || [],
-          f = r[8] || {};
+          ins = r[4] || {}, locs = r[5] || [], devs = r[6] || [],
+          f = r[7] || {};
 
       var figs = [
         ['money', 'Revenue', rupees(k.revenue), pct(k.revenue, k.revenue_before)],
@@ -1890,7 +1878,7 @@ tr.lift{opacity:.4}
 
         '<div class="grid-2">' +
           '<div class="card"><h3>Where the money came from' +
-            '<span class="more" data-go="marketing">Marketing</span></h3>' +
+            '</h3>' +
             chanBlock + '</div>' +
           '<div class="card"><h3>Where the shop loses people</h3>' +
             '<div class="funnel">' + steps.map(function (s) {
@@ -1916,17 +1904,6 @@ tr.lift{opacity:.4}
               }).join('') + '</tbody></table></div>'
             : '<p class="empty">Nothing sold yet.</p>') + '</div>' +
 
-          '<div class="card"><h3>Campaigns' +
-            '<span class="more" data-go="campaigns">All</span></h3>' + (camps.length
-            ? '<div class="scroll"><table><thead><tr><th>Campaign</th><th>Sent to</th>' +
-              '<th>Revenue</th></tr></thead><tbody>' +
-              camps.slice(0, 6).map(function (c) {
-                return '<tr><td>' + esc(c.name) + '<br><span class="muted">' +
-                    esc(c.channel) + '</span></td>' +
-                  '<td class="num">' + (c.recipients || 0) + '</td>' +
-                  '<td class="num">' + rupees(c.revenue) + '</td></tr>';
-              }).join('') + '</tbody></table></div>'
-            : '<p class="empty">No campaigns yet.</p>') + '</div>' +
 
           '<div class="card"><h3>Customers</h3>' +
             '<div class="mini" style="grid-template-columns:1fr 1fr">' +
@@ -2202,42 +2179,6 @@ tr.lift{opacity:.4}
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
-  /* ---------- collections ---------- */
-
-  function collections() {
-    A.collections().then(function (rows) {
-      body('<p class="hint">The groupings the shop sorts cloth into. The order ' +
-        'here is the order they appear.</p>' +
-        '<form class="filters" id="newcol">' +
-          '<input class="cell wide" name="name" placeholder="A new collection" required>' +
-          '<button class="btn small" type="submit">Add</button></form>' +
-        (rows.length
-        ? '<div class="scroll"><table><thead><tr><th>Name</th><th>Blurb</th>' +
-          '<th>Order</th><th>Shown</th></tr></thead><tbody>' +
-          rows.map(function (c) {
-            return '<tr><td>' + esc(c.name) + '<br><span class="muted">' +
-                esc(c.slug) + '</span></td>' +
-              '<td><input class="cell wide" value="' + esc(c.blurb || '') +
-                '" data-col="' + c.id + '" data-field="blurb"></td>' +
-              '<td><input class="cell" type="number" style="width:4rem" value="' +
-                (c.sort_order || 0) + '" data-col="' + c.id + '" data-field="sort_order"></td>' +
-              '<td><label class="tick"><input type="checkbox" data-colvis="' + c.id +
-                '"' + (c.visible ? ' checked' : '') + '></label></td></tr>';
-          }).join('') + '</tbody></table></div>'
-        : '<p class="empty">No collections yet.</p>'));
-
-      document.getElementById('newcol').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var name = e.target.elements.name.value.trim();
-        if (!name) return;
-        A.addCollection({
-          name: name,
-          slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-          sort_order: rows.length + 1
-        }).then(collections);
-      });
-    }).catch(function (e) { body(needsSQL(e)); });
-  }
 
   /* ================================ MARKETING ================================
      WHAT IS MEASURED HERE AND WHAT IS NOT.
@@ -2270,115 +2211,6 @@ tr.lift{opacity:.4}
       }).join('') + '</svg>';
   }
 
-  function marketing() {
-    Promise.all([A.marketing(), A.channels(), A.activity(), A.cartStats()])
-      .then(function (r) {
-        var m = r[0] || {}, chans = r[1] || [], acts = r[2] || [], carts = r[3] || {};
-        var total = chans.reduce(function (a, c) { return a + Number(c.revenue || 0); }, 0);
-
-        var figs = [
-          ['money', 'Revenue from marketing', rupees(m.revenue),
-            deltaHTML(pct(m.revenue, m.revenue_before)), false],
-          ['cart', 'Orders from marketing', m.orders || 0,
-            deltaHTML(pct(m.orders, m.orders_before)), false],
-          ['customers', 'New customers', m.new_customers || 0,
-            '<span class="delta flat">first order in 30 days</span>', false],
-          ['rise', 'Return on ad spend', m.roas ? m.roas + '×' : '—',
-            m.roas ? '<span class="delta flat">on ' + rupees(m.spent) + ' spent</span>'
-                   : '<span class="delta flat">enter your ad spend below</span>',
-            false]
-        ].map(function (f) {
-          return '<div class="fig-box' + (f[4] ? ' warn' : '') + '">' + figIcon(f[0]) +
-            '<span class="lab">' + f[1] + '</span><b>' + esc(f[2]) + '</b>' +
-            f[3] + '</div>';
-        }).join('');
-
-        var TONE = ['#2F6F5B','#B08A46','#7A6A9B','#A65A4A','#5B7C99','#8A8578'];
-        var legend = chans.length
-          ? '<ul class="legend">' + chans.slice(0, 6).map(function (c, i) {
-              var share = total ? Math.round(Number(c.revenue) / total * 1000) / 10 : 0;
-              return '<li><i style="background:' + TONE[i % TONE.length] + '"></i>' +
-                '<span class="nm">' + esc(c.channel) + '</span>' +
-                '<span class="n">' + share + '% · ' + rupees(c.revenue) + '</span></li>';
-            }).join('') + '</ul>'
-          : '';
-
-        body(
-          '<div class="figs">' + figs + '</div>' +
-
-          '<div class="grid-2">' +
-            '<div class="card"><h3>Where the orders came from' +
-              '<span class="more" data-go="analytics">Analytics</span></h3>' +
-              (chans.length
-                ? '<div class="chan">' + donut(chans, total) + legend + '</div>' +
-                  '<p class="hint">Read from the link a customer arrived on. An ' +
-                  'order with nothing on the link is counted as direct, which is ' +
-                  'what it is — not a guess.</p>'
-                : '<p class="empty">Nothing attributed yet. Put ' +
-                  '<code>?utm_source=instagram</code> on the end of a link in a ' +
-                  'bio or an ad and every order through it lands here.</p>') +
-            '</div>' +
-
-            '<div class="card"><h3>Carts left behind' +
-              '<span class="more" data-go="carts">All carts</span></h3>' +
-              '<div class="mini">' +
-                '<div><b>' + (carts.abandoned || 0) + '</b><span>abandoned, 7 days</span></div>' +
-                '<div><b>' + (carts.recovered || 0) + '</b><span>came back</span></div>' +
-                '<div><b>' + rupees(carts.at_stake) + '</b><span>still sitting there</span></div>' +
-              '</div>' +
-              '<p class="hint">A cart is only recorded once somebody has typed a ' +
-              'way to reach them into the checkout. Browsing is never recorded ' +
-              'against a person.</p>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="grid-2">' +
-            '<div class="card"><h3>Lately</h3>' + (acts.length
-              ? '<div class="scroll"><table><thead><tr><th>What</th><th>Kind</th>' +
-                '<th>State</th><th>Revenue</th><th>Made</th></tr></thead><tbody>' +
-                acts.map(function (a) {
-                  return '<tr><td>' + esc(a.what) + '</td>' +
-                    '<td>' + esc(a.kind) + '</td>' +
-                    '<td><span class="tag ' + esc(a.state || '') + '">' +
-                      esc(a.state || '—') + '</span></td>' +
-                    '<td class="num">' + rupees(a.revenue) + '</td>' +
-                    '<td class="num">' + day(a.at) + '</td></tr>';
-                }).join('') + '</tbody></table></div>'
-              : '<p class="empty">No offers or campaigns yet.</p>') + '</div>' +
-
-            '<div class="card"><h3>What you spent</h3>' +
-              '<p class="hint">There is no way for the shop to know an ad bill. ' +
-              'Type what a channel cost this month and the return above starts ' +
-              'working. Leave it and it stays honestly blank.</p>' +
-              '<form class="filters" id="spendform">' +
-                '<input class="cell" name="channel" placeholder="instagram" ' +
-                  'required style="width:9rem">' +
-                '<input class="cell" name="amount" type="number" min="0" ' +
-                  'placeholder="₹ this month" required style="width:9rem">' +
-                '<button class="btn small" type="submit">Record it</button>' +
-              '</form>' +
-              '<div class="quick">' +
-                '<button data-go="newcode"><b>Make an offer</b>' +
-                  '<span>A code that works at checkout today</span></button>' +
-                '<button data-go="newcamp"><b>Start a campaign</b>' +
-                  '<span>Build a list from your own customers</span></button>' +
-                '<button data-go="carts"><b>Chase a cart</b>' +
-                  '<span>People who stopped at the last step</span></button>' +
-              '</div>' +
-            '</div>' +
-          '</div>');
-
-        document.getElementById('spendform').addEventListener('submit', function (e) {
-          e.preventDefault();
-          var f = e.target, d = new Date();
-          A.setSpend({
-            month: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-01',
-            channel: f.elements.channel.value.trim().toLowerCase(),
-            amount: Number(f.elements.amount.value) || 0
-          }).then(marketing).catch(function (err) { alert(err.message); });
-        });
-      }).catch(function (e) { body(needsSQL(e)); });
-  }
 
   /* ---------- offers ----------
      A code is never shown without what it cost. A coupon that brought three
@@ -2631,248 +2463,10 @@ tr.lift{opacity:.4}
      house one link per person. Email and SMS come out as a file until a
      provider is connected, and say so on the screen. */
 
-  var CAMP_TAB = 'all', CAMP_OPEN = null;
-  var CHANNELS = [['whatsapp','WhatsApp','Sent by you, one tap each. Works today.'],
-                  ['email','Email','Needs a mail provider before it can send.'],
-                  ['sms','SMS','Needs an SMS gateway before it can send.']];
 
-  function campaigns() {
-    A.campaigns().then(function (rows) {
-      var counts = { all: rows.length };
-      rows.forEach(function (c) { counts[c.channel] = (counts[c.channel] || 0) + 1; });
-      var shown = rows.filter(function (c) {
-        return CAMP_TAB === 'all' || c.channel === CAMP_TAB;
-      });
-      var tabs = [['all','All']].concat(CHANNELS.map(function (c) { return [c[0], c[1]]; }))
-        .map(function (t) {
-          return '<button class="tab" data-camptab="' + t[0] + '" aria-pressed="' +
-            (CAMP_TAB === t[0]) + '">' + t[1] + ' (' + (counts[t[0]] || 0) + ')</button>';
-        }).join('');
 
-      body(
-        '<div class="toolbar"><div class="tabs">' + tabs + '</div>' +
-          '<button class="btn" data-go="newcamp">+ Create campaign</button></div>' +
-        (shown.length
-        ? '<div class="scroll"><table><thead><tr><th>Campaign</th><th>Channel</th>' +
-          '<th>Audience</th><th>People</th><th>Sent</th><th>State</th><th>Made</th>' +
-          '<th></th></tr></thead><tbody>' +
-          shown.map(function (c) {
-            return '<tr><td><b>' + esc(c.name) + '</b>' +
-                (c.subject ? '<br><span class="muted">' + esc(c.subject) + '</span>' : '') +
-                '</td>' +
-              '<td>' + esc(c.channel) + '</td>' +
-              '<td class="muted">' + esc(c.audience) + '</td>' +
-              '<td class="num">' + (c.recipients || 0) + '</td>' +
-              '<td class="num">' + (c.sent || 0) + '</td>' +
-              '<td><span class="tag ' + esc(c.state) + '">' + esc(c.state) + '</span></td>' +
-              '<td class="num">' + day(c.made_at) + '</td>' +
-              '<td><button class="btn small" data-camp="' + c.id + '">Open</button></td>' +
-              '</tr>';
-          }).join('') + '</tbody></table></div>'
-        : '<p class="empty">No campaigns yet. A campaign here is a list of your ' +
-          'own customers and something to say to them — never a bought list.</p>'));
-    }).catch(function (e) { body(needsSQL(e)); });
-  }
 
-  function newcamp() {
-    A.audiences().then(function (auds) {
-      body(
-        '<div class="filters"><button class="btn small" data-go="campaigns">' +
-          '&larr; Campaigns</button></div>' +
-        '<div class="grid-side">' +
-          '<div class="card"><h3>The campaign</h3><form id="campform" class="f2">' +
-            '<fieldset><legend>Where it goes</legend><div class="picks">' +
-              CHANNELS.map(function (c, i) {
-                return '<label class="pick"><input type="radio" name="channel" value="' +
-                  c[0] + '"' + (i === 0 ? ' checked' : '') + '><span><b>' + c[1] +
-                  '</b><small>' + c[2] + '</small></span></label>';
-              }).join('') + '</div></fieldset>' +
 
-            '<p><label for="m-name">Campaign name</label>' +
-              '<input id="m-name" name="name" required placeholder="Summer collection launch"></p>' +
-
-            '<fieldset><legend>Who it goes to</legend><div class="picks stack">' +
-              auds.map(function (a, i) {
-                return '<label class="pick"><input type="radio" name="audience" value="' +
-                  esc(a.kind) + '"' + (i === 0 ? ' checked' : '') + '><span><b>' +
-                  esc(a.label) + '</b><small>' + a.n + ' ' +
-                  (a.n === 1 ? 'person' : 'people') + '</small></span></label>';
-              }).join('') + '</div>' +
-              '<p class="hint">Every one of these is somebody who gave the house ' +
-              'their number while buying or asking. Nothing here is bought or ' +
-              'scraped.</p></fieldset>' +
-
-            '<p id="subwrap" hidden><label for="m-sub">Subject line</label>' +
-              '<input id="m-sub" name="subject" placeholder="Introducing our summer collection"></p>' +
-
-            '<p><label for="m-msg">The message</label>' +
-              '<textarea id="m-msg" name="message" rows="6" ' +
-              'placeholder="Hello {name}, the new season’s cloth has arrived…"></textarea></p>' +
-            '<p class="hint"><code>{name}</code> becomes their first name. ' +
-              'Nothing else is substituted — a merge field that silently ' +
-              'fails prints the braces to a customer.</p>' +
-
-            '<p><label for="m-utm">Tag the links (optional)</label>' +
-              '<input id="m-utm" name="utm_campaign" placeholder="summer-launch"></p>' +
-            '<p class="hint">Put <code>?utm_source=whatsapp&amp;utm_campaign=' +
-              '<span id="utmecho">…</span></code> on any link in the message ' +
-              'and the orders it brings show up against this campaign.</p>' +
-
-            '<div class="row-end">' +
-              '<button type="button" class="btn small" data-go="campaigns">Cancel</button>' +
-              '<button class="btn" type="submit">Build the list</button>' +
-            '</div>' +
-          '</form></div>' +
-
-          '<aside class="card"><h3>What happens next</h3>' +
-            '<div class="summary"><ol class="steps">' +
-              '<li><b>Build the list.</b> The audience is resolved into real ' +
-                'people, now, and stored with the campaign.</li>' +
-              '<li><b>Check it.</b> You see every name before anything goes out.</li>' +
-              '<li><b>Send.</b> WhatsApp opens one chat at a time with the ' +
-                'message already written, and ticks each person off as you go.</li>' +
-            '</ol>' +
-            '<p class="note bad" id="chanwarn" hidden></p></div>' +
-          '</aside>' +
-        '</div>');
-
-      var form = document.getElementById('campform');
-      function chanChange() {
-        var ch = form.querySelector('[name=channel]:checked').value;
-        document.getElementById('subwrap').hidden = ch !== 'email';
-        var w = document.getElementById('chanwarn');
-        if (ch === 'whatsapp') { w.hidden = true; return; }
-        w.hidden = false;
-        w.textContent = ch === 'email'
-          ? 'Email cannot be sent from here yet — there is no mail provider ' +
-            'connected. The list and the message are saved, and download as a ' +
-            'file you can hand to one. No open rate is recorded, because nothing ' +
-            'here can measure one.'
-          : 'SMS cannot be sent from here yet — there is no gateway connected. ' +
-            'The list downloads as a file. Indian promotional SMS also needs a ' +
-            'registered DLT template before any provider will carry it.';
-      }
-      form.addEventListener('change', chanChange);
-      form.addEventListener('input', function () {
-        document.getElementById('utmecho').textContent =
-          form.elements.utm_campaign.value.trim() || '…';
-      });
-      chanChange();
-
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var f = form.elements;
-        A.addCampaign({
-          name: f.name.value.trim(),
-          channel: form.querySelector('[name=channel]:checked').value,
-          audience: form.querySelector('[name=audience]:checked').value,
-          subject: f.subject.value.trim() || null,
-          message: f.message.value,
-          utm_campaign: f.utm_campaign.value.trim() || null
-        }).then(function (c) {
-          return A.buildAudience(c.id).then(function () { return c.id; });
-        }).then(function (id) {
-          CAMP_OPEN = id; openCampaign(id);
-        }).catch(function (err) { alert(err.message); });
-      });
-    }).catch(function (e) { body(needsSQL(e)); });
-  }
-
-  /* ---------- one campaign: the actual sending ----------
-     For WhatsApp this is the whole product. One button per person, the message
-     already merged, and a tick the moment the chat opens — which is the only
-     thing this can honestly claim to know. */
-
-  function merge(msg, name) {
-    var first = String(name || '').trim().split(/\s+/)[0] || 'there';
-    return String(msg || '').replace(/\{name\}/g, first);
-  }
-
-  function openCampaign(id) {
-    here = 'campaign'; REOPEN = function () { openCampaign(id); }; REOPEN.at = 'campaign';
-    drawNav(); shell(waiting());
-    Promise.all([A.campaign(id), A.recipients(id)]).then(function (r) {
-      var c = r[0] || {}, list = r[1] || [];
-      var sent = list.filter(function (x) { return x.sent_at; }).length;
-
-      var rows = list.map(function (p) {
-        var text = merge(c.message, p.name);
-        var wa = 'https://wa.me/91' + String(p.phone || '').replace(/\D/g, '').slice(-10) +
-                 '?text=' + encodeURIComponent(text);
-        return '<tr' + (p.sent_at ? ' class="done"' : '') + '>' +
-          '<td>' + esc(p.name || '—') + '</td>' +
-          '<td class="num">' + esc(p.phone || '') + '</td>' +
-          '<td class="muted">' + esc(p.email || '—') + '</td>' +
-          '<td>' + (p.sent_at
-            ? '<span class="tag delivered">sent</span>'
-            : c.channel === 'whatsapp'
-              ? '<a class="btn small" target="_blank" rel="noopener" ' +
-                'data-send="' + p.id + '" href="' + esc(wa) + '">Open chat</a>'
-              : '<span class="muted">waiting on a provider</span>') + '</td></tr>';
-      }).join('');
-
-      body(
-        '<div class="filters"><button class="btn small" data-go="campaigns">' +
-          '&larr; Campaigns</button>' +
-          '<button class="btn small" id="exportcamp">Download the list (CSV)</button>' +
-          '<button class="btn small" id="rebuild">Rebuild the list</button></div>' +
-
-        '<div class="figs">' + [
-          ['customers', 'People on the list', list.length, ''],
-          ['cart', 'Reached', sent + ' of ' + list.length, ''],
-          ['tag', 'Channel', c.channel || '', ''],
-          ['clock', 'State', c.state || '', '']
-        ].map(function (f) {
-          return '<div class="fig-box">' + figIcon(f[0]) +
-            '<span class="lab">' + f[1] + '</span><b>' + esc(f[2]) + '</b></div>';
-        }).join('') + '</div>' +
-
-        '<div class="grid-2">' +
-          '<div class="card"><h3>The message</h3>' +
-            (c.subject ? '<p><b>' + esc(c.subject) + '</b></p>' : '') +
-            '<pre class="msg">' + esc(c.message || '') + '</pre>' +
-            '<p class="hint">Shown here exactly as it will arrive, except that ' +
-            '<code>{name}</code> becomes each person’s first name.</p></div>' +
-          '<div class="card"><h3>How this sends</h3>' +
-            (c.channel === 'whatsapp'
-              ? '<p class="hint">WhatsApp needs no provider and no approval: each ' +
-                'button opens a chat with the message already written. Tick as ' +
-                'you go — the count above is people you actually opened, ' +
-                'which is the only thing this can honestly know. It cannot know ' +
-                'whether they read it.</p>'
-              : '<p class="note bad">There is no ' +
-                (c.channel === 'email' ? 'mail provider' : 'SMS gateway') +
-                ' connected, so nothing can be sent from this screen. Download ' +
-                'the list and hand it to one. Delivery and open rates will only ' +
-                'appear once a provider is wired and reports them back — ' +
-                'they are not estimated here.</p>') +
-          '</div>' +
-        '</div>' +
-
-        (list.length
-          ? '<div class="scroll"><table><thead><tr><th>Name</th><th>Phone</th>' +
-            '<th>Email</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
-          : '<p class="empty">Nobody matched that audience yet.</p>'));
-
-      document.getElementById('rebuild').addEventListener('click', function () {
-        A.buildAudience(id).then(function () { openCampaign(id); })
-          .catch(function (err) { alert(err.message); });
-      });
-
-      document.getElementById('exportcamp').addEventListener('click', function () {
-        var csv = 'name,phone,email,message\n' + list.map(function (p) {
-          return [p.name, p.phone, p.email, merge(c.message, p.name)]
-            .map(function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; })
-            .join(',');
-        }).join('\n');
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = (c.name || 'campaign').replace(/\W+/g, '-').toLowerCase() + '.csv';
-        a.click();
-        URL.revokeObjectURL(a.href);
-      });
-    }).catch(function (e) { body(needsSQL(e)); });
-  }
 
   /* ---------- abandoned carts ---------- */
 
@@ -2930,90 +2524,6 @@ tr.lift{opacity:.4}
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
-  /* ============================ THE SHOP WINDOWS ============================
-     WHAT THESE SCREENS ARE, AND WHAT THEY ARE NOT.
-
-     Every page of this site is finished, hand-built HTML that renders with no
-     JavaScript and no database. These screens do not build pages — they let the
-     house OVERRIDE a page that is already correct: hide a band, reorder two,
-     rename a link, change a photograph.
-
-     So there is no "add a section" here, and no page builder. A band that is
-     not in the HTML has no design, no photography and no words, and a switch
-     for it would be a switch wired to nothing. What the house gets instead is
-     the thing it actually needs twice a year, working, on a page that still
-     loads instantly on a bad phone. */
-
-  function website() {
-    Promise.all([A.siteStats(), A.settings(), A.content()]).then(function (r) {
-      var st = r[0] || {}, sets = r[1] || [], slots = r[2] || [];
-      var val = function (k) {
-        var s = sets.filter(function (x) { return x.key === k; })[0];
-        return s ? s.value : '';
-      };
-      var barOn = String(val('bar_on')).toLowerCase() === 'true';
-
-      var figs = [
-        ['pages', 'Pages', st.pages || 0, (st.pages_all || 0) + ' in all'],
-        ['collections', 'Collections', st.collections || 0, 'in the range'],
-        ['media', 'Files', st.files || 0, mb(st.bytes)],
-        ['homepage', 'Bands on the home page', st.sections_live || 0,
-          'of ' + (st.sections_all || 0)]
-      ].map(function (f) {
-        return '<div class="fig-box">' + figIcon(f[0]) +
-          '<span class="lab">' + f[1] + '</span><b>' + esc(f[2]) + '</b>' +
-          '<span class="delta flat">' + esc(f[3]) + '</span></div>';
-      }).join('');
-
-      body('<div class="figs">' + figs + '</div>' +
-        '<div class="grid-2">' +
-          '<div class="card"><h3>The shop front</h3>' +
-            '<div class="scroll"><table><tbody>' +
-            [['Address', '<a href="' + SITE + '" target="_blank" ' +
-              'rel="noopener">www.iamratan.co.in</a>'],
-             ['Announcement bar', barOn
-                ? '<span class="tag active">on</span> ' + esc(val('announcement') || '(no words yet)')
-                : '<span class="tag draft">off</span>'],
-             ['Menu', (st.menu_items || 0) + ' links'],
-             ['Taking orders', String(val('shop_open')).toLowerCase() === 'false'
-                ? '<span class="tag cancelled">closed</span>'
-                : '<span class="tag active">open</span>']
-            ].map(function (row) {
-              return '<tr><td class="muted" style="width:12rem">' + row[0] + '</td>' +
-                     '<td>' + row[1] + '</td></tr>';
-            }).join('') + '</tbody></table></div>' +
-            '<div class="quick">' +
-              '<button data-go="media"><b>Upload a photograph</b>' +
-                '<span>Straight to the shop, with no deploy</span></button>' +
-              '<button data-go="bar"><b>Change the announcement bar</b>' +
-                '<span>The line across the top of every page</span></button>' +
-              '<button data-go="homepage"><b>Change the home page</b>' +
-                '<span>Its words, its photographs, its bands</span></button>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="card"><h3>What the house changes itself</h3>' +
-            '<p class="hint">None of these needs a developer or a deploy. ' +
-            'Each lands on the live site within five minutes, sooner in a ' +
-            'fresh tab.</p>' +
-            '<div class="quick">' +
-              '<button data-go="products"><b>The range</b>' +
-                '<span>Add a cloth, its name, price, words and photographs</span></button>' +
-              '<button data-go="inventory"><b>Inventory</b>' +
-                '<span>What is left of every cloth in every neck</span></button>' +
-              '<button data-go="homepage"><b>The home page</b>' +
-                '<span>Every line and picture, and which bands show</span></button>' +
-              '<button data-go="journal"><b>The journal</b>' +
-                '<span>Write, publish and take down entries</span></button>' +
-              '<button data-go="navigation"><b>The menu</b>' +
-                '<span>The links across the top of every page</span></button>' +
-              '<button data-go="settings"><b>Settings</b>' +
-                '<span>Delivery days, returns, the shop open or closed, the legal facts</span></button>' +
-            '</div>' +
-          '</div>' +
-        '</div>');
-    }).catch(function (e) { body(needsSQL(e)); });
-  }
 
   function mb(b) {
     b = Number(b || 0);
@@ -3379,32 +2889,6 @@ tr.lift{opacity:.4}
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
-  /* ---------- pages ---------- */
-
-  function pages() {
-    A.pages().then(function (rows) {
-      body('<p class="hint">Every page that exists on the site. This is a record ' +
-        'of them, not a builder: each one is a hand-built file with its own ' +
-        'layout and its own words.</p>' +
-        (rows.length
-        ? '<div class="scroll"><table><thead><tr><th>Page</th><th>Address</th>' +
-          '<th>Last touched</th><th></th></tr></thead><tbody>' +
-          rows.map(function (p) {
-            return '<tr><td><b>' + esc(p.title) + '</b><br>' +
-                '<span class="muted">' + esc(p.slug) + '</span></td>' +
-              '<td class="num">/' + esc(p.path) + '</td>' +
-              '<td class="num">' + day(p.updated_at) + '</td>' +
-              '<td><a class="btn small" target="_blank" rel="noopener" ' +
-                'href="' + SITE + '/' + esc(p.path) + '">View</a></td>' +
-              '</tr>';
-          }).join('') + '</tbody></table></div>'
-        : '<p class="empty">No pages recorded.</p>') +
-        '<p class="hint" style="margin-top:var(--s4)">A brand new page — its ' +
-        'layout, its photographs, its words — is a change to the site itself, ' +
-        'and that is me. The words and pictures on the home page, the menu ' +
-        'and the journal each have their own screen.</p>');
-    }).catch(function (e) { body(needsSQL(e)); });
-  }
 
   /* ---------- the journal ----------
      Four entries were written as hand-built HTML files, and publishing a fifth
@@ -3747,7 +3231,7 @@ tr.lift{opacity:.4}
   }
 
   function repCustomers() {
-    Promise.all([A.customers(), A.insights().catch(function () { return {}; }),
+    Promise.all([A.people2(), A.insights().catch(function () { return {}; }),
                  A.locations().catch(nil)])
       .then(function (r) {
         var people = r[0] || [], ins = r[1] || {}, locs = r[2] || [];
@@ -4155,10 +3639,6 @@ tr.lift{opacity:.4}
     var lab = t.closest && t.closest('label.tick');
     if (lab) lab.classList.remove('pending');
   }
-  function clearPending() {
-    PENDING.slice().forEach(unstage);
-    drawSavebar();
-  }
   function drawSavebar() {
     if (!savebar) {
       savebar = document.createElement('div');
@@ -4401,14 +3881,6 @@ tr.lift{opacity:.4}
       });
     }
 
-    var mt = e.target.closest('[data-camptab]');
-    if (mt) { CAMP_TAB = mt.getAttribute('data-camptab'); campaigns(); }
-
-    var oc = e.target.closest('[data-camp]');
-    if (oc) openCampaign(oc.getAttribute('data-camp'));
-
-    /* Ticked when the chat is opened — which is the only thing this can
-       honestly claim to know. It is not a read receipt and is not called one. */
     /* ---- the shop windows ---- */
 
     var mf = e.target.closest('[data-folder]');
@@ -4440,14 +3912,6 @@ tr.lift{opacity:.4}
           .catch(function (err) { alert(err.message); });
     }
 
-    var sd = e.target.closest('[data-send]');
-    if (sd) {
-      var row = sd.closest('tr');
-      A.markSent(sd.getAttribute('data-send')).then(function () {
-        if (row) row.classList.add('done');
-        sd.outerHTML = '<span class="tag delivered">sent</span>';
-      });
-    }
   });
 
   /* A change on a field with a data-* hook is staged. Files are not: every
@@ -4537,15 +4001,6 @@ tr.lift{opacity:.4}
       saving(A.setMedia(t.getAttribute('data-alt'), { alt: t.value.trim() || null }),
              t, 'the description');
 
-    if (has('data-col')) {
-      var fld = t.getAttribute('data-field');
-      var val = fld === 'sort_order' ? (parseInt(t.value, 10) || 0) : t.value;
-      var patch = {}; patch[fld] = val;
-      saving(A.setCollection(t.getAttribute('data-col'), patch), t, 'the collection');
-    }
-    if (has('data-colvis'))
-      saving(A.setCollection(t.getAttribute('data-colvis'), { visible: t.checked }),
-             null, 'the collection');
     if (has('data-code'))
       saving(A.setDiscount(t.getAttribute('data-code'), { live: t.checked }), null, 'the offer');
     if (has('data-photos'))

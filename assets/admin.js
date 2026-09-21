@@ -327,16 +327,10 @@
     return api('journal?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
   };
 
-  /* ---------- collections, offers, the shop windows ---------- */
+  /* ---------- offers ----------
+     An offer may be limited to a collection; the list is read from here. */
 
   A.collections   = function () { return api('collections?select=*&order=sort_order.asc'); };
-  A.addCollection = function (row) {
-    return api('collections', { method: 'POST', prefer: 'return=minimal', body: [row] });
-  };
-  A.setCollection = function (id, patch) {
-    return api('collections?id=eq.' + id,
-      { method: 'PATCH', body: patch, prefer: 'return=minimal' });
-  };
 
   /* the performance view, so a code is never shown without what it cost */
   A.discounts   = function () { return api('discount_performance?select=*'); };
@@ -365,56 +359,16 @@
       { method: 'DELETE', prefer: 'return=minimal' });
   };
 
-  /* ---------- marketing ----------
-     Attribution, carts and audiences are read straight from what happened.
-     Nothing in here estimates, models or projects anything. */
+  /* ---------- abandoned carts ---------- */
 
-  A.marketing   = function () { return api('marketing_overview?select=*').then(one); };
-  A.channels    = function () { return api('marketing_channels?select=*'); };
-  A.activity    = function () { return api('marketing_activity?select=*'); };
   A.cartStats   = function () { return api('cart_stats?select=*').then(one); };
   A.carts       = function () { return api('abandoned_carts?select=*&limit=200'); };
-  A.spend       = function () { return api('ad_spend?select=*&order=month.desc'); };
-  A.setSpend    = function (row) {
-    /* one figure per channel per month — typing it twice corrects it */
-    return api('ad_spend?on_conflict=month,channel', {
-      method: 'POST', prefer: 'return=minimal,resolution=merge-duplicates', body: [row]
-    });
-  };
-
-  A.audiences   = function () { return api('audience_sizes?select=*'); };
-  A.campaigns   = function () { return api('campaign_list?select=*'); };
-  A.campaign    = function (id) { return api('campaign_list?id=eq.' + id + '&select=*').then(one); };
-  A.addCampaign = function (row) {
-    return api('campaigns', { method: 'POST', prefer: 'return=representation', body: [row] })
-      .then(one);
-  };
-  A.setCampaign = function (id, patch) {
-    return api('campaigns?id=eq.' + id,
-      { method: 'PATCH', body: patch, prefer: 'return=minimal' });
-  };
-  A.delCampaign = function (id) {
-    return api('campaigns?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
-  };
-  A.buildAudience = function (id) {
-    return api('rpc/build_audience', { method: 'POST', body: { camp_id: id } });
-  };
-  A.recipients  = function (id) {
-    return api('campaign_recipients?campaign_id=eq.' + id +
-               '&select=*&order=sent_at.nullsfirst,id.asc');
-  };
-  A.markSent    = function (rowId) {
-    return api('campaign_recipients?id=eq.' + rowId,
-      { method: 'PATCH', body: { sent_at: new Date().toISOString() },
-        prefer: 'return=minimal' });
-  };
 
   /* ---------- the shop windows ----------
-     Media, the home page bands, the menu and the pages. Everything here
+     Media, the home page bands and the menu. Everything here
      OVERRIDES hand-built HTML that is already correct; none of it builds a
      page from nothing. See assets/house.js for the other half. */
 
-  A.siteStats = function () { return api('site_stats?select=*').then(one); };
 
   A.media     = function () { return api('media?select=*&order=added_at.desc'); };
   A.setMedia  = function (id, patch) {
@@ -530,7 +484,6 @@
     return api('nav_items?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
   };
 
-  A.pages    = function () { return api('pages?select=*&order=title.asc'); };
 
   /* Which of the statutory facts are still stand-ins. The desk refuses to be
      quiet about this: a shop that goes live with an invented GSTIN and a
@@ -547,7 +500,6 @@
   A.locations = function () { return api('top_locations?select=*&limit=8'); };
   A.traffic   = function () { return api('traffic_sources?select=*&limit=8'); };
   A.devices   = function () { return api('device_split?select=*'); };
-  A.campaignResults = function () { return api('campaign_results?select=*&limit=8'); };
 
   /* ---------- reports ---------- */
 

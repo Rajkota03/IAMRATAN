@@ -3,7 +3,7 @@
 Everything needed to own, run and repair this website without the person who
 built it. Written for someone technical who has never seen it before.
 
-Last updated 5 Sep 2026.
+Last updated 21 Sep 2026.
 
 ---
 
@@ -35,7 +35,7 @@ in an agency's name is a hostage, not a handover.
 |---|---|---|---|
 | The code | this folder + GitHub | the site itself | the client |
 | Hosting | Vercel, project `iar-next` | serves the domain | the client |
-| Database | Supabase, project `hckbqcphijihqbysibos` | orders, products, accounts | the client |
+| Database | Supabase, project `hckbqcphijihqbysibos` | orders, products, accounts | **the client — transferred 17 Sep 2026** |
 | Domain | wherever `iamratan.co.in` is registered | the address itself | the client |
 | Payments | Razorpay dashboard | the money | **the client, and only the client** |
 | Email | the address orders are sent to | order notifications | the client |
@@ -66,8 +66,16 @@ you deploy. This script re-stamps all of them from the newest file's timestamp.
 ### Deploying
 
 ```bash
-npx vercel --prod --yes
+VERCEL_ORG_ID=team_DOzNMvuKLb1DyCyimnUQvIh3 VERCEL_PROJECT_ID=prj_MxnDFdbYyfhRYEn07D6j1ga3Vj4C npx vercel deploy --prod --yes
 ```
+
+**The two variables matter.** Four Vercel projects share this folder and
+`.vercel/project.json` points at `im-ratan`, a working copy. A bare
+`npx vercel --prod` deploys there, reports success, and changes nothing on
+`www.iamratan.co.in`. The domain is served by `iar-next`, which is what the
+variables select. Pushing to GitHub does not deploy either; only this command
+does. Verify afterwards by fetching a changed file from the live domain, not by
+reading the CLI's "Aliased" line.
 
 Run from this folder. Takes about ten seconds. Vercel keeps every previous
 deployment, so a bad one is undone from the dashboard by promoting the last good
@@ -232,9 +240,9 @@ Anything written at the desk has no file. It is laid out in the house style by
 `journal-entry.html`, which reads the entry by its address. One paragraph to a
 line with a blank line between them is the whole of the formatting, on purpose.
 
-**A photograph has to exist before it can be named.** The Photograph field takes
-a path like `images/journal/button.webp`; put the file in that folder and deploy
-it first. Use **Shop front → Media** to see what is already there.
+**The photograph** is uploaded from the entry itself: the file button beside
+the Photograph field sends it to Media and fills in the address. A path to a
+file already on the site, like `images/journal/button.webp`, works too.
 
 One limitation worth knowing: an entry written at the desk is drawn by the
 browser, so a search engine that does not run JavaScript sees an empty page.
@@ -276,6 +284,44 @@ Two things worth knowing:
 
 ---
 
+## 4d · What the house changes itself, and what needs a developer
+
+Everything below is done at the desk, lands on the live site within five
+minutes (a browser keeps the shop's data for five minutes; a fresh tab sees it
+at once), and needs no deploy and nobody technical.
+
+| the house changes | where at the desk |
+|---|---|
+| Add a cloth; its name, price, MRP, colour, collection, description | Catalogue → The range |
+| Its fabric, weave, pattern, fit, collar, sleeve, origin, care | The range → click the name |
+| Its photographs: add, remove, reorder | The range → click the name → Photographs |
+| Take a cloth off the shop, or delete a hidden one for good | The range (the tick), then its page |
+| Stock in every neck, with a reason kept for every change | Catalogue → Inventory |
+| Every line and photograph on the home page; which bands show and in what order | Shop front → Home page |
+| The menu across the top of every page | Shop front → Menu |
+| The announcement bar | Shop front → Announcement bar |
+| Journal entries: write, publish, take down | Shop front → Journal |
+| Photographs and files, with a permanent public link | Shop front → Media |
+| Delivery days, returns window, shipping note, shop open or closed | System → Settings |
+| The legal facts: GSTIN, registered address, Grievance Officer | System → Settings |
+| Discount codes, campaigns, abandoned carts | Marketing |
+| Orders, returns, invoices, the measurement book | Commerce |
+
+**Photographs on a cloth are staged.** A chosen file uploads and waits; nothing
+reaches the shop until **Put on the shop** is pressed. A slip in the file picker
+cannot change the face of a live product. On the home page a picture goes live
+the moment it lands, because **Back to the original** is one press away.
+
+**Delete is deliberately narrow.** Only a cloth that is already off the shop
+can be deleted, and the house types its name to confirm. Orders already placed
+keep their own record of it.
+
+What still needs a developer: a new page, a new band on the home page, the
+words on the About, Bespoke and legal pages, and the photographs on any page
+other than home. Each of those is a change to a hand-built file, then a deploy.
+
+---
+
 ## 5 · Running the shop day to day
 
 - **Orders, products, discounts:** `admin.html` on the site, signed in with a
@@ -288,6 +334,8 @@ Two things worth knowing:
 - **A cloth's fabric, weave, fit, collar, care:** click its name in The range.
   These print on the product page, and any one left empty simply does not
   appear there rather than showing as a blank row.
+- **The home page's words and pictures:** Shop front → Home page. Each box
+  shows the page's own line in grey; an empty box keeps it.
 
 ---
 
@@ -307,11 +355,11 @@ Otherwise it is public the moment you deploy, at a URL anyone can guess.
 Tracked in full in `LAUNCH.md` and `PENDING-FROM-CLIENT.md`. The ones that block
 a real launch:
 
-- Razorpay live keys, and the four-step test above
-- GSTIN and the Grievance Officer name for the legal pages
-- Real prices for every cloth
-- The 19 legacy collar labels
-- `sitemap.xml`
+- Custom SMTP in Supabase, so sign-up and password emails come from the
+  house's own address (templates in `iar-lab/email/`)
+- GSTIN, registered address and the Grievance Officer name, then
+  `facts_are_real` switched on in Settings
+- Vercel project `iar-next` and the domain moved to the client's own accounts
 - An Android device test on a real handset
 
 ---

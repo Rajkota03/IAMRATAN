@@ -14,23 +14,6 @@
 
 window.IAR_CATALOGUE = [
  {
-  "name": "Indigo Oak",
-  "slug": "indigo-oak",
-  "price": 4999,
-  "cat": "Working hours",
-  "sizes": [
-   "39",
-   "40",
-   "42",
-   "44",
-   "46"
-  ],
-  "hex": "#4A5570",
-  "body": "The Indigo Oak is a testament to exquisite craftsmanship, made from supersoft, premium cotton for ultimate comfort. The intricate herringbone weave showcases attention to detail, while the rich, refined brown and blues adds a touch of timeless sophistication.",
-  "img": "indigo-oak.webp",
-  "url": "https://iamratan.co.in/product/indigo-oak/"
- },
- {
   "name": "Blanc Celestia",
   "slug": "blanc-celestia-2",
   "price": 6999,
@@ -167,7 +150,7 @@ window.IAR_CATALOGUE = [
   "url": "https://iamratan.co.in/product/harbour-blue/"
  },
  {
-  "name": "Espresso",
+  "name": "Indigo Oak",
   "slug": "espresso",
   "price": 3999,
   "cat": "Working hours",

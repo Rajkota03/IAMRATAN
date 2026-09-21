@@ -51,7 +51,7 @@ function shoot(name, frames, room) {
 }
 
 window.IAR_SHOTS = {
-  'espresso':             shoot('Espresso', ['1-hero', '2-back', '4-cuff', '5-button']),
+  'espresso':             shoot('Indigo Oak', ['1-hero', '2-back', '4-cuff', '5-button']),
   'aegean-haze':        shoot('Aegean Haze', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),
   'azure-pearls':         shoot('Ratan\'s Blue', ['1-hero', '2-back', '4-cuff', '5-button']),
   'azure-thread':       shoot('Azure Thread', ['1-hero', '2-view', '3-view', '4-cuff', '5-button']),

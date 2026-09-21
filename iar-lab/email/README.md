@@ -37,7 +37,33 @@ sends from `noreply@mail.app.supabase.io` and is capped at a handful of messages
 an hour, project-wide. That cap is almost certainly what made signup look
 broken while it was being tested.
 
-### 2a · A mail provider
+### The short way: the mailbox the house already has (recommended)
+
+Checked 21 Sep 2026: `iamratan.co.in` already carries Hostinger's SPF, all
+three DKIM keys and a DMARC record, because the house's own email is on
+Hostinger. So there is nothing to add at the registrar and no new provider
+to sign up for. Costs nothing extra; a Hostinger mailbox sends up to 3,000
+messages a day.
+
+1. **Hostinger hPanel → Emails → Create mailbox:** `no-reply@iamratan.co.in`,
+   a strong password. Its own mailbox, so Supabase never holds a person's.
+2. **Supabase → Authentication → Emails → Set up custom SMTP:**
+
+   | field | value |
+   |---|---|
+   | Host | `smtp.hostinger.com` |
+   | Port | `465` |
+   | Username | `no-reply@iamratan.co.in` |
+   | Password | the mailbox password |
+   | Sender email | `no-reply@iamratan.co.in` |
+   | Sender name | `I Am Ratan` |
+
+3. Skip to section 3, the templates.
+
+The Resend route below still works and is the one to take if the house ever
+leaves Hostinger.
+
+### 2a · A mail provider (the long way)
 
 Resend is the least trouble: free to 3,000 messages a month, which is far more
 than this shop will send. Brevo and Amazon SES also work and are cheaper at

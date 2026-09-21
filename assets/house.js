@@ -249,7 +249,8 @@
         [].forEach.call(pic.querySelectorAll('source'), function (src) {
           src.setAttribute('srcset', v);
         });
-        var img = pic.querySelector('img');
+        /* the slot is either a <picture> or the <img> itself */
+        var img = pic.tagName === 'IMG' ? pic : pic.querySelector('img');
         if (img) { img.removeAttribute('srcset'); img.src = v; }
       }
     });

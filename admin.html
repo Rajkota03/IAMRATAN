@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100..800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/iar-house.css?v=1790012213">
+<link rel="stylesheet" href="assets/iar-house.css?v=1790012422">
 <style>
 /* ---------- THE DESK ----------
    A control room, not a dashboard. The first question it answers is "what
@@ -672,10 +672,10 @@ tr.lift{opacity:.4}
     <div class="over-card"></div></div>
 </main>
 
-<script src="assets/shots.js?v=1790012213"></script>
-<script src="assets/admin.js?v=1790012213"></script>
-<script src="assets/iar-house.js?v=1790012213"></script>
-<script src="assets/mark.js?v=1790012213"></script>
+<script src="assets/shots.js?v=1790012422"></script>
+<script src="assets/admin.js?v=1790012422"></script>
+<script src="assets/iar-house.js?v=1790012422"></script>
+<script src="assets/mark.js?v=1790012422"></script>
 <script>
 (function () {
   'use strict';
@@ -753,6 +753,7 @@ tr.lift{opacity:.4}
     discounts:'M8 16 16 8M9 9h.01M15 15h.01M4 12V6a2 2 0 0 1 2-2h6l8 8-8 8-8-8Z',
     marketing:'M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1ZM17 8a5 5 0 0 1 0 8',
     homepage:'M4 4h16v5H4ZM4 12h7v8H4ZM13 12h7v8h-7Z',
+    sitephotos:'M4 7h3l2-2h6l2 2h3v12H4ZM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7',
     navigation:'M4 6h16M4 12h16M4 18h10',
     media:'M3 5h18v14H3ZM3 15l5-5 4 4 3-3 6 6M8.5 9.5h.01',
     bar:'M3 5h18v4H3ZM6 13h12M6 17h8',
@@ -776,7 +777,8 @@ tr.lift{opacity:.4}
                         ['customers','Customers'],['book','Measurement book']]],
     ['Catalogue', null, [['products','The range'],['inventory','Inventory']]],
     ['Marketing', null, [['discounts','Offers'],['carts','Abandoned carts']]],
-    ['Shop front', null, [['homepage','Home page'],['navigation','Menu'],
+    ['Shop front', null, [['homepage','Home page'],['sitephotos','Photographs'],
+                          ['navigation','Menu'],
                           ['media','Media'],['bar','Announcement bar'],
                           ['journal','Journal']]],
     ['Insights', null, [['analytics','Analytics'],['reports','Reports'],
@@ -841,7 +843,8 @@ tr.lift{opacity:.4}
     settings:'Settings.', book:'The measurement book.', sheet:'The sheet.',
     discounts:'Offers.', reports:'Reports.', cloth:'The cloth.',
     newcode:'A new offer.', carts:'Abandoned carts.',
-    homepage:'The home page.', navigation:'The menu.', media:'Media.',
+    homepage:'The home page.', sitephotos:'Photographs.',
+    navigation:'The menu.', media:'Media.',
     bar:'The announcement bar.', journal:'The journal.', newentry:'A new entry.'
   };
 
@@ -860,6 +863,7 @@ tr.lift{opacity:.4}
     carts:'People who got as far as the checkout and stopped.',
     newcode:'The database decides what it is worth, not the browser.',
     homepage:'Its bands, its words and its photographs.',
+    sitephotos:'Every photograph on Bespoke, About us and Contact.',
     navigation:'Four links that ship in the HTML of every page.',
     media:'Photographs and files, without a deploy.',
     bar:'The line across the top of the shop.',
@@ -888,7 +892,8 @@ tr.lift{opacity:.4}
        products:products, inventory:inventory, analytics:analytics,
        demand:demand, enquiries:enquiries, settings:settings,
        book:book, discounts:discounts, reports:reports, carts:carts,
-       newcode:newcode, homepage:homepage, navigation:navigation,
+       newcode:newcode, homepage:homepage, sitephotos:sitephotos,
+       navigation:navigation,
        media:media, bar:bar, journal:journal, newentry:newentry }[here] || dashboard)();
   }
 
@@ -2579,6 +2584,109 @@ tr.lift{opacity:.4}
       ['note',   'The note',         'A small, invited group of the house\'s closest clients, with personalised access, experiences and privileges. Membership is not open. The house extends it.']]]
   ];
 
+  /* ---------- a photograph the house may replace ----------
+     One slot: what the page shows now, a file button, and Back to the
+     original. The slot's value travels in a hidden field, so a new
+     photograph is staged and saved exactly like a line of words. `own` is
+     the site's built-in file, shown whenever the house has not replaced it. */
+  function picBlock(slot, cur, own) {
+    return '<figure class="homepic"><img src="' + esc(cur || (SITE + '/' + own)) +
+        '" alt="" loading="lazy" data-picimg="' + esc(slot) + '" data-picown="' + esc(own) + '">' +
+        '<figcaption data-piccap="' + esc(slot) + '">' +
+          (cur ? 'Your photograph' : 'The site\'s own') + '</figcaption></figure>' +
+      '<input type="hidden" data-slot="' + esc(slot) + '" value="' + esc(cur) + '">' +
+      '<p class="filters"><input type="file" data-picfile="' + esc(slot) + '" ' +
+        'accept="image/jpeg,image/png,image/webp,image/avif">' +
+        '<button class="btn small" type="button" data-picclear="' + esc(slot) + '"' +
+          (cur ? '' : ' style="display:none"') + '>Back to the original</button>' +
+        '<span class="muted" data-picnote="' + esc(slot) + '"></span></p>';
+  }
+
+  /* A chosen photograph goes to Media straight away, because the file has to
+     exist somewhere before it can be named; but the page is not told about
+     it until Save. Until then it is a preview with an amber note. */
+  function wirePictures(folder) {
+    function staged(slot, url) {
+      var hid = document.querySelector('input[data-slot="' + slot + '"]');
+      var img = document.querySelector('[data-picimg="' + slot + '"]');
+      var cap = document.querySelector('[data-piccap="' + slot + '"]');
+      var clr = document.querySelector('[data-picclear="' + slot + '"]');
+      hid.value = url;
+      img.src = url || (SITE + '/' + img.getAttribute('data-picown'));
+      cap.textContent = (url ? 'Your photograph' : 'The site\'s own') + ' · not saved yet';
+      clr.style.display = url ? '' : 'none';
+      stage(hid);
+    }
+    [].forEach.call(document.querySelectorAll('[data-picfile]'), function (inp) {
+      inp.addEventListener('change', function () {
+        var f = inp.files && inp.files[0];
+        if (!f) return;
+        var slot = inp.getAttribute('data-picfile');
+        var note = document.querySelector('[data-picnote="' + slot + '"]');
+        inp.disabled = true;
+        note.textContent = 'Uploading…';
+        A.upload(f, folder).then(function (m) {
+          inp.disabled = false; inp.value = ''; note.textContent = '';
+          staged(slot, m.url);
+        }).catch(function (err) {
+          inp.disabled = false; note.textContent = '';
+          toast('The photograph did not go up. ' + (err && err.message), true);
+        });
+      });
+    });
+    [].forEach.call(document.querySelectorAll('[data-picclear]'), function (b) {
+      b.addEventListener('click', function () { staged(b.getAttribute('data-picclear'), ''); });
+    });
+  }
+
+  /* ---------- photographs on the other pages ----------
+     Every photograph on Bespoke, About us and Contact, named by the
+     data-pic on its element in that page's file. Only photographs: the words
+     on those pages are the client's own and stay as written. The journal's
+     pictures belong to the Journal screen. */
+  var SITEPICS = [
+    ['Bespoke', 'bespoke.html', [
+      ['bespoke.mtm',  'Made to Measure',                  'images/bespoke/made-to-measure.webp'],
+      ['bespoke.wm',   'Wardrobe Management',              'images/bespoke/wardrobe-management.webp'],
+      ['bespoke.cuff', 'The signature at the cuff',        'images/cuff-monogram.webp']]],
+    ['About us', 'house.html', [
+      ['about.open',     'The opening photograph',         'images/about/open-tall.webp'],
+      ['about.strip1',   'The strip, first frame',         'images/about/strip-1.webp'],
+      ['about.strip2',   'The strip, second frame',        'images/about/strip-2.webp'],
+      ['about.strip3',   'The strip, third frame',         'images/about/strip-3.webp'],
+      ['about.strip4',   'The strip, fourth frame',        'images/about/strip-4.webp'],
+      ['about.box',      'The house box',                  'images/about/box-tall.webp'],
+      ['about.founders', 'The founders',                   'images/about/founders.webp'],
+      ['about.stage1',   'Reclaim',                        'images/about/stage-1.webp'],
+      ['about.stage2',   'Redefine',                       'images/about/stage-2.webp'],
+      ['about.stage3',   'Resonate',                       'images/about/stage-3.webp']]],
+    ['Contact', 'contact.html', [
+      ['contact.atelier', 'The workroom',                  'images/atelier.webp']]]
+  ];
+
+  function sitephotos() {
+    A.content().then(function (rows) {
+      var slots = {};
+      (rows || []).forEach(function (c) { slots[c.slot] = (c.value || '').trim(); });
+      body('<p class="hint">Every photograph on the Bespoke, About us and Contact ' +
+        'pages. Choose a file to replace one; it previews here and reaches the ' +
+        'page only when you press <b>Save to the shop</b>. <b>Back to the ' +
+        'original</b> puts the site\'s own photograph back. The words on these ' +
+        'pages are not changed here. A photograph on the home page is on the ' +
+        'Home page screen; a journal entry\'s is on the Journal screen.</p>' +
+        SITEPICS.map(function (pg) {
+          return '<div class="block"><h3>' + esc(pg[0]) +
+            ' <a class="more" href="' + SITE + '/' + pg[1] + '" target="_blank" ' +
+            'rel="noopener">See the page</a></h3>' +
+            '<div class="homegrid">' + pg[2].map(function (x) {
+              return '<div class="card"><h3>' + esc(x[1]) + '</h3>' +
+                picBlock(x[0], slots[x[0]] || '', x[2]) + '</div>';
+            }).join('') + '</div></div>';
+        }).join(''));
+      wirePictures('site');
+    }).catch(function (e) { body(needsSQL(e)); });
+  }
+
   function homepage() {
     Promise.all([A.bands(), A.content()]).then(function (r) {
       var rows = r[0] || [], slots = {};
@@ -2615,18 +2723,7 @@ tr.lift{opacity:.4}
         '<div class="homegrid">' + HOME.map(function (g) {
           var pk = g[0] + '.picture', cur = slots[pk] || '';
           return '<div class="card"><h3>' + esc(g[1]) + '</h3>' +
-            '<figure class="homepic"><img src="' +
-              esc(cur || (SITE + '/' + g[2])) + '" alt="" loading="lazy" data-picimg="' + pk + '">' +
-              '<figcaption data-piccap="' + pk + '">' + (cur ? 'Your photograph' : 'The site\'s own') +
-              '</figcaption></figure>' +
-            /* the slot's value travels in a hidden field, so a new photograph
-               is staged and saved exactly like a line of words */
-            '<input type="hidden" data-slot="' + pk + '" value="' + esc(cur) + '">' +
-            '<p class="filters"><input type="file" data-picfile="' + pk + '" ' +
-              'accept="image/jpeg,image/png,image/webp,image/avif">' +
-              '<button class="btn small" data-picclear="' + pk + '"' +
-                (cur ? '' : ' style="display:none"') + '>Back to the original</button>' +
-              '<span class="muted" data-picnote="' + pk + '"></span></p>' +
+            picBlock(pk, cur, g[2]) +
             '<div class="f2">' + g[3].map(function (w) {
               var k = g[0] + '.' + w[0];
               return '<p><label for="' + k + '">' + esc(w[1]) + '</label>' +
@@ -2640,43 +2737,7 @@ tr.lift{opacity:.4}
         'no photographs and no words — a switch for it would be a switch wired ' +
         'to nothing. A new band is a change to the site, and that is me.</p>');
 
-      /* A chosen photograph goes to Media straight away, because the file has
-         to exist somewhere before it can be named; but the page is not told
-         about it until Save. Until then it is a preview with an amber note. */
-      function pictureStaged(slot, url) {
-        var hid = document.querySelector('input[data-slot="' + slot + '"]');
-        var img = document.querySelector('[data-picimg="' + slot + '"]');
-        var cap = document.querySelector('[data-piccap="' + slot + '"]');
-        var clr = document.querySelector('[data-picclear="' + slot + '"]');
-        var g = HOME.filter(function (x) { return x[0] + '.picture' === slot; })[0];
-        hid.value = url;
-        img.src = url || (SITE + '/' + g[2]);
-        cap.textContent = (url ? 'Your photograph' : 'The site\'s own') + ' · not saved yet';
-        clr.style.display = url ? '' : 'none';
-        stage(hid);
-      }
-      [].forEach.call(document.querySelectorAll('[data-picfile]'), function (inp) {
-        inp.addEventListener('change', function () {
-          var f = inp.files && inp.files[0];
-          if (!f) return;
-          var slot = inp.getAttribute('data-picfile');
-          var note = document.querySelector('[data-picnote="' + slot + '"]');
-          inp.disabled = true;
-          note.textContent = 'Uploading…';
-          A.upload(f, 'home').then(function (m) {
-            inp.disabled = false; inp.value = ''; note.textContent = '';
-            pictureStaged(slot, m.url);
-          }).catch(function (err) {
-            inp.disabled = false; note.textContent = '';
-            toast('The photograph did not go up. ' + (err && err.message), true);
-          });
-        });
-      });
-      [].forEach.call(document.querySelectorAll('[data-picclear]'), function (b) {
-        b.addEventListener('click', function () {
-          pictureStaged(b.getAttribute('data-picclear'), '');
-        });
-      });
+      wirePictures('home');
     }).catch(function (e) { body(needsSQL(e)); });
   }
 
@@ -4033,7 +4094,12 @@ tr.lift{opacity:.4}
              t.classList.contains('cell') ? t : null, t.getAttribute('data-set'));
     }
     if (has('data-slot'))
-      saving(A.setContent(t.getAttribute('data-slot'), t.value), t, 'the words');
+      saving(A.setContent(t.getAttribute('data-slot'), t.value), t, 'the words')
+        .then(function () {
+          /* a photograph's caption stops saying "not saved yet" once it is */
+          var cap = document.querySelector('[data-piccap="' + t.getAttribute('data-slot') + '"]');
+          if (cap) cap.textContent = t.value ? 'Your photograph' : 'The site\'s own';
+        }, function () {});
     /* an offer switched off stops at the very next checkout — the database is
        asked again on every order, never the page */
     if (has('data-live'))

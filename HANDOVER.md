@@ -307,6 +307,7 @@ save. After every Save a box confirms it and says when the site will show it.
 | Take a cloth off the shop, or delete a hidden one for good | The range (the tick), then its page |
 | Stock in every neck, with a reason kept for every change | Catalogue → Inventory |
 | Every line and photograph on the home page; which bands show and in what order | Shop front → Home page |
+| Every photograph on Bespoke, About us and Contact | Shop front → Photographs |
 | The menu across the top of every page | Shop front → Menu |
 | The announcement bar | Shop front → Announcement bar |
 | Journal entries: write, publish, take down | Shop front → Journal |
@@ -328,8 +329,7 @@ can be deleted, and the house types its name to confirm. Orders already placed
 keep their own record of it.
 
 What still needs a developer: a new page, a new band on the home page, the
-words on the About, Bespoke and legal pages, and the photographs on any page
-other than home. Each of those is a change to a hand-built file, then a deploy.
+words on the About, Bespoke and legal pages. Each of those is a change to a hand-built file, then a deploy.
 
 ---
 

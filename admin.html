@@ -4354,6 +4354,26 @@ tr.lift{opacity:.4}
       }
     }
 
+    /* the revenue chart's period. These four buttons were drawn with no
+       handler behind them, so the chart only ever showed today. */
+    var rg = e.target.closest('[data-range]');
+    if (rg) {
+      CHART_RANGE = rg.getAttribute('data-range');
+      [].forEach.call(document.querySelectorAll('[data-range]'), function (b) {
+        b.setAttribute('aria-pressed', String(b === rg));
+      });
+      var ch = document.getElementById('chart');
+      if (ch) {
+        ch.style.opacity = '.4';
+        A.series(CHART_RANGE).then(function (rows) {
+          ch.innerHTML = chart(rows || []); ch.style.opacity = '';
+        }, function (err) {
+          ch.style.opacity = '';
+          toast('The chart could not be read. ' + (err && err.message), true);
+        });
+      }
+    }
+
     /* ---- marketing ---- */
 
     var ar = e.target.closest('[data-arange]');

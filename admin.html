@@ -452,8 +452,13 @@ tr.done td{opacity:.5}
    positions rather than rename the class — the drag-to-reorder handlers on the
    cloth screen already look for .shot, and this fixes that screen too. */
 .shot{position:static;margin:0;background:var(--room);border:1px solid var(--hair);
-  border-radius:.5rem;overflow:hidden;display:grid;grid-template-rows:auto 1fr}
-.shot img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;
+  border-radius:.5rem;overflow:hidden;display:grid;grid-template-rows:auto 1fr;
+  /* the shared sheet also gives a .shot the gallery's 4:3 ratio. Left in
+     place, it squashed every card to 4:3 and clipped the caption, so the
+     kind select and the Remove button existed below the fold of a card that
+     could not scroll: the house never saw a Remove button at all. */
+  aspect-ratio:auto;height:auto}
+.shot img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;display:block;
   background:var(--under)}
 .shot .filetype{display:grid;place-items:center;aspect-ratio:4/5;
   background:var(--under);font-family:var(--mono);font-size:.75rem;
@@ -1515,7 +1520,7 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
             '<input class="cell wide" name="name" placeholder="Cocoa Drift" required>' +
             '<input class="cell" name="price" type="number" min="0" ' +
               'placeholder="2999" required>' +
-            '<input class="cell" name="hex" type="color" value="#8FA5C0" ' +
+            '<input class="cell" name="hex" type="color" value="#8FA5C0" style="width:3.5rem" ' +
               'title="The cloth\'s colour, used for the swatch">' +
             '<input class="cell wide" name="collection" placeholder="Everyday" ' +
               'list="collist">' +
@@ -1606,8 +1611,8 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
             '</b><span>' + f[0] + '</span></div>';
         }).join('');
         body('<div class="strip">' + strip + '</div>' +
-          '<p class="hint">Type a number and it saves itself, with a reason ' +
-          'recorded beside it. Zero marks that neck sold out on the shop \u2014 ' +
+          '<p class="hint">Type a number and press Save; the reason chosen below ' +
+          'is recorded beside it. Zero marks that neck sold out on the shop \u2014 ' +
           'the size is struck through and cannot be ordered. Whether shoppers ' +
           'see counts at all is under Settings.</p>' +
           '<p class="f" style="max-width:16rem;margin-bottom:var(--s4)">' +

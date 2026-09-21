@@ -19,9 +19,15 @@
   var A = root.IARACCOUNT = {};
   A.token = null; A.email = null; A.name = null;
 
+  /* the bar at the top listens for this, so "Sign in" becomes "Your account"
+     the moment it is true rather than on the next page */
+  function announce() {
+    try { root.dispatchEvent(new CustomEvent('iar:account')); } catch (e) {}
+  }
   function save(tok, email, name) {
     A.token = tok; A.email = email; A.name = name || null;
     try { localStorage.setItem(KEY, JSON.stringify({ t: tok, e: email, n: A.name })); } catch (e) {}
+    announce();
   }
   A.restore = function () {
     try {
@@ -33,6 +39,7 @@
   A.signOut = function () {
     A.token = A.email = A.name = null;
     try { localStorage.removeItem(KEY); } catch (e) {}
+    announce();
   };
 
   function auth(path, body, qs) {

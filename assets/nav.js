@@ -78,6 +78,30 @@
   if (wide.addEventListener) wide.addEventListener('change', place);
   else if (wide.addListener) wide.addListener(place);
 
+  /* Signed in, or not. account.js loads only on the account page, so every
+     other page's bar said "Sign in · Register" to a customer who had signed
+     in a minute earlier, and the panel on a phone said it in two large
+     buttons. The session account.js keeps is read here directly; the account
+     page announces a sign-in or sign-out so this bar changes at once, and a
+     sign-in in another tab arrives through the storage event. */
+  var ACCOUNT = 'iar.account.v1';
+  var accLink = acct.filter(function (a) { return a.classList.contains('nav-acc'); })[0];
+  var regLink = acct.filter(function (a) { return a.classList.contains('nav-reg'); })[0];
+  function account() {
+    var on = false;
+    try {
+      var s = JSON.parse(localStorage.getItem(ACCOUNT) || 'null');
+      on = !!(s && s.t);
+    } catch (e) {}
+    if (accLink) accLink.textContent = on ? 'Your account' : 'Sign in';
+    if (regLink) regLink.style.display = on ? 'none' : '';
+  }
+  account();
+  window.addEventListener('iar:account', account);
+  window.addEventListener('storage', function (e) {
+    if (!e.key || e.key === ACCOUNT) account();
+  });
+
   var open = false;
   var lastFocus = null;
 

@@ -301,7 +301,7 @@ save. After every Save a box confirms it and says when the site will show it.
 
 | the house changes | where at the desk |
 |---|---|
-| Add a cloth; its name, price, MRP, colour, collection, description | Catalogue → The range |
+| Add a cloth; its name, price, MRP, colour, collection, description; the order the shop shows them in (drag a row or use its arrows) | Catalogue → The range |
 | Its fabric, weave, pattern, fit, collar, sleeve, origin, care | The range → click the name |
 | Its photographs: add, remove, reorder | The range → click the name → Photographs |
 | Take a cloth off the shop, or delete a hidden one for good | The range (the tick), then its page |

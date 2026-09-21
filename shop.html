@@ -671,6 +671,17 @@
         });
       });
 
+      /* The order is the house's. The desk keeps a position for every cloth
+         and the shop view arrives sorted by it; until now the grid drew the
+         catalogue's built-in order and ignored that entirely. A cloth the
+         desk does not know keeps its catalogue place, after the ones it does. */
+      R.sort(function (a, b) {
+        var x = live[a.slug], y = live[b.slug];
+        var i = x && x.sort_order != null ? Number(x.sort_order) : 1e9;
+        var j = y && y.sort_order != null ? Number(y.sort_order) : 1e9;
+        return i - j;
+      });
+
       document.getElementById('total').textContent = R.length;
       draw();
     });

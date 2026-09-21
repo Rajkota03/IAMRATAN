@@ -34,3 +34,6 @@ cuff-images
 # The hero source PNGs (9 MB). The served crops live in images/hero/.
 new-hero
 images/hero/_bak
+
+# desk harnesses: the page with its database stubbed, never deployed or committed
+_*fit.html

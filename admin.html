@@ -540,13 +540,18 @@ input[type=color]{width:100%;min-height:2.75rem;padding:.25rem;
 .strip .warn b{color:#8A6A18}
 
 /* the little photograph in a list row */
-.gripcell{white-space:nowrap;width:5rem}
-.grip{cursor:grab;color:var(--muted);font-size:.9rem;letter-spacing:-.2em;margin-right:var(--s1)}
-.rowbtn{appearance:none;background:none;border:1px solid var(--hair);border-radius:.3rem;
-  color:var(--muted);font-size:.55rem;line-height:1;padding:.3rem .35rem;cursor:pointer;
-  margin-left:2px}
-.rowbtn:hover{color:var(--ink);border-color:var(--ink)}
+.gripcell{white-space:nowrap;width:2rem}
+.grip{cursor:grab;color:var(--muted);font-size:.9rem;letter-spacing:-.2em}
+.sorted .grip{visibility:hidden}
 tr.lift{opacity:.4}
+/* a column heading that sorts: the same small caps as the heading it sits
+   in, with the direction marked after it */
+.sorth{appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;
+  letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer;white-space:nowrap}
+.sorth:hover{color:var(--ink)}
+.sorth.on{color:var(--ink)}
+.sorth.on::after{content:' \25B2';font-size:.6em}
+.sorth.on.desc::after{content:' \25BC'}
 .thumb{width:2.6rem;height:3.2rem;border-radius:.3rem;object-fit:cover;
   background:var(--under);display:block}
 
@@ -1518,9 +1523,10 @@ tr.lift{opacity:.4}
         body('<div class="strip">' + figs + '</div>' +
           '<p class="hint">Price is in whole rupees, inclusive of tax. Untick a ' +
           'cloth to take it off the shop without deleting anything. Click a ' +
-          'name to set its cloth, its care and its photographs. <b>The order ' +
-          'here is the order the shop shows them in:</b> drag a row by its ' +
-          'handle, or use the arrows, then Save.</p>' +
+          'name to set its cloth, its care and its photographs. Click a column ' +
+          'heading to sort the list. <b>In shop order, the list is the order ' +
+          'the shop shows them in:</b> drag a row by its handle to move it, ' +
+          'then Save.</p>' +
 
           '<div class="block"><h3>Add a cloth</h3>' +
           '<p class="hint">It arrives hidden. Give it its photographs and its ' +
@@ -1543,19 +1549,27 @@ tr.lift{opacity:.4}
             '<button class="btn small" type="submit">Add</button>' +
           '</form></div>' +
           '<input type="hidden" id="rangePlan" data-rangeorder="1">' +
-          '<div class="card"><div class="scroll"><table><thead><tr><th></th><th></th>' +
-          '<th>Cloth</th><th>SKU</th><th>Price</th><th>Necks</th><th>Stock</th>' +
-          '<th>Collection</th><th>On the shop</th></tr></thead><tbody id="rangeRows">' +
+          '<div class="card"><div class="scroll"><table><thead><tr>' +
+          '<th><button class="sorth on" type="button" data-sortby="order">Shop order</button></th>' +
+          '<th></th>' +
+          '<th><button class="sorth" type="button" data-sortby="name">Cloth</button></th>' +
+          '<th><button class="sorth" type="button" data-sortby="sku">SKU</button></th>' +
+          '<th><button class="sorth" type="button" data-sortby="price">Price</button></th>' +
+          '<th>Necks</th>' +
+          '<th><button class="sorth" type="button" data-sortby="stock">Stock</button></th>' +
+          '<th><button class="sorth" type="button" data-sortby="collection">Collection</button></th>' +
+          '<th><button class="sorth" type="button" data-sortby="visible">On the shop</button></th>' +
+          '</tr></thead><tbody id="rangeRows">' +
           PRODUCTS.map(function (p) {
             var s2 = STOCK[p.id] || {};
             var tot = NECKS.reduce(function (a, z) { return a + (+s2[z] || 0); }, 0);
             var gone = NECKS.filter(function (z) { return (+s2[z] || 0) === 0; }).length;
             return '<tr draggable="true" data-pid="' + p.id + '" data-was="' +
-                (p.sort_order == null ? '' : p.sort_order) + '">' +
+                (p.sort_order == null ? '' : p.sort_order) + '" data-name="' +
+                esc(p.name || '') + '" data-sku="' + esc(p.sku || '') + '" data-stock="' +
+                tot + '" data-collection="' + esc(p.collection || '') + '">' +
               '<td class="gripcell"><span class="grip" title="Drag to move" ' +
-                'aria-hidden="true">&#8942;&#8942;</span>' +
-                '<button class="rowbtn" type="button" data-up aria-label="Move up">&#9650;</button>' +
-                '<button class="rowbtn" type="button" data-down aria-label="Move down">&#9660;</button></td>' +
+                'aria-hidden="true">&#8942;&#8942;</span></td>' +
               '<td><img class="thumb" src="' + thumbFor(p.slug) + '" alt="" ' +
                 'loading="lazy" onerror="this.style.visibility=\'hidden\'"></td>' +
               /* openCloth has existed all along and nothing ever linked to it,
@@ -1577,26 +1591,55 @@ tr.lift{opacity:.4}
             '</tr>';
           }).join('') + '</tbody></table></div></div>');
 
-        /* ---------- the order ----------
-           A row moves by drag or by its arrows; the hidden plan is staged, and
-           Save writes a new position to every cloth whose place changed. The
-           shop draws the ticked ones in exactly this order. */
+        /* ---------- sorting the list, and the shop's order ----------
+           A column heading sorts the list; the rows are the same elements
+           moved about, so anything typed and not yet saved travels with its
+           row. Price and the tick are read from the fields, not the data, so
+           the sort reflects what is on the screen.
+
+           Only in shop order may a row be dragged: the list is then the order
+           the shop shows, and Save writes a new position to every cloth whose
+           place changed. Sorted by anything else, the handles go. */
         (function () {
           var tb = document.getElementById('rangeRows');
           var plan = document.getElementById('rangePlan');
           if (!tb || !plan) return;
-          function moved() { stage(plan); }
-          tb.addEventListener('click', function (e) {
-            var up = e.target.closest('[data-up]'), down = e.target.closest('[data-down]');
-            if (!up && !down) return;
-            var tr = e.target.closest('tr');
-            if (up && tr.previousElementSibling) tb.insertBefore(tr, tr.previousElementSibling);
-            else if (down && tr.nextElementSibling) tb.insertBefore(tr.nextElementSibling, tr);
-            else return;
-            moved();
+          var sortKey = 'order', sortDir = 1;
+
+          function valueOf(tr, key) {
+            if (key === 'order')   return Number(tr.getAttribute('data-was')) || 1e9;
+            if (key === 'price')   return Number(tr.querySelector('[data-price]').value) || 0;
+            if (key === 'stock')   return Number(tr.getAttribute('data-stock')) || 0;
+            if (key === 'visible') return tr.querySelector('[data-visible]').checked ? 0 : 1;
+            return (tr.getAttribute('data-' + key) || '').toLowerCase();
+          }
+          function sortRows() {
+            var rows = [].slice.call(tb.querySelectorAll('tr[data-pid]'));
+            rows.sort(function (a, b) {
+              var x = valueOf(a, sortKey), y = valueOf(b, sortKey);
+              if (x === y) return Number(a.getAttribute('data-was')) - Number(b.getAttribute('data-was'));
+              return (x < y ? -1 : 1) * sortDir;
+            });
+            rows.forEach(function (tr) { tb.appendChild(tr); });
+            tb.classList.toggle('sorted', sortKey !== 'order');
+            [].forEach.call(document.querySelectorAll('.sorth'), function (b) {
+              var on = b.getAttribute('data-sortby') === sortKey;
+              b.classList.toggle('on', on);
+              b.classList.toggle('desc', on && sortDir < 0);
+            });
+          }
+          [].forEach.call(document.querySelectorAll('.sorth'), function (b) {
+            b.addEventListener('click', function () {
+              var key = b.getAttribute('data-sortby');
+              if (key === sortKey) sortDir = -sortDir; else { sortKey = key; sortDir = 1; }
+              sortRows();
+            });
           });
+
+          function moved() { stage(plan); }
           var from = null;
           tb.addEventListener('dragstart', function (e) {
+            if (sortKey !== 'order') { e.preventDefault(); return; }
             var tr = e.target.closest('tr'); if (!tr) return;
             from = tr; tr.classList.add('lift'); e.dataTransfer.effectAllowed = 'move';
           });

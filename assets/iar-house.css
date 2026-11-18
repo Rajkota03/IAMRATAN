@@ -71,8 +71,11 @@
      a phone gets and is deliberately unchanged; only the ceiling came down,
      from 128px, because past about 1350px the mark stopped growing WITH the
      page and simply sat there being large. */
-  --mkw:clamp(92px,5.6vw,108px);
-  --bar:calc(2rem + 1px + var(--mkw) * 620 / 1430);
+  /* The wordmark is 353:241, far squarer than the old 1430:620 mark, so the
+     same width would have grown the bar by a third on every page. 76px keeps
+     "Ratan" comfortably legible and the bar within 6px of what it was. */
+  --mkw:clamp(76px,4.8vw,92px);
+  --bar:calc(2rem + 1px + var(--mkw) * 241 / 353);
   /* What the first block on a page needs above it. Not a spacing choice — it is
      the bar's height plus one step of air — so it gets a name instead of a
      number. Typed as a number it was 6.5rem, which cleared the bar on a desktop
@@ -227,7 +230,7 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
    the badger walks in with its head forward, stops, and turns to look back.
    Head and body overlap by twelve pixels so the neck never opens a seam. */
 .mk{position:relative;display:block;width:var(--mkw);
-  aspect-ratio:1430/620;color:inherit}
+  aspect-ratio:353/241;color:inherit}
 /* Only the three masked layers take the fill. .mk-badger is a positioning
    wrapper — giving it currentColor with no mask painted a solid block over the
    whole mark, which is exactly what it did the first time. */
@@ -236,50 +239,19 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
   -webkit-mask-position:center;mask-position:center;
   -webkit-mask-size:contain;mask-size:contain}
-.mk-badger{background:none}
-.mk-letters{-webkit-mask-image:url('mark-letters.webp');mask-image:url('mark-letters.webp')}
-.mk-body{-webkit-mask-image:url('mark-body.webp');mask-image:url('mark-body.webp')}
-.mk-head{-webkit-mask-image:url('mark-head.png');mask-image:url('mark-head.png');
-  transform-origin:73.6% 50.2%}
+/* The whole wordmark is one flat shape, so it is one mask. The badger's body
+   and head were separate layers only so the head could turn; with no badger
+   in the mark there is nothing to articulate, and painting them would stack
+   the old logo underneath the new one. */
+.mk-letters{-webkit-mask-image:url('mark-wordmark.webp');mask-image:url('mark-wordmark.webp')}
+.mk-body,.mk-head,.mk-badger{display:none}
 
-.mk-badger{position:absolute;inset:0}
-
-/* ---------- the clips ----------
-   The walk-in and the three reactions are real film — generated cycles with an
-   articulated gait, which a CSS transform cannot produce. They are pinned at
-   both ends to frames composited from these same masked layers, so the
-   letterforms never drift, and each one crossfades back to the mask mark while
-   the badger is still. The resting logo is always the true one.
-
-   They are animated IMAGES with an alpha channel, not video. Video autoplay is
-   refused outright by iOS in Low Power Mode, and the clips used to carry the
-   house bone baked into their background at rgb(231,229,219) — against the
-   header's #EDE9E0 that showed as a pale rectangle pasted in behind the logo.
-   With the ground keyed out there is nothing left to match.
-
-   object-fit:contain, and the clips are cropped to the mark's own 1430:620, so
-   the logo inside them fills the frame the way the mask does. Before that fit
-   the film's logo sat at 93% width against the mask's 100% and the handover at
-   the end of the walk visibly jumped in scale.                                */
-.mk-clip{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
-  pointer-events:none}
-.mk--clip .mk-letters,.mk--clip .mk-badger{opacity:0}
-.mk-letters,.mk-badger{transition:opacity .3s linear}
-
-
-/* The lingering glance on the true mask mark, once the entry is done — the
-   breathing between the filmed reactions rather than a reaction itself.
-   It ran on a 13s loop, which is four and a half glances a minute: often
-   enough that the eye starts watching the logo instead of the page. At 34s it
-   is something you catch rather than something you notice. The percentages are
-   retuned with it so the glance itself still takes about three seconds; left
-   alone they would have stretched it to nine. */
-.mk--idle .mk-head{animation:mk-glance 34s var(--settle) infinite}
-@keyframes mk-glance{
-  0%,89%{transform:rotate(0)}
-  93%,96%{transform:rotate(12deg)}
-  100%{transform:rotate(0)}
-}
+/* The filmed walk-in and the three reactions were the badger's — it walked in,
+   shook, glanced back. The wordmark has no badger to animate, so the clips,
+   the idle glance and assets/mark.js all go with it. The files are still in
+   assets/ and in the history: if the house wants the mark to arrive rather
+   than simply be there, it is a new piece of film against this wordmark, not
+   a revival of these. */
 .markwrap{-webkit-tap-highlight-color:transparent}
 
 @media(prefers-reduced-motion:reduce){
@@ -477,10 +449,10 @@ a.shot:hover img{transform:scale(1.03)}
    beside anything. So the brand block and the contact block keep the full
    width, and the two that can share, share. */
 @media(min-width:860px){.foot-grid{grid-template-columns:1.5fr 1fr 1fr 1fr}}
-.mark--monogram{width:min(200px,56vw);aspect-ratio:1430/620;display:block;
+.mark--monogram{width:min(168px,48vw);aspect-ratio:353/241;display:block;
   background:currentColor;margin-bottom:var(--s4);
-  -webkit-mask:url('mark-monogram.webp') no-repeat center/contain;
-  mask:url('mark-monogram.webp') no-repeat center/contain}
+  -webkit-mask:url('mark-wordmark.webp') no-repeat center/contain;
+  mask:url('mark-wordmark.webp') no-repeat center/contain}
 
 /* Sign in sits apart from the four navigation words: it is an action, not a
    place on the site, and lining it up with Home and Shop invites a visitor to

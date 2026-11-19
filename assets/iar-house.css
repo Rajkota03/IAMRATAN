@@ -74,10 +74,10 @@
   /* The wordmark is 353:241, far squarer than the old 1430:620 mark, so the
      same width would have grown the bar by a third on every page. 76px keeps
      "Ratan" comfortably legible and the bar within 6px of what it was. */
-  /* the house's own gold, as supplied with the wordmark */
-  --mark:#D6A671;
+  /* the house's own navy, sampled from the wordmark as supplied */
+  --mark:#162544;
   --mkw:clamp(76px,4.8vw,92px);
-  --bar:calc(2rem + 1px + var(--mkw) * 241 / 353);
+  --bar:calc(2rem + 1px + var(--mkw) * 353 / 526);
   /* What the first block on a page needs above it. Not a spacing choice — it is
      the bar's height plus one step of air — so it gets a name instead of a
      number. Typed as a number it was 6.5rem, which cleared the bar on a desktop
@@ -232,7 +232,7 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
    the badger walks in with its head forward, stops, and turns to look back.
    Head and body overlap by twelve pixels so the neck never opens a seam. */
 .mk{position:relative;display:block;width:var(--mkw);
-  aspect-ratio:353/241;color:var(--mark)}
+  aspect-ratio:526/353;color:var(--mark)}
 /* Only the three masked layers take the fill. .mk-badger is a positioning
    wrapper — giving it currentColor with no mask painted a solid block over the
    whole mark, which is exactly what it did the first time. */
@@ -451,7 +451,7 @@ a.shot:hover img{transform:scale(1.03)}
    beside anything. So the brand block and the contact block keep the full
    width, and the two that can share, share. */
 @media(min-width:860px){.foot-grid{grid-template-columns:1.5fr 1fr 1fr 1fr}}
-.mark--monogram{width:min(168px,48vw);aspect-ratio:353/241;display:block;
+.mark--monogram{width:min(168px,48vw);aspect-ratio:526/353;display:block;
   background:var(--mark);margin-bottom:var(--s4);
   -webkit-mask:url('mark-wordmark.webp') no-repeat center/contain;
   mask:url('mark-wordmark.webp') no-repeat center/contain}
